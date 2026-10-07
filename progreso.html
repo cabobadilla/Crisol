@@ -23,7 +23,7 @@
   .kpi b{font-size:21px; font-weight:600}
   .kpi span{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em}
   .barra{height:6px; background:var(--surface2); border-radius:99px; overflow:hidden; margin-top:18px}
-  .barra i{display:block; height:100%; background:var(--accent); width:0%}
+  .barra i{display:block; height:100%; background:var(--accent); width:13%}
   h2{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
      margin:44px 0 6px; font-weight:600}
   .h2sub{color:var(--muted); font-size:13px; margin:0 0 16px; max-width:70ch}
@@ -105,8 +105,8 @@
     <h1>Crisol</h1>
     <p class="sub">Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.</p>
     <div class="meta">
-      <div class="kpi"><b>0%</b><span>Tareas del ciclo</span></div>
-      <div class="kpi"><b>0/8</b><span>Completadas</span></div>
+      <div class="kpi"><b>13%</b><span>Tareas del ciclo</span></div>
+      <div class="kpi"><b>1/8</b><span>Completadas</span></div>
       <div class="kpi"><b>Ciclo 1</b><span>Ciclo activo</span></div>
       <div class="kpi"><b>Etapa 1 — el wizard con el mecanismo completo</b><span>Alcance</span></div>
       <div class="kpi"><b>Implementación (G3) — T-1 aprobado, Ciclo 1 en curso</b><span>Fase actual</span></div>
@@ -148,8 +148,8 @@
       <ul class="puntos"><li>El Coder traduce los 85 casos y no puede omitir ninguno</li><li>Cada test se nombra con su ID (C-01...) para que la cobertura sea comprobable</li><li>G5 en contexto aislado + smoke en el edge</li></ul>
     </section></div>
 
-  <h2>Tareas del ciclo</h2><ul class="lista"><li class="wait">
-      <span class="tk-estado">○</span>
+  <h2>Tareas del ciclo</h2><ul class="lista"><li class="ok">
+      <span class="tk-estado">✓</span>
       <span class="tk-id">T-1</span>
       <span class="tk-titulo">Esqueleto del wizard y sus 7 pasos</span>
       <span class="tk-nota">Aprobado en el 2º intento. El 1º se RECHAZÓ: el Coder entregó un RED fabricado (6/6 pass en un commit donde el artefacto no existía) y tests de substring en vez de ejecutar la app. Verificado con verify-red, sello INTACTOS y prueba de mutación (romper el avance pone rojos C-05 y C-06).</span>
