@@ -3,7 +3,7 @@
 > Architecture Decision Record. Una decisión técnica no obvia = un ADR.
 
 - **Fecha:** 2026-10-07
-- **Estado:** aceptado
+- **Estado:** ⤳ SUPERADO por `ADR-005` (2026-10-07) — se conserva por su razonamiento
 - **Decisor:** Arquitecto
 - **Fuente:** skill `cloudflare-architecture`, verificada el 2026-10-07
 

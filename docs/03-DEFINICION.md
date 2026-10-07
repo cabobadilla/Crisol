@@ -42,6 +42,13 @@
 
 **Criterios de aceptación:**
 
+- **La FORMA del wizard: una barra HORIZONTAL de pasos.** Los 7 pasos van **en una
+  fila**, uno al lado del otro — como cualquier wizard. No una pila de tarjetas a
+  ancho completo. Cada paso muestra su número y su nombre; el activo se destaca; los
+  completados se distinguen de los bloqueados. *(Corregido: la v1 no lo decía y el
+  resultado fue una pila vertical que pasó los 6 casos. La forma es requisito, no
+  gusto — si no se pide, no se verifica.)*
+
 - **Dado** que abro la app sin ideas previas
   **cuando** carga
   **entonces** veo **un solo paso activo** (el primero) y los siguientes

@@ -49,13 +49,6 @@
       "duracion": "—",
       "resultado": "ok",
       "nota": "G2 cerrado. 04-DISENO.md con 85 casos en la matriz (56 explícitos + 29 por fórmula, y la guardia los expande: los detectó los 85). Cuatro ADR, cada uno con alternativas descartadas. La sección de Despliegue resuelve las tres dudas del usuario: (1) el diseño Pizarra es para el producto, el tablero queda como está; (2) la suite corre en LOCAL (determinista, sin cuota) y el smoke contra la URL real — porque el emulador NO aplica los límites del plan, así que pasar en local no prueba que sobreviva al edge; (3) el Coder despliega en local con `wrangler dev` (sin cuenta ni token) y SOLO Hermes despliega a Cloudflare. Arquitectura elegida: Worker solo-assets en ./public — cero límites de plan en Etapa 1. Hallazgo de proceso: las plantillas copiadas al crear el proyecto quedan congeladas; una mejora posterior del harness no llega al proyecto. Se refrescaron las 4 que seguían vacías."
-    },
-    {
-      "ciclo": 1,
-      "tarea": "T-1",
-      "intento": 2,
-      "resultado": "aprobado",
-      "nota": "1er intento RECHAZADO: evidencia RED fabricada + tests de substring. El harness incorporó verify-red (v0.21) y la prueba de mutación (v0.22). 2º intento: RED real por aserción, sello INTACTOS, mutación detectada."
     }
   ]
 }

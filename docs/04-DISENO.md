@@ -182,7 +182,7 @@ y su diseño es Pizarra. Son dos ciclos de vida distintos.
 
 **Consecuencia operativa:** `public/` es **solo** el producto. El tablero y los `docs/`
 viven en la raíz del repo y **no** entran al directorio de assets — si entraran, se
-publicarían en Cloudflare, que es exactamente lo que `C-51`/`C-56` previenen.
+publicarían el tablero y los `docs/`, que es exactamente lo que `C-51`/`C-56` previenen.
 
 ### Forma del Worker
 
@@ -325,12 +325,14 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 
 | ID | Caso | Criterio de origen | Tipo | Observable esperado |
 |---|---|---|---|---|
-| `C-01` | Los 7 pasos se muestran en orden | HU-1 / #1 | estructura | El DOM tiene exactamente 7 pasos, con los títulos y el orden de `PASOS` |
-| `C-02` | Al cargar sin datos, solo el paso 1 es accesible | HU-1 / #1 | comportamiento | El paso 1 acepta interacción; los pasos 2..7 existen y **no** son accesibles |
-| `C-03` | Los pasos futuros son visibles, no ocultos | HU-1 / #1 | comportamiento | Los 7 títulos están en el DOM aunque estén bloqueados |
-| `C-04` | Se indica el total de pasos | HU-1 / #1 | estructura | Aparece el número 7 como total |
-| `C-05` | Completar un paso avanza al siguiente | HU-1 / #2 | comportamiento | Tras confirmar un paso válido, el paso activo es el siguiente y el anterior queda completo |
-| `C-06` | Completar los 7 pasos registra la idea | HU-1 / #3 | comportamiento | La idea aparece en la lista con sus datos |
+| `C-01` | Los 7 pasos están **en UNA fila horizontal** | HU-1 / #1 | **geometría** | `getBoundingClientRect()` de los 7: mismo `top` (±2 px) y `left` **estrictamente creciente** |
+| `C-02` | Al cargar, solo el paso 1 es accesible | HU-1 / #1 | comportamiento | El paso 1 acepta interacción; los 2..7 existen y **no** aceptan eventos de puntero |
+| `C-03` | Los 7 pasos se ven aunque estén bloqueados | HU-1 / #1 | **geometría** | Los 7 tienen `width` y `height` > 0 **y** están dentro del viewport en el eje de la fila |
+| `C-04` | Se indica el paso actual y el total | HU-1 / #1 | estructura | Aparece «1 de 7» **y** el paso 1 está marcado como activo en la fila |
+| `C-05` | Completar marca y avanza | HU-1 / #2 | comportamiento | El anterior queda **completado** (estado distinto del activo y del bloqueado) y el activo es el siguiente |
+| `C-06` | Completar los 7 registra la idea | HU-1 / #3 | comportamiento | La idea aparece en la lista con sus datos |
+| `C-86` | A 390 px la fila **no desborda** el viewport | HU-1 / #1 | **umbral** | `document.scrollingElement.scrollWidth <= 392` |
+| `C-87` | A 390 px el contenido respeta el margen | HU-1 / #1 | **umbral** | El borde izquierdo del primer hijo >= 16 px (no pegado al canto) |
 
 ### Grupo B — Valor y métrica (HU-2)
 
@@ -409,13 +411,13 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 
 | ID | Caso | Criterio de origen | Tipo | Observable esperado |
 |---|---|---|---|---|
-| `C-50` | `wrangler.jsonc` declara un Worker solo-assets | HU-8 / #4 | estructura | Tiene `assets.directory` y **no** tiene `main` |
-| `C-51` | El directorio de assets es `./public` | HU-8 / #8 | estructura | `assets.directory === "./public"` — no `"."` |
+| `C-50` | La config declara un Worker solo-assets | HU-8 / #4 | estructura | `wrangler.jsonc` tiene `assets.directory` y **no** tiene `main` |
+| `C-51` | El directorio de assets es `./public` | HU-8 / #8 | estructura | `assets.directory === \"./public\"` — no `\".\"` |
 | `C-52` | `public/` contiene solo lo publicable | HU-8 / #8 | estructura | En `public/` está `index.html` y **nada** de `docs/`, `tests/` ni la config |
-| `C-53` | El comando local está documentado | HU-8 / #1 | empaquetado | El README indica `npx wrangler dev` y el puerto 8787 |
-| `C-54` | El comando de deploy está documentado | HU-8 / #2 | empaquetado | El README indica `npx wrangler deploy` |
-| `C-55` | Cero credenciales en el repo | HU-8 / #7 | estructura | Ningún archivo versionado contiene un token; `.dev.vars` está en `.gitignore` |
-| `C-56` | El smoke verifica que `docs/` no es público | HU-8 / #8 | **umbral** | Pedir `/docs/03-DEFINICION.md` a la URL real → **404**, no 200 |
+| `C-53` | El comando local está documentado | HU-8 / #1 | empaquetado | El README indica `npx wrangler dev` y su puerto |
+| `C-54` | El comando de despliegue está documentado | HU-8 / #2 | empaquetado | El README indica `npx wrangler deploy` y **quién** lo corre (Hermes) |
+| `C-55` | Cero credenciales en el repo | HU-8 / #7 | estructura | Ningún archivo versionado contiene un token; `.env` y `.dev.vars` en `.gitignore` |
+| `C-56` | El smoke verifica que lo publicado **ES** lo construido | HU-8 / #8 | **umbral** | El HTML servido en la URL real tiene el **mismo hash** que el del repo |
 
 ### Cobertura combinada
 
