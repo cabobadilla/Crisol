@@ -105,69 +105,47 @@ test('C-01 · los 7 pasos están en UNA fila horizontal', async () => {
   }
 });
 
-test('C-02 · al cargar sin datos, solo el paso 1 es accesible', async () => {
+test('C-02 · al cargar sin datos, solo el paso 1 tiene formulario en pantalla', async () => {
   const r = await app.evaluar(`
     (() => {
-      const controlesDe = paso => Array.from(
-        paso.querySelectorAll('button, input, textarea, select')
-      ).map(control => {
-        control.focus();
-        return {
-          etiqueta: control.getAttribute('data-accion') ||
-                   control.getAttribute('data-campo') ||
-                   control.tagName,
-          enfocado: document.activeElement === control,
-        };
-      });
       const pasos = Array.from(document.querySelectorAll('[data-paso]'));
-      const info = pasos.map(paso => ({
+      const visibles = pasos.filter(p => {
+        const estilo = getComputedStyle(p);
+        return !p.hasAttribute('hidden') &&
+               estilo.display !== 'none' &&
+               estilo.visibility !== 'hidden' &&
+               p.offsetParent !== null;
+      });
+      const info = visibles.map(paso => ({
         id: paso.getAttribute('data-paso'),
         estado: paso.getAttribute('data-estado'),
-        controles: controlesDe(paso),
+        controles: Array.from(paso.querySelectorAll('button, input, textarea, select')).length,
       }));
-      const confirmarSegundo =
-        document.querySelector('[data-paso="problema"] [data-accion="confirmar"]');
-      if (confirmarSegundo) confirmarSegundo.click();
       const activo = document.querySelector('[data-estado="activo"]');
       return {
-        cantidad: pasos.length,
+        cantidadVisibles: visibles.length,
+        totalEnDOM: pasos.length,
         info,
-        activoTrasClicSegundo: activo ? activo.getAttribute('data-paso') : null,
+        activoId: activo ? activo.getAttribute('data-paso') : null,
       };
     })()
   `);
 
   assert.equal(
-    r.cantidad, 7,
-    `los pasos 2..7 deben existir en el DOM; se hallaron ${r.cantidad} pasos`
+    r.cantidadVisibles, 1,
+    `al cargar debe haber EXACTAMENTE 1 formulario visible; hay ${r.cantidadVisibles}`
   );
-  assert.equal(r.info[0].estado, 'activo', 'el paso 1 debe ser el activo al cargar');
-
-  assert.ok(
-    r.info[0].controles.length > 0,
-    'el paso 1 debe tener controles que acepten interacción'
-  );
-  assert.ok(
-    r.info[0].controles.some(control => control.enfocado),
-    `el paso 1 debe aceptar interacción (foco); controles: ${JSON.stringify(r.info[0].controles)}`
-  );
-
-  for (const paso of r.info.slice(1)) {
-    assert.equal(
-      paso.estado, 'bloqueado',
-      `el paso ${paso.id} debe estar declarado bloqueado; estado: ${paso.estado}`
-    );
-    for (const control of paso.controles) {
-      assert.equal(
-        control.enfocado, false,
-        `el paso ${paso.id} está bloqueado pero su control «${control.etiqueta}» aceptó foco`
-      );
-    }
-  }
-
   assert.equal(
-    r.activoTrasClicSegundo, 'idea',
-    `el paso 2 está bloqueado: su confirmar no debe avanzar; tras el clic el paso activo es ${r.activoTrasClicSegundo}`
+    r.activoId, 'idea',
+    `el formulario visible debe ser el del paso 1 (idea); es ${r.activoId}`
+  );
+  assert.ok(
+    r.info[0].controles > 0,
+    'el paso 1 visible debe tener controles'
+  );
+  assert.equal(
+    r.totalEnDOM, 1,
+    `solo el paso activo debe tener formulario en el DOM; hay ${r.totalEnDOM}`
   );
 });
 
@@ -296,7 +274,7 @@ test('C-04 · se indica el paso actual y el total, y el activo está en la fila'
   );
 });
 
-test('C-05 · completar un paso avanza al siguiente', async () => {
+test('C-05 · confirmar paso 1 muestra formulario del paso 2 y oculta el del paso 1', async () => {
   const r = await app.evaluar(`
     (() => {
       const activo = document.querySelector('[data-estado="activo"]');
@@ -310,12 +288,20 @@ test('C-05 · completar un paso avanza al siguiente', async () => {
       const confirmar = activo.querySelector('[data-accion="confirmar"]');
       if (confirmar) confirmar.click();
       const despues = document.querySelector('[data-estado="activo"]');
-      const antes = document.querySelector('[data-paso="' + id + '"]');
+      const indicadorAntes = document.querySelector('[data-paso-indicador="' + id + '"]');
+      const visibles = Array.from(document.querySelectorAll('[data-paso]')).filter(p => {
+        const estilo = getComputedStyle(p);
+        return !p.hasAttribute('hidden') &&
+               estilo.display !== 'none' &&
+               estilo.visibility !== 'hidden' &&
+               p.offsetParent !== null;
+      });
       return {
         idAntes: id,
         habiaConfirmar: !!confirmar,
         idDespues: despues ? despues.getAttribute('data-paso') : null,
-        estadoAntes: antes ? antes.getAttribute('data-estado') : null,
+        estadoIndicadorAntes: indicadorAntes ? indicadorAntes.getAttribute('data-estado-indicador') : null,
+        visiblesDespues: visibles.map(p => p.getAttribute('data-paso')),
       };
     })()
   `);
@@ -327,8 +313,12 @@ test('C-05 · completar un paso avanza al siguiente', async () => {
     `tras confirmar un paso válido el paso activo debe ser problema; es ${r.idDespues}`
   );
   assert.equal(
-    r.estadoAntes, 'completo',
-    `el paso confirmado debe quedar marcado completo; quedó en ${r.estadoAntes}`
+    r.estadoIndicadorAntes, 'completo',
+    `el paso confirmado debe quedar marcado completo en la barra; quedó en ${r.estadoIndicadorAntes}`
+  );
+  assert.deepEqual(
+    r.visiblesDespues, ['problema'],
+    `después de confirmar paso 1, SOLO el paso 2 debe ser visible; visibles: ${JSON.stringify(r.visiblesDespues)}`
   );
 });
 
