@@ -132,8 +132,8 @@
     <section class="fase run">
       <header><span class="chip run">◐ En curso</span><span class="gate gate-wait">G1</span></header>
       <h3>3 · Definición</h3>
-      <p class="resumen">5 historias con criterios verificables, corte en etapas documentado y 10 casos borde.</p>
-      <ul class="puntos"><li>El challenger debe RECHAZAR de verdad, no ser un sello de goma</li><li>El paso de referencias exige fuente y conclusión</li><li>Responsive 375px en el DoD: aprendizaje de H-1</li></ul>
+      <p class="resumen">6 historias con criterios verificables, los 7 pasos del framework, corte en etapas documentado y 13 casos borde.</p>
+      <ul class="puntos"><li>El paso de valor y metrica es obligatorio: que cambia, para quien, y como se mide con valor objetivo</li><li>El challenger debe RECHAZAR de verdad, no ser un sello de goma</li><li>El paso de referencias exige fuente y conclusion</li><li>Responsive 375px en el DoD: aprendizaje de H-1</li></ul>
     </section>
     <section class="fase wait">
       <header><span class="chip wait">○ Pendiente</span><span class="gate gate-wait">G2</span></header>
@@ -152,22 +152,26 @@
   <h2>Historias de usuario</h2><ul class="lista"><li class="prop">
       <span class="tk-estado">◇</span>
       <span class="tk-id">HU-1</span>
-      <span class="tk-titulo">Registrar una idea paso a paso</span>
+      <span class="tk-titulo">Registrar una idea paso a paso (7 pasos)</span>
     </li><li class="prop">
       <span class="tk-estado">◇</span>
       <span class="tk-id">HU-2</span>
-      <span class="tk-titulo">El proceso no deja avanzar con huecos</span>
+      <span class="tk-titulo">Definir el valor del producto y como se mide</span>
     </li><li class="prop">
       <span class="tk-estado">◇</span>
       <span class="tk-id">HU-3</span>
-      <span class="tk-titulo">Buscar referencias antes de seguir</span>
+      <span class="tk-titulo">El proceso no deja avanzar con huecos</span>
     </li><li class="prop">
       <span class="tk-estado">◇</span>
       <span class="tk-id">HU-4</span>
-      <span class="tk-titulo">El challenger objeta las definiciones</span>
+      <span class="tk-titulo">Buscar referencias antes de seguir</span>
     </li><li class="prop">
       <span class="tk-estado">◇</span>
       <span class="tk-id">HU-5</span>
+      <span class="tk-titulo">El challenger objeta las definiciones</span>
+    </li><li class="prop">
+      <span class="tk-estado">◇</span>
+      <span class="tk-id">HU-6</span>
       <span class="tk-titulo">Guardar y reabrir una idea</span>
     </li></ul>
 
@@ -204,7 +208,7 @@
       </div>
   </div>
 
-  <h2>Decisiones</h2><div class="caja"><ul><li><strong>El framework es el del harness</strong> — No se inventa uno nuevo: se productiza el que ya funciona (supuesto S-3)</li><li><strong>Challenger determinístico por reglas</strong> — El mecanismo que importa es que RECHACE, no que use un LLM (supuesto S-4)</li><li><strong>Un solo artefacto, sin backend</strong> — POC estático, igual que MyHermesTest</li><li><strong>Anti-alcance: no ejecuta, solo define</strong> — Su dominio termina donde empieza la construcción</li></ul></div>
+  <h2>Decisiones</h2><div class="caja"><ul><li><strong>El framework es el del harness</strong> — No se inventa uno nuevo: se productiza el que ya funciona (supuesto S-3)</li><li><strong>Valor y metrica son Etapa 1, no diferido</strong> — Correccion del usuario: una idea que no dice que cambia y como se mide no esta definida</li><li><strong>El challenger tiene 4 reglas, una por gap estructural</strong> — R1 sin problema, R2 sin valor o metrica medible, R3 sin referencias, R4 sin criterio de terminado</li><li><strong>Challenger determinístico por reglas</strong> — El mecanismo que importa es que RECHACE, no que use un LLM (supuesto S-4)</li><li><strong>Un solo artefacto, sin backend</strong> — POC estático, igual que MyHermesTest</li><li><strong>Anti-alcance: no ejecuta, solo define</strong> — Su dominio termina donde empieza la construcción</li></ul></div>
 
   
   <h2>3 · Histórico de corridas</h2>
@@ -227,11 +231,19 @@
       <td class="num">—</td>
       <td><span class="chip ok">OK</span></td>
       <td class="nota">G0 y G1a escritos: requerimiento crudo, 5 preguntas abiertas, 5 supuestos, anti-alcance y veredicto. Fase 3 con 5 historias y criterios verificables, corte en etapas documentado. Espera G1 (aprobación humana).</td>
+    </tr>
+    <tr>
+      <td class="num">3</td>
+      <td>Ciclo 1 · G1 (revisión)</td>
+      <td><code>(Hermes, rol PO)</code></td>
+      <td class="num">—</td>
+      <td><span class="chip ok">OK</span></td>
+      <td class="nota">Corrección del usuario ANTES de aprobar el gate: faltaba la definición inicial del valor del producto y su forma de medir. Peor: estaba puesta como regla DIFERIDA (4..N) — al revés. Se agregó HU-2 con el paso obligatorio de valor y métrica (qué cambia, para quién, cómo se mide con valor objetivo), el framework pasó de 6 a 7 pasos y el challenger de 3 a 4 reglas (R2 ahora rechaza métrica vaga). El gate humano hizo exactamente lo que existe para hacer: rechazar antes de que el costo subiera.</td>
     </tr></tbody>
   </table>
 
   <footer>
-    <p><strong>Siguiente:</strong> El PO escribió las 5 historias con criterios verificables. Falta tu aprobación explícita: sin G1 no se avanza a diseño.</p>
+    <p><strong>Siguiente:</strong> El PO escribió las 6 historias con criterios verificables. Falta tu aprobación explícita: sin G1 no se avanza a diseño.</p>
     <p>Actualizado 07-10-2026, 10:30 a. m. · estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.</p>
   </footer>
 

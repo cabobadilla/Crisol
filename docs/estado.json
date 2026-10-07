@@ -5,7 +5,7 @@
   "ciclo": "Ciclo 1",
   "etapa": "Etapa 1 — el wizard con el mecanismo completo",
   "fase_actual": "Definición — esperando G1 (aprobación humana)",
-  "siguiente": "El PO escribió las 5 historias con criterios verificables. Falta tu aprobación explícita: sin G1 no se avanza a diseño.",
+  "siguiente": "El PO escribió las 6 historias con criterios verificables. Falta tu aprobación explícita: sin G1 no se avanza a diseño.",
   "nota_de_proceso": "estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.",
   "fases": [
     {
@@ -29,8 +29,8 @@
       "nombre": "3 · Definición",
       "estado": "en-curso",
       "gate": "G1",
-      "resumen": "5 historias con criterios verificables, corte en etapas documentado y 10 casos borde.",
-      "puntos": ["El challenger debe RECHAZAR de verdad, no ser un sello de goma", "El paso de referencias exige fuente y conclusión", "Responsive 375px en el DoD: aprendizaje de H-1"]
+      "resumen": "6 historias con criterios verificables, los 7 pasos del framework, corte en etapas documentado y 13 casos borde.",
+      "puntos": ["El paso de valor y metrica es obligatorio: que cambia, para quien, y como se mide con valor objetivo", "El challenger debe RECHAZAR de verdad, no ser un sello de goma", "El paso de referencias exige fuente y conclusion", "Responsive 375px en el DoD: aprendizaje de H-1"]
     },
     {
       "id": "diseno",
@@ -51,11 +51,12 @@
   ],
   "tareas": [],
   "historias": [
-    { "id": "HU-1", "titulo": "Registrar una idea paso a paso", "estado": "propuesto" },
-    { "id": "HU-2", "titulo": "El proceso no deja avanzar con huecos", "estado": "propuesto" },
-    { "id": "HU-3", "titulo": "Buscar referencias antes de seguir", "estado": "propuesto" },
-    { "id": "HU-4", "titulo": "El challenger objeta las definiciones", "estado": "propuesto" },
-    { "id": "HU-5", "titulo": "Guardar y reabrir una idea", "estado": "propuesto" }
+    { "id": "HU-1", "titulo": "Registrar una idea paso a paso (7 pasos)", "estado": "propuesto" },
+    { "id": "HU-2", "titulo": "Definir el valor del producto y como se mide", "estado": "propuesto" },
+    { "id": "HU-3", "titulo": "El proceso no deja avanzar con huecos", "estado": "propuesto" },
+    { "id": "HU-4", "titulo": "Buscar referencias antes de seguir", "estado": "propuesto" },
+    { "id": "HU-5", "titulo": "El challenger objeta las definiciones", "estado": "propuesto" },
+    { "id": "HU-6", "titulo": "Guardar y reabrir una idea", "estado": "propuesto" }
   ],
   "siguientes_ciclos": [
     {
@@ -86,13 +87,16 @@
   ],
   "decisiones": [
     { "titulo": "El framework es el del harness", "texto": "No se inventa uno nuevo: se productiza el que ya funciona (supuesto S-3)" },
+    { "titulo": "Valor y metrica son Etapa 1, no diferido", "texto": "Correccion del usuario: una idea que no dice que cambia y como se mide no esta definida" },
+    { "titulo": "El challenger tiene 4 reglas, una por gap estructural", "texto": "R1 sin problema, R2 sin valor o metrica medible, R3 sin referencias, R4 sin criterio de terminado" },
     { "titulo": "Challenger determinístico por reglas", "texto": "El mecanismo que importa es que RECHACE, no que use un LLM (supuesto S-4)" },
     { "titulo": "Un solo artefacto, sin backend", "texto": "POC estático, igual que MyHermesTest" },
     { "titulo": "Anti-alcance: no ejecuta, solo define", "texto": "Su dominio termina donde empieza la construcción" }
   ],
   "diferido": [
     "Agente LLM real (necesita backend o key)",
-    "Reglas de challenger 4..N",
+    "Reglas de challenger 5..N",
+    "Instrumentacion real de la metrica",
     "Framework configurable",
     "Multiusuario / nube / compartir",
     "Exportar la idea como artefacto",
