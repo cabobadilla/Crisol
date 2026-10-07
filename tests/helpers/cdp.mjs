@@ -183,6 +183,20 @@ export async function abrirNavegador() {
 
   await irAlaApp();
 
+  // Fija el tamaño del viewport renderizado (CDP Emulation). Los casos de
+  // geometría se miden a 1200 px; los de umbral (C-86/C-87), a 390 px.
+  // Sin esto el layout se mide en el viewport por defecto y el número no
+  // significa nada.
+  async function tamano(ancho, alto) {
+    await sesion.enviar('Emulation.setDeviceMetricsOverride', {
+      width: ancho,
+      height: alto,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
+    await dormir(120);
+  }
+
   async function cerrar() {
     try {
       await Promise.race([sesion.enviar('Browser.close'), dormir(1500)]);
@@ -199,5 +213,11 @@ export async function abrirNavegador() {
     rmSync(perfil, { recursive: true, force: true });
   }
 
-  return { direccion, evaluar: expresion => sesion.evaluar(expresion), irAlaApp, cerrar };
+  return {
+    direccion,
+    evaluar: expresion => sesion.evaluar(expresion),
+    irAlaApp,
+    tamano,
+    cerrar,
+  };
 }
