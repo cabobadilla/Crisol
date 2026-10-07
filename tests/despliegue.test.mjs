@@ -72,9 +72,12 @@ test('C-55 · ningún archivo versionado contiene un token; .env y .dev.vars est
 
   const trackedFiles = getTrackedFiles();
   const tokenPatterns = [
+    /cfat_[a-zA-Z0-9_-]{16,}/,
     /sk-[a-zA-Z0-9]{32,}/,
     /ghp_[a-zA-Z0-9]{36}/,
     /glpat-[a-zA-Z0-9_-]{20,}/,
+    /AKIA[0-9A-Z]{16}/,
+    /Bearer\s+[a-zA-Z0-9._-]{20,}/,
   ];
 
   for (const file of trackedFiles) {
