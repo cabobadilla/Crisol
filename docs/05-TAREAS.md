@@ -130,13 +130,17 @@
 - **Cubre:** HU-8 / #1..#8
 - **Casos que debe cubrir:** `C-50`..`C-56`
 - **Entrada:** `04-DISENO.md` § Despliegue
-- **Salida:** `wrangler.jsonc`, `public/index.html` ubicado, README con los comandos,
-  `.gitignore`
+- **Salida:** `wrangler.jsonc`, `public/index.html` ubicado, `scripts/smoke.sh`, README
+  con los comandos, `.gitignore`
 - **Test primero:** `assets.directory === "./public"` y **sin `main`**; `public/`
   contiene solo lo publicable
 - **Criterio de terminado:** los 7 casos pasan. **`C-53`/`C-54` (comandos
   documentados)**: el Coder **no** ejecuta `wrangler deploy` — solo `wrangler dev`
 - **Nota:** el deploy a Cloudflare lo hace **Hermes**, no el Coder
+- **Nota:** `scripts/smoke.sh` es un **entregable del diseño** (ya existe, escrito por
+  el Arquitecto): verifica contra la URL real y **no** lo corre el Coder. El Coder lo
+  verifica **estructuralmente** (`C-56` exige que el smoke contemple que `docs/` no sea
+  público), no lo ejecuta
 
 - [ ] Test escrito y fallando (RED) — evidencia:
 - [ ] Implementación mínima que lo pasa (GREEN)

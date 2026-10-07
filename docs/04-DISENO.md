@@ -165,6 +165,25 @@ produjo. No es una opinión, es una regla con nombre.
 
 ## Despliegue  ⭐ OBLIGATORIA
 
+### Dos despliegues, no uno
+
+> Este proyecto tiene **dos** cosas publicadas, en **dos** plataformas, con **dos**
+> dueños. Confundirlas es el error fácil.
+
+| Qué | Dónde | Quién | Cómo |
+|---|---|---|---|
+| **El producto** (Crisol) | **Cloudflare** (Worker solo-assets) | **Hermes** | `npx wrangler deploy` |
+| **El tablero** (`progreso.html`) | **GitHub Pages** | **Hermes** (vía el harness) | `scripts/update-status.sh --push` |
+
+**Por qué no van juntos.** El tablero es un artefacto **del harness**, no del producto:
+existe también en `MyHermesTest` y en cualquier proyecto futuro, y su diseño es del
+harness (el usuario confirmó que **queda como está**). El producto es de este proyecto
+y su diseño es Pizarra. Son dos ciclos de vida distintos.
+
+**Consecuencia operativa:** `public/` es **solo** el producto. El tablero y los `docs/`
+viven en la raíz del repo y **no** entran al directorio de assets — si entraran, se
+publicarían en Cloudflare, que es exactamente lo que `C-51`/`C-56` previenen.
+
 ### Forma del Worker
 
 **Elegida: A — Worker solo-assets (sin `main`).**
