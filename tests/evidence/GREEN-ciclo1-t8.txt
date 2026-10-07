@@ -1,0 +1,23 @@
+✔ C-01 · los 7 pasos están en UNA fila horizontal (629.328208ms)
+✔ C-02 · al cargar sin datos, solo el paso 1 es accesible (209.776708ms)
+✔ C-03 · los 7 pasos se ven aunque estén bloqueados (geometría) (208.955709ms)
+✔ C-04 · se indica el paso actual y el total, y el activo está en la fila (209.325333ms)
+✔ C-05 · completar un paso avanza al siguiente (210.717291ms)
+✔ C-06 · completar los 7 pasos registra la idea (210.631083ms)
+✔ C-86 · a 390 px la fila no desborda el viewport (327.988375ms)
+✔ C-87 · a 390 px el contenido respeta el margen de 16 px (332.984375ms)
+✔ C-88 · a 1200 px los 7 pasos caben sin recortar en su contenedor (333.702875ms)
+✔ C-50 · wrangler.jsonc tiene assets.directory y no tiene main (0.444583ms)
+✔ C-51 · assets.directory === "./public" (0.329625ms)
+✔ C-52 · public/ contiene index.html y nada de docs/, tests/, scripts/ (0.105167ms)
+✔ C-53 · el README menciona npx wrangler dev (0.076625ms)
+✔ C-54 · el README menciona npx wrangler deploy y que lo corre Hermes (0.072709ms)
+✔ C-55 · ningún archivo versionado contiene un token; .env y .dev.vars están ignorados (11.740875ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4271.592667
