@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crisol</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.5;
+    color: #14161a;
+    background: #ffffff;
+  }
+  .barra {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid #c9ced6;
+    background: #f5f6f8;
+  }
+  .barra h1 { margin: 0; font-size: 1.15rem; }
+  .contador { margin: 0; font-size: 0.95rem; color: #33383f; }
+  main { max-width: 46rem; margin: 0 auto; padding: 1.25rem; }
+  .panel { margin-bottom: 2rem; }
+  .panel > h2 { font-size: 1.05rem; margin: 0 0 0.75rem; }
+  .pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+  .paso {
+    border: 1px solid #b8bec7;
+    border-radius: 10px;
+    padding: 1rem;
+    background: #ffffff;
+  }
+  .paso[data-estado="activo"] { border-color: #1f5fbf; box-shadow: 0 0 0 1px #1f5fbf; }
+  .paso[data-estado="completo"] { background: #f2f6fc; }
+  .paso[data-estado="bloqueado"] { background: #f7f7f8; color: #4a4f57; }
+  .paso-titulo { margin: 0 0 0.15rem; font-size: 1.05rem; }
+  .paso-estado {
+    display: inline-block;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #33383f;
+    border: 1px solid #b8bec7;
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+    background: #eceef1;
+  }
+  .paso[data-estado="activo"] .paso-estado { background: #dbe6fb; border-color: #1f5fbf; }
+  .paso[data-estado="completo"] .paso-estado { background: #e3efe3; border-color: #3f7d3f; }
+  .paso-exige { margin: 0.5rem 0 0.75rem; font-size: 0.88rem; color: #4a4f57; }
+  .campo { display: block; margin-bottom: 0.65rem; }
+  .campo-etiqueta { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.2rem; }
+  .campo input, .campo textarea {
+    width: 100%;
+    padding: 0.45rem 0.55rem;
+    font: inherit;
+    border: 1px solid #9aa1ab;
+    border-radius: 6px;
+    background: #ffffff;
+    color: inherit;
+  }
+  .campo textarea { min-height: 4.5rem; resize: vertical; }
+  .paso-mensaje {
+    margin: 0.6rem 0;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid #d3a2a2;
+    border-radius: 6px;
+    background: #fdf1f1;
+    color: #7a1616;
+    font-size: 0.9rem;
+  }
+  .paso-confirmar {
+    font: inherit;
+    padding: 0.5rem 1rem;
+    border: 1px solid #1f5fbf;
+    border-radius: 8px;
+    background: #1f5fbf;
+    color: #ffffff;
+    cursor: pointer;
+  }
+  .paso-confirmar:disabled { cursor: not-allowed; opacity: 0.55; }
+  input:disabled, textarea:disabled { opacity: 0.6; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible {
+    outline: 2px solid #1f5fbf;
+    outline-offset: 2px;
+  }
+  .lista-vacia { color: #4a4f57; font-size: 0.92rem; }
+  .lista-ideas { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+  .idea {
+    border: 1px solid #b8bec7;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    background: #f2f6fc;
+    display: grid;
+    gap: 0.15rem;
+  }
+  .idea-titulo { font-size: 1rem; }
+  .idea-problema { font-size: 0.9rem; color: #33383f; }
+  .idea-fecha { font-size: 0.78rem; color: #5a6069; }
+</style>
+</head>
+<body>
+<header class="barra">
+  <h1>Crisol</h1>
+  <p class="contador" id="contador-pasos" data-contador>
+    Paso <span data-paso-actual></span> de <span data-total></span>
+  </p>
+</header>
+<main>
+  <section class="panel" aria-labelledby="titulo-wizard">
+    <h2 id="titulo-wizard">Definir la idea</h2>
+    <ol class="pasos" id="pasos"></ol>
+  </section>
+  <section class="panel" aria-labelledby="titulo-ideas">
+    <h2 id="titulo-ideas">Ideas registradas</h2>
+    <p class="lista-vacia" id="lista-vacia">Todavía no hay ideas registradas.</p>
+    <ul class="lista-ideas" id="lista-ideas" data-lista-ideas></ul>
+  </section>
+</main>
+<script>
+(function () {
+  'use strict';
+
+  const PASOS = [
+    { id: 'idea',        titulo: 'Idea',                  exige: ['que es, en una frase'] },
+    { id: 'problema',    titulo: 'Problema',              exige: ['quien lo sufre', 'con que frecuencia'] },
+    { id: 'valor',       titulo: 'Valor y metrica',       exige: ['que cambia', 'para quien', 'como se mide'] },
+    { id: 'referencias', titulo: 'Referencias',           exige: ['>=2 referencias', 'fuente', 'que se toma'] },
+    { id: 'alcance',     titulo: 'Alcance',               exige: ['que entra', 'que NO entra'] },
+    { id: 'terminado',   titulo: 'Criterio de terminado', exige: ['como se sabe que quedo definida'] },
+    { id: 'challenge',   titulo: 'Challenge',             exige: [] }
+  ];
+
+  const CAMPOS = {
+    idea: [
+      { ruta: 'valor', etiqueta: 'La idea, en una frase', exige: 'que es, en una frase', tipo: 'textarea' }
+    ],
+    problema: [
+      { ruta: 'quien',     etiqueta: '¿Quién lo sufre?',       exige: 'quien lo sufre' },
+      { ruta: 'frecuencia', etiqueta: '¿Con qué frecuencia?',  exige: 'con que frecuencia' }
+    ],
+    valor: [
+      { ruta: 'cambia',           etiqueta: '¿Qué cambia?',                 exige: 'que cambia' },
+      { ruta: 'paraQuien',        etiqueta: '¿Para quién cambia?',           exige: 'para quien' },
+      { ruta: 'metrica.que',      etiqueta: 'Métrica: ¿qué se mide?',        exige: 'como se mide' },
+      { ruta: 'metrica.como',     etiqueta: 'Métrica: ¿cómo se obtiene?',    exige: 'como se mide' },
+      { ruta: 'metrica.objetivo', etiqueta: 'Métrica: valor objetivo',       exige: 'como se mide' }
+    ],
+    alcance: [
+      { ruta: 'entra',    etiqueta: 'Qué entra en la idea',          exige: 'que entra' },
+      { ruta: 'noEntra',  etiqueta: 'Qué NO entra en la idea',       exige: 'que NO entra' }
+    ],
+    terminado: [
+      { ruta: 'criterio', etiqueta: '¿Cómo se sabe que quedó definida?', exige: 'como se sabe que quedo definida' }
+    ],
+    challenge: []
+  };
+
+  const ESTADOS = { bloqueado: 'Bloqueado', activo: 'Activo', completo: 'Completo' };
+  const REFERENCIAS_POR_DEFECTO = 2;
+
+  const contenedorPasos = document.getElementById('pasos');
+  const contador = document.querySelector('[data-contador]');
+  const listaIdeas = document.querySelector('[data-lista-ideas]');
+  const avisoVacio = document.getElementById('lista-vacia');
+
+  let ideas = [];
+  let ideaActual = ideaNueva();
+  let pasoActual = 0;
+
+  function ideaNueva() {
+    return {
+      id: 'i-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
+      creada: new Date().toISOString(),
+      pasos: {
+        idea:        { valor: '', completo: false },
+        problema:    { quien: '', frecuencia: '', completo: false },
+        valor:       { cambia: '', paraQuien: '',
+                       metrica: { que: '', como: '', objetivo: '' }, completo: false },
+        referencias: { items: [{ fuente: '', aporta: '' }, { fuente: '', aporta: '' }], completo: false },
+        alcance:     { entra: '', noEntra: '', completo: false },
+        terminado:   { criterio: '', completo: false }
+      },
+      pasoActual: 0,
+      challenge: null
+    };
+  }
+
+  function camposDe(id) {
+    if (id === 'referencias') {
+      const defs = [];
+      for (let i = 0; i < REFERENCIAS_POR_DEFECTO; i++) {
+        defs.push({ ruta: 'items.' + i + '.fuente', etiqueta: 'Referencia ' + (i + 1) + ': fuente', exige: 'fuente' });
+        defs.push({ ruta: 'items.' + i + '.aporta', etiqueta: 'Referencia ' + (i + 1) + ': qué se toma de ella', exige: 'que se toma' });
+      }
+      return defs;
+    }
+    return CAMPOS[id] || [];
+  }
+
+  function fijar(destino, ruta, valor) {
+    const partes = ruta.split('.');
+    let ref = destino;
+    for (let i = 0; i < partes.length - 1; i++) {
+      const clave = partes[i];
+      if (ref[clave] === undefined || ref[clave] === null) {
+        ref[clave] = /^\d+$/.test(clave) ? [] : {};
+      }
+      ref = ref[clave];
+    }
+    ref[partes[partes.length - 1]] = valor;
+  }
+
+  function leer(destino, ruta) {
+    if (!destino) return '';
+    const valor = ruta.split('.').reduce((ref, clave) => (ref === undefined || ref === null ? undefined : ref[clave]), destino);
+    return valor === undefined || valor === null ? '' : valor;
+  }
+
+  function nodoPaso(id) {
+    return contenedorPasos.querySelector('[data-paso="' + id + '"]');
+  }
+
+  function construirCampo(def) {
+    const etiqueta = document.createElement('label');
+    etiqueta.className = 'campo';
+    const texto = document.createElement('span');
+    texto.className = 'campo-etiqueta';
+    texto.textContent = def.etiqueta;
+    const control = def.tipo === 'textarea' ? document.createElement('textarea') : document.createElement('input');
+    if (control.tagName === 'INPUT') control.type = 'text';
+    control.setAttribute('data-campo', def.ruta);
+    control.setAttribute('data-exige', def.exige);
+    etiqueta.append(texto, control);
+    return etiqueta;
+  }
+
+  function construir() {
+    PASOS.forEach((paso, indice) => {
+      const li = document.createElement('li');
+      li.className = 'paso';
+      li.setAttribute('data-paso', paso.id);
+
+      const titulo = document.createElement('h3');
+      titulo.className = 'paso-titulo';
+      titulo.textContent = paso.titulo;
+
+      const etiquetaEstado = document.createElement('span');
+      etiquetaEstado.className = 'paso-estado';
+
+      const exige = document.createElement('p');
+      exige.className = 'paso-exige';
+      exige.textContent = paso.exige.length
+        ? 'Exige: ' + paso.exige.join(' · ')
+        : 'Al confirmar se registra la idea con sus pasos.';
+
+      const campos = document.createElement('div');
+      campos.className = 'paso-campos';
+      camposDe(paso.id).forEach(def => campos.appendChild(construirCampo(def)));
+
+      const mensaje = document.createElement('p');
+      mensaje.className = 'paso-mensaje';
+      mensaje.setAttribute('role', 'alert');
+      mensaje.hidden = true;
+
+      const confirmar = document.createElement('button');
+      confirmar.type = 'button';
+      confirmar.className = 'paso-confirmar';
+      confirmar.setAttribute('data-accion', 'confirmar');
+      confirmar.textContent = indice === PASOS.length - 1 ? 'Registrar idea' : 'Confirmar paso';
+      confirmar.addEventListener('click', confirmarPaso);
+
+      li.append(titulo, etiquetaEstado, exige, campos, mensaje, confirmar);
+      contenedorPasos.appendChild(li);
+    });
+  }
+
+  function sincronizar(paso) {
+    const estadoPaso = ideaActual.pasos[paso.id];
+    if (!estadoPaso) return;
+    const nodo = nodoPaso(paso.id);
+    nodo.querySelectorAll('[data-campo]').forEach(control => {
+      fijar(estadoPaso, control.getAttribute('data-campo'), control.value);
+    });
+  }
+
+  function faltantes(paso) {
+    const nodo = nodoPaso(paso.id);
+    const motivos = [];
+    nodo.querySelectorAll('[data-campo]').forEach(control => {
+      if (control.value.trim() === '') {
+        const exige = control.getAttribute('data-exige');
+        if (!motivos.includes(exige)) motivos.push(exige);
+      }
+    });
+    return motivos;
+  }
+
+  function mostrarMensaje(paso, texto) {
+    const mensaje = nodoPaso(paso.id).querySelector('.paso-mensaje');
+    mensaje.textContent = texto;
+    mensaje.hidden = false;
+  }
+
+  function confirmarPaso() {
+    const paso = PASOS[pasoActual];
+    sincronizar(paso);
+    const faltantesDe = faltantes(paso);
+    if (faltantesDe.length > 0) {
+      mostrarMensaje(paso, 'El paso «' + paso.titulo + '» exige: ' + faltantesDe.join(' · '));
+      return;
+    }
+    const estadoPaso = ideaActual.pasos[paso.id];
+    if (estadoPaso) estadoPaso.completo = true;
+    if (pasoActual === PASOS.length - 1) {
+      registrar();
+      return;
+    }
+    pasoActual += 1;
+    ideaActual.pasoActual = pasoActual;
+    actualizar();
+  }
+
+  function registrar() {
+    ideaActual.pasoActual = PASOS.length - 1;
+    ideas.push(ideaActual);
+    renderizarIdeas();
+    ideaActual = ideaNueva();
+    pasoActual = 0;
+    actualizar();
+  }
+
+  function actualizar() {
+    PASOS.forEach((paso, indice) => {
+      const nodo = nodoPaso(paso.id);
+      const estado = indice < pasoActual ? 'completo' : indice === pasoActual ? 'activo' : 'bloqueado';
+      nodo.setAttribute('data-estado', estado);
+      nodo.querySelector('.paso-estado').textContent = ESTADOS[estado];
+      const habilitado = estado === 'activo';
+      nodo.querySelectorAll('button, input, textarea, select').forEach(control => {
+        control.disabled = !habilitado;
+      });
+      const estadoPaso = ideaActual.pasos[paso.id];
+      nodo.querySelectorAll('[data-campo]').forEach(control => {
+        control.value = leer(estadoPaso, control.getAttribute('data-campo'));
+      });
+      nodo.querySelector('.paso-mensaje').hidden = true;
+    });
+    contador.querySelector('[data-paso-actual]').textContent = String(pasoActual + 1);
+    contador.querySelector('[data-total]').textContent = String(PASOS.length);
+  }
+
+  function renderizarIdeas() {
+    listaIdeas.textContent = '';
+    ideas.forEach(idea => {
+      const li = document.createElement('li');
+      li.className = 'idea';
+      const titulo = document.createElement('strong');
+      titulo.className = 'idea-titulo';
+      titulo.textContent = idea.pasos.idea.valor;
+      const problema = document.createElement('span');
+      problema.className = 'idea-problema';
+      problema.textContent = 'Problema: ' + idea.pasos.problema.quien;
+      const fecha = document.createElement('span');
+      fecha.className = 'idea-fecha';
+      fecha.textContent = idea.creada;
+      li.append(titulo, problema, fecha);
+      listaIdeas.appendChild(li);
+    });
+    avisoVacio.hidden = ideas.length > 0;
+  }
+
+  contenedorPasos.addEventListener('input', evento => {
+    const control = evento.target.closest('[data-campo]');
+    if (!control) return;
+    const paso = control.closest('[data-paso]');
+    const estadoPaso = ideaActual.pasos[paso.getAttribute('data-paso')];
+    if (estadoPaso) fijar(estadoPaso, control.getAttribute('data-campo'), control.value);
+    paso.querySelector('.paso-mensaje').hidden = true;
+  });
+
+  construir();
+  renderizarIdeas();
+  actualizar();
+})();
+</script>
+</body>
+</html>
