@@ -17,6 +17,14 @@
       "duracion": "—",
       "resultado": "ok",
       "nota": "G0 y G1a escritos: requerimiento crudo, 5 preguntas abiertas, 5 supuestos, anti-alcance y veredicto. Fase 3 con 5 historias y criterios verificables, corte en etapas documentado. Espera G1 (aprobación humana)."
+    },
+    {
+      "n": 3,
+      "ciclo": "Ciclo 1 · G1 (revisión)",
+      "modelo": "(Hermes, rol PO)",
+      "duracion": "—",
+      "resultado": "ok",
+      "nota": "Corrección del usuario ANTES de aprobar el gate: faltaba la definición inicial del valor del producto y su forma de medir. Peor: estaba puesta como regla DIFERIDA (4..N) — al revés. Se agregó HU-2 con el paso obligatorio de valor y métrica (qué cambia, para quién, cómo se mide con valor objetivo), el framework pasó de 6 a 7 pasos y el challenger de 3 a 4 reglas (R2 ahora rechaza métrica vaga). El gate humano hizo exactamente lo que existe para hacer: rechazar antes de que el costo subiera."
     }
   ]
 }
