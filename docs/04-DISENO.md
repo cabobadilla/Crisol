@@ -417,7 +417,7 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 | `C-52` | `public/` contiene solo lo publicable | HU-8 / #8 | estructura | En `public/` está `index.html` y **nada** de `docs/`, `tests/` ni la config |
 | `C-53` | El comando local está documentado | HU-8 / #1 | empaquetado | El README indica `npx wrangler dev` y su puerto |
 | `C-54` | El comando de despliegue está documentado | HU-8 / #2 | empaquetado | El README indica `npx wrangler deploy` y **quién** lo corre (Hermes) |
-| `C-55` | Cero credenciales en el repo | HU-8 / #7 | estructura | Ningún archivo versionado contiene un token; `.env` y `.dev.vars` en `.gitignore` |
+| `C-55` | Cero credenciales en el repo | HU-8 / #7 | **umbral** | Ningún archivo versionado matchea las formas de token **de ESTE proyecto**: `cfat_` (Cloudflare) · `sk-` (OpenAI) · `ghp_` (GitHub) · `glpat-` (GitLab) · `AKIA` (AWS) · `Bearer <20+>`; y `.env` / `.dev.vars` / `.wrangler/` en `.gitignore`. *(Corregido: la v1 sólo buscaba `sk-`/`ghp_`/`glpat-` y **no veía `cfat_`** — no detectaba el token que este proyecto usa.)* |
 | `C-56` | El smoke verifica que lo publicado **ES** lo construido | HU-8 / #8 | **umbral** | El HTML servido en la URL real tiene el **mismo hash** que el del repo |
 
 ### Cobertura combinada
