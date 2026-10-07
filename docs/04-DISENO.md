@@ -333,6 +333,7 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 | `C-06` | Completar los 7 registra la idea | HU-1 / #3 | comportamiento | La idea aparece en la lista con sus datos |
 | `C-86` | A 390 px la fila **no desborda** el viewport | HU-1 / #1 | **umbral** | `document.scrollingElement.scrollWidth <= 392` |
 | `C-87` | A 390 px el contenido respeta el margen | HU-1 / #1 | **umbral** | El borde izquierdo del primer hijo >= 16 px (no pegado al canto) |
+| `C-88` | **A 1200 px la barra no recorta ningún paso** | HU-1 / #1 | **geometría** | `contenedor.scrollWidth <= contenedor.clientWidth + 2` **y** los 7 indicadores con `right <= contenedor.right` — ninguno escondido tras un scroll interno |
 
 ### Grupo B — Valor y métrica (HU-2)
 

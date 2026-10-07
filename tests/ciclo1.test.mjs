@@ -1,4 +1,4 @@
-// T-1 / T-1b — Esqueleto del wizard de Crisol: casos C-01..C-06 y C-86/C-87
+// T-1 / T-1b — Esqueleto del wizard de Crisol: casos C-01..C-06, C-86/C-87 y C-88
 // (Grupo A, HU-1).
 //
 // LA FORMA es requisito (docs/03-DEFINICION.md § HU-1 y docs/04-DISENO.md §
@@ -444,5 +444,43 @@ test('C-87 · a 390 px el contenido respeta el margen de 16 px', async () => {
     r.izq >= 16,
     `a ${ANCHO_ANGOSTO} px el primer paso (${r.id}) debe empezar a >= 16 px del ` +
       `borde izquierdo; empieza en ${r.izq} px (ancho ${r.ancho})`
+  );
+});
+
+test('C-88 · a 1200 px los 7 pasos caben sin recortar en su contenedor', async () => {
+  await app.tamano(ANCHO_GEOMETRIA, 800);
+  const r = await app.evaluar(`
+    (() => {
+      const cont = document.querySelector('[data-paso-indicador]').parentElement;
+      const rectCont = cont.getBoundingClientRect();
+      const pasos = Array.from(cont.querySelectorAll('[data-paso-indicador]'));
+      return {
+        scrollWidth: cont.scrollWidth,
+        clientWidth: cont.clientWidth,
+        innerWidth: window.innerWidth,
+        contenedorRight: Number(rectCont.right.toFixed(2)),
+        pasos: pasos.map(p => {
+          const r = p.getBoundingClientRect();
+          return {
+            id: p.getAttribute('data-paso-indicador'),
+            right: Number(r.right.toFixed(2)),
+          };
+        }),
+      };
+    })()
+  `);
+
+  assert.ok(
+    r.scrollWidth <= r.clientWidth + 2,
+    `C-88 FAIL: contenedor recorta — scrollWidth=${r.scrollWidth} > clientWidth=${r.clientWidth} ` +
+      `(innerWidth=${r.innerWidth}). Pasos: ${JSON.stringify(r.pasos)}`
+  );
+
+  const fuera = r.pasos.filter(p => p.right > r.contenedorRight + 0.5);
+  assert.equal(
+    fuera.length, 0,
+    `C-88 FAIL: ${fuera.length} paso(s) quedan fuera del contenedor (right > contenedor.right): ` +
+      `${JSON.stringify(fuera)}. contenedor.right=${r.contenedorRight}, ` +
+      `scrollWidth=${r.scrollWidth}, clientWidth=${r.clientWidth}`
   );
 });
