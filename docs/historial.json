@@ -1,0 +1,22 @@
+{
+  "proyecto": "Crisol",
+  "nota": "Registro INMUTABLE de corridas. Se acumula, nunca se reinicia ni se borra. Es la memoria del proceso: qué modelo corrió, cuánto tardó y qué pasó realmente.",
+  "corridas": [
+    {
+      "n": 1,
+      "ciclo": "Ciclo 0 · arranque",
+      "modelo": "(Hermes)",
+      "duracion": "—",
+      "resultado": "ok",
+      "nota": "PRIMER uso real de new-project.sh de punta a punta. Funcionó a la primera: repo público creado, 8 artefactos y 7 guardias copiadas, commit 'Scaffold from HermesHarness @313af19'. Verificado por Hermes: el repo existe en GitHub y check-coverage.sh corre solo, sin el repo del harness. Cierra el hueco de 'nunca ejercitado'."
+    },
+    {
+      "n": 2,
+      "ciclo": "Ciclo 1 · fases 1-3",
+      "modelo": "(Hermes, rol PO)",
+      "duracion": "—",
+      "resultado": "ok",
+      "nota": "G0 y G1a escritos: requerimiento crudo, 5 preguntas abiertas, 5 supuestos, anti-alcance y veredicto. Fase 3 con 5 historias y criterios verificables, corte en etapas documentado. Espera G1 (aprobación humana)."
+    }
+  ]
+}
