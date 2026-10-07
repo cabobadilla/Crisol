@@ -194,6 +194,11 @@ entre mis herramientas
 **Fuente de verdad:** `DISENO-PIZARRA.md`. Los valores de ese documento **mandan**;
 si el Coder se aparta de un token, el diseño está mal aunque se vea bien.
 
+> **Alcance del requisito (aclaración del usuario).** El diseño Pizarra es para **el
+> producto** — la app Crisol. **El tablero de progreso queda como está**: su diseño es
+> del harness, no se re-versiona, y no es parte de esta historia. El Coder no toca
+> `progreso.html`.
+
 **Criterios de aceptación:**
 
 - **Dado** que abro la app
@@ -285,6 +290,21 @@ de `04-DISENO.md`. **El diseño no pasa G2 sin ella.**
 - **Dado** el diseño
   **cuando** reviso el directorio de assets
   **entonces** declara si hay algo ahí que **no** debería ser público
+
+- **Dado** que hay que verificar el comportamiento
+  **cuando** se corre la **suite**
+  **entonces** corre **en local** (`wrangler dev`), sin red y sin gastar cuota
+
+- **Dado** un deploy recién hecho
+  **cuando** se corre el **smoke test**
+  **entonces** verifica contra **la URL real**: responde, los assets cargan, y la
+  versión publicada es la construida
+
+- **Dado** el reparto de responsabilidades
+  **cuando** se despliega
+  **entonces** **el Coder solo despliega en local** (`wrangler dev`, sin cuenta) y
+  **solo Hermes despliega en Cloudflare** — y **el token nunca está en el entorno
+  del Coder**
 
 ## Etapas
 

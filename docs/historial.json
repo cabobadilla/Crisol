@@ -41,6 +41,14 @@
       "duracion": "—",
       "resultado": "ok",
       "nota": "Aprendizaje del usuario incorporado: el despliegue es un tema a definir, y Cloudflare es su servicio preferido. Se creó la skill cloudflare-architecture (9.3 KB) con datos VERIFICADOS, no de memoria: Cloudflare hoy dice 'start new projects with Workers', no Pages — Pages sigue vivo pero las features nuevas van a Workers. Límites del plan free documentados (100k req/día, 10 ms de CPU, 3 MB, 50 subrequests, KV 1.000 escrituras/día). El despliegue entró como sección OBLIGATORIA de 04-DISENO.md y como ítem de G2, y como HU-8 en Crisol. Lección registrada: una skill sin gancho en el proceso no se usa — se conectó al gate que la exige."
+    },
+    {
+      "n": 6,
+      "ciclo": "Ciclo 1 · G2 (diseño)",
+      "modelo": "(Hermes, rol Arquitecto)",
+      "duracion": "—",
+      "resultado": "ok",
+      "nota": "G2 cerrado. 04-DISENO.md con 85 casos en la matriz (56 explícitos + 29 por fórmula, y la guardia los expande: los detectó los 85). Cuatro ADR, cada uno con alternativas descartadas. La sección de Despliegue resuelve las tres dudas del usuario: (1) el diseño Pizarra es para el producto, el tablero queda como está; (2) la suite corre en LOCAL (determinista, sin cuota) y el smoke contra la URL real — porque el emulador NO aplica los límites del plan, así que pasar en local no prueba que sobreviva al edge; (3) el Coder despliega en local con `wrangler dev` (sin cuenta ni token) y SOLO Hermes despliega a Cloudflare. Arquitectura elegida: Worker solo-assets en ./public — cero límites de plan en Etapa 1. Hallazgo de proceso: las plantillas copiadas al crear el proyecto quedan congeladas; una mejora posterior del harness no llega al proyecto. Se refrescaron las 4 que seguían vacías."
     }
   ]
 }
