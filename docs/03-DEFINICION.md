@@ -51,8 +51,12 @@
 
 - **Dado** que abro la app sin ideas previas
   **cuando** carga
-  **entonces** veo **un solo paso activo** (el primero) y los siguientes
-  **visibles pero inaccesibles**, con la cantidad total de pasos indicada (**7**)
+  **entonces** veo **el formulario del paso activo** (el primero) y **sólo ese**;
+  en la **barra de arriba** están los 7 pasos con el actual destacado y la cantidad
+  total indicada (**7**)
+  *(Corregido: la v1 decía «los siguientes visibles pero inaccesibles» y eso produjo
+  siete formularios apilados, seis atenuados. **Un wizard muestra un paso por vez** —
+  el progreso lo lleva la barra, no una pila. El PO lo rechazó al verlo.)*
 
 - **Dado** que estoy en un paso
   **cuando** escribo la respuesta y confirmo

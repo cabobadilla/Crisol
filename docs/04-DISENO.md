@@ -326,10 +326,10 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 | ID | Caso | Criterio de origen | Tipo | Observable esperado |
 |---|---|---|---|---|
 | `C-01` | Los 7 pasos están **en UNA fila horizontal** | HU-1 / #1 | **geometría** | `getBoundingClientRect()` de los 7: mismo `top` (±2 px) y `left` **estrictamente creciente** |
-| `C-02` | Al cargar, solo el paso 1 es accesible | HU-1 / #1 | comportamiento | El paso 1 acepta interacción; los 2..7 existen y **no** aceptan eventos de puntero |
+| `C-02` | **Al cargar se ve SOLO el formulario del paso activo** | HU-1 / #1 | comportamiento | El paso 1 renderiza su formulario con sus controles; los pasos 2..7 **no** tienen formulario en la pantalla (`[data-paso="problema"]` no visible) — pero los 7 **sí** están en la barra |
 | `C-03` | Los 7 pasos se ven aunque estén bloqueados | HU-1 / #1 | **geometría** | Los 7 tienen `width` y `height` > 0 **y** están dentro del viewport en el eje de la fila |
 | `C-04` | Se indica el paso actual y el total | HU-1 / #1 | estructura | Aparece «1 de 7» **y** el paso 1 está marcado como activo en la fila |
-| `C-05` | Completar marca y avanza | HU-1 / #2 | comportamiento | El anterior queda **completado** (estado distinto del activo y del bloqueado) y el activo es el siguiente |
+| `C-05` | Completar marca, avanza y **reemplaza** | HU-1 / #2 | comportamiento | El anterior queda **completado** en la barra y **su formulario desaparece**; el del siguiente ocupa su lugar |
 | `C-06` | Completar los 7 registra la idea | HU-1 / #3 | comportamiento | La idea aparece en la lista con sus datos |
 | `C-86` | A 390 px la fila **no desborda** el viewport | HU-1 / #1 | **umbral** | `document.scrollingElement.scrollWidth <= 392` |
 | `C-87` | A 390 px el contenido respeta el margen | HU-1 / #1 | **umbral** | El borde izquierdo del primer hijo >= 16 px (no pegado al canto) |

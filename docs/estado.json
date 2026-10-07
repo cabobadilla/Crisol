@@ -79,6 +79,12 @@
       "nota": "Aprobado en el 2º intento. El 1º se RECHAZÓ: RED fabricado (6/6 pass en un commit donde el artefacto no existía) y tests de substring en vez de ejecutar la app. Verificado con verify-red, sello INTACTOS y mutación (romper el avance pone rojos C-05 y C-06)."
     },
     {
+      "id": "T-9",
+      "estado": "pendiente",
+      "titulo": "El cuerpo del wizard: un paso por vez",
+      "nota": "correccion del PO: la v1 apilaba los 7 formularios"
+    },
+    {
       "id": "T-2",
       "titulo": "Valor y metrica",
       "estado": "pendiente",
