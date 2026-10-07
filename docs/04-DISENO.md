@@ -182,7 +182,7 @@ y su diseño es Pizarra. Son dos ciclos de vida distintos.
 
 **Consecuencia operativa:** `public/` es **solo** el producto. El tablero y los `docs/`
 viven en la raíz del repo y **no** entran al directorio de assets — si entraran, se
-publicarían en Cloudflare, que es exactamente lo que `C-51`/`C-56` previenen.
+publicarían el tablero y los `docs/`, que es exactamente lo que `C-51`/`C-56` previenen.
 
 ### Forma del Worker
 
@@ -409,13 +409,13 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 
 | ID | Caso | Criterio de origen | Tipo | Observable esperado |
 |---|---|---|---|---|
-| `C-50` | `wrangler.jsonc` declara un Worker solo-assets | HU-8 / #4 | estructura | Tiene `assets.directory` y **no** tiene `main` |
-| `C-51` | El directorio de assets es `./public` | HU-8 / #8 | estructura | `assets.directory === "./public"` — no `"."` |
-| `C-52` | `public/` contiene solo lo publicable | HU-8 / #8 | estructura | En `public/` está `index.html` y **nada** de `docs/`, `tests/` ni la config |
-| `C-53` | El comando local está documentado | HU-8 / #1 | empaquetado | El README indica `npx wrangler dev` y el puerto 8787 |
-| `C-54` | El comando de deploy está documentado | HU-8 / #2 | empaquetado | El README indica `npx wrangler deploy` |
-| `C-55` | Cero credenciales en el repo | HU-8 / #7 | estructura | Ningún archivo versionado contiene un token; `.dev.vars` está en `.gitignore` |
-| `C-56` | El smoke verifica que `docs/` no es público | HU-8 / #8 | **umbral** | Pedir `/docs/03-DEFINICION.md` a la URL real → **404**, no 200 |
+| `C-50` | El destino de publicación está declarado | HU-8 / #4 | estructura | El README declara que el sitio se publica desde `main` en GitHub Pages, y en qué ruta queda el artefacto |
+| `C-51` | El artefacto vive en una ruta publicable y estable | HU-8 / #8 | estructura | Existe `preview/1/index.html`, la ruta declarada; el tablero sigue en la raíz |
+| `C-52` | Cero credenciales en el repo | HU-8 / #7 | estructura | Ningún archivo versionado contiene un token; `.env` y `.dev.vars` están en `.gitignore` |
+| `C-53` | Publicar no requiere build ni dependencias | HU-8 / #1 | empaquetado | El README declara que **no** hay `npm install`: los archivos se sirven tal cual |
+| `C-54` | La URL del ciclo queda documentada | HU-8 / #2 | empaquetado | El README da la **URL exacta** del ciclo, no «se publica en Pages» |
+| `C-55` | El techo de la Etapa 1 está declarado | HU-8 / #5 | estructura | El diseño declara que la Etapa 1 es estática y que el agente LLM (Etapa 2) **exige** Cloudflare por runtime |
+| `C-56` | El smoke verifica que lo publicado **ES** lo construido | HU-8 / #8 | **umbral** | El HTML servido en la URL real tiene el **mismo hash** que el del repo |
 
 ### Cobertura combinada
 

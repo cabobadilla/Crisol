@@ -125,44 +125,20 @@
 - [ ] Refactor sin romper tests
 - [ ] Commit
 
-### T-8 — Empaquetado y despliegue
+### T-8 — Publicación de la Etapa 1
 
 - **Cubre:** HU-8 / #1..#8
 - **Casos que debe cubrir:** `C-50`..`C-56`
-- **Entrada:** `04-DISENO.md` § Despliegue
-- **Salida:** `wrangler.jsonc`, `public/index.html` ubicado, `scripts/smoke.sh`, README
-  con los comandos, `.gitignore`
-- **Test primero:** `assets.directory === "./public"` y **sin `main`**; `public/`
-  contiene solo lo publicable
-- **Criterio de terminado:** los 7 casos pasan. **`C-53`/`C-54` (comandos
-  documentados)**: el Coder **no** ejecuta `wrangler deploy` — solo `wrangler dev`
-- **Nota:** el deploy a Cloudflare lo hace **Hermes**, no el Coder
+- **Entrada:** `04-DISENO.md` § Despliegue · `ADR-005`
+- **Salida:** `README.md` con el destino y la **URL exacta** del ciclo, `.gitignore`,
+  el artefacto ubicado en `preview/1/index.html`, y `scripts/smoke.sh` ajustado
+- **Test primero:** la ruta declarada existe y el `README` nombra la URL textual
+- **Criterio de terminado:** los 7 casos pasan. **`C-53` (sin build)**: no hay
+  `npm install` en ningún paso
+- **Nota:** **no** hay `wrangler.jsonc`. La Etapa 1 se publica en **GitHub Pages**;
+  Cloudflare entra en la Etapa 2 (el agente LLM necesita runtime) — ver `ADR-005`
+- **Nota:** publicar es un `push` a `main`, y lo hace **Hermes**, no el Coder
 - **Nota:** `scripts/smoke.sh` es un **entregable del diseño** (ya existe, escrito por
-  el Arquitecto): verifica contra la URL real y **no** lo corre el Coder. El Coder lo
-  verifica **estructuralmente** (`C-56` exige que el smoke contemple que `docs/` no sea
-  público), no lo ejecuta
+  el Arquitecto): compara el **hash** de lo publicado contra el repo. El Coder lo
+  verifica **estructuralmente**, no lo ejecuta contra la red
 
-- [ ] Test escrito y fallando (RED) — evidencia:
-- [ ] Implementación mínima que lo pasa (GREEN)
-- [ ] Refactor sin romper tests
-- [ ] Commit
-
----
-
-## Estado
-
-| Tarea | Estado | Gate G3 (tests primero) | Notas |
-|---|---|---|---|
-| T-1 | pendiente | — | esqueleto del wizard |
-| T-2 | pendiente | — | valor y métrica |
-| T-3 | pendiente | — | bloqueo uniforme |
-| T-4 | pendiente | — | referencias |
-| T-5 | pendiente | — | el challenger debe **rechazar** |
-| T-6 | pendiente | — | persistencia |
-| T-7 | pendiente | — | Pizarra; `C-46` a 375px |
-| T-8 | pendiente | — | despliegue; el deploy lo hace Hermes |
-
----
-
-**Gate G2 (salida de fase 4):** trazabilidad completa definición ↔ tareas. Las 8
-tareas cubren los 85 casos declarados en la matriz.
