@@ -10,6 +10,10 @@
   medición estaban mencionados solo como regla *diferida* — al revés: una idea que
   no dice qué cambia y cómo se mide **no está definida**, y no puede quedar para
   después.
+- **Revisión 3:** se agregó **HU-7 (diseño Pizarra)** por pedido del usuario:
+  reutilizar el diseño del proyecto anterior. Ver `DISENO-PIZARRA.md` — es la
+  fuente de verdad de los tokens, y **arrastra un defecto conocido** (H-1) que hay
+  que corregir, no heredar.
 
 ---
 
@@ -180,6 +184,58 @@
   **cuando** guardo
   **entonces** el cambio persiste y su veredicto de challenge **se invalida**
 
+## HU-7 · La app usa el diseño Pizarra del proyecto anterior
+
+**Como** autor
+**quiero** que Crisol se vea con el **diseño Pizarra** que ya validé en MyHermesTest
+**para** no empezar el lenguaje visual de cero y tener una identidad consistente
+entre mis herramientas
+
+**Fuente de verdad:** `DISENO-PIZARRA.md`. Los valores de ese documento **mandan**;
+si el Coder se aparta de un token, el diseño está mal aunque se vea bien.
+
+**Criterios de aceptación:**
+
+- **Dado** que abro la app
+  **cuando** inspecciono los estilos
+  **entonces** los **13 tokens** de Pizarra están presentes con sus **valores
+  exactos**, en modo claro y en modo oscuro
+
+- **Dado** el modo oscuro
+  **cuando** comparo el acento con el del modo claro
+  **entonces** **no es el mismo valor**: es `#7aa8ff`, un azul rediseñado, no una
+  inversión
+
+- **Dado** cualquier texto de la interfaz
+  **cuando** se mide su contraste
+  **entonces** cumple **AA ≥ 4.5:1**, y el cálculo lo hace una **implementación
+  independiente** de la que declaró los valores
+
+- **Dado** los estados de un paso (bloqueado / disponible / completo / inválido)
+  **cuando** los distingo
+  **entonces** **no se distinguen solo por color**: hay al menos **dos señales
+  independientes** (texto, icono, forma o contenido), porque `--border` da 1.35:1
+  y el color solo sería inaccesible
+
+- **Dado** cualquier elemento interactivo
+  **cuando** lo enfoco con el teclado
+  **entonces** tiene **foco visible** (`outline: 2px solid var(--accent)`)
+
+- **Dado** la barra superior a **375 px**
+  **cuando** miro la pantalla
+  **entonces** **nada desborda** horizontalmente: el grupo de controles **envuelve**
+  (corrige el hallazgo **H-1** del proyecto anterior)
+
+- **Dado** que comparo Crisol con MyHermesTest
+  **cuando** miro ambos lado a lado
+  **entonces** se reconocen como **el mismo sistema visual** (tipografía, radio,
+  sombra, superficies), aunque el contenido y la estructura sean distintos
+
+- **Dado** el diseño Pizarra
+  **cuando** reviso qué se reutilizó
+  **entonces** **no** se reutilizó la estructura de la landing, ni el selector de
+  pieles, ni las otras 9 pieles
+
 ## Etapas
 
 > **Obligatorio si el diseño tiene complejidad combinada.** Sí la hay.
@@ -245,6 +301,10 @@ no es más trabajo, es **más superficie donde algo puede fallar en silencio**.
 | Editar una idea ya aprobada | El veredicto de challenge se invalida |
 | Todos los pasos completos pero una regla fallando | RECHAZADO; no se puede marcar como definida |
 | Recargar en medio del wizard | Se vuelve al paso alcanzado, con lo escrito conservado |
+| **Barra a 375 px** | **Nada desborda**: el grupo de controles envuelve (corrige **H-1**) |
+| **Estados de paso distinguidos solo por color del borde** | **Rechazado en diseño**: hacen falta ≥2 señales independientes del color |
+| **Modo oscuro con el acento claro reutilizado** | **Rechazado**: el acento oscuro es `#7aa8ff`, rediseñado, no una inversión |
+| Cambio de modo con datos cargados | No se pierde nada de lo escrito |
 
 ## Definición de "terminado" para esta iteración
 
@@ -260,17 +320,28 @@ no es más trabajo, es **más superficie donde algo puede fallar en silencio**.
 - [ ] Editar invalida lo que dependía de lo editado
 - [ ] Un solo artefacto, sin build, sin dependencias externas
 - [ ] Responsive usable a 375px **y** 1440px *(aprendizaje de MyHermesTest: H-1 fue un bug de 375px que 79 tests verdes no vieron)*
+- [ ] **Los 13 tokens de Pizarra** presentes y exactos, en modo claro y oscuro
+- [ ] **El acento oscuro no es el claro**: es `#7aa8ff` (no-inversión)
+- [ ] **Contraste AA ≥4.5:1** en los textos, calculado por una implementación **independiente**
+- [ ] **Los estados de paso no se distinguen solo por color** (≥2 señales)
+- [ ] **Foco visible** en todo lo interactivo
+- [ ] **La barra no desborda a 375px** (H-1 corregido, no heredado)
+- [ ] Crisol y MyHermesTest se reconocen como **el mismo sistema visual**
 
 ## Fuera de esta iteración
 
 - Agente LLM real, reglas 5..N, instrumentación real de la métrica, framework
   configurable, multiusuario, exportación, búsqueda asistida de referencias.
+- **Las otras 9 pieles** del proyecto anterior, su selector y su contador `NN/10`:
+  de MyHermesTest se reutiliza **una** piel (Pizarra), no el estudio de pieles.
 
 ---
 
 ## Aprobación
 
-- [ ] **Aprobado por el usuario** — fecha:
+- [x] **Aprobado por el usuario** — fecha: **2026-10-07** *(«si, aprobado»)*
+- [x] Adicionalmente pedido al aprobar: **reutilizar el diseño Pizarra del proyecto
+      anterior** → incorporado como **HU-7** (Revisión 3)
 - [ ] Cambios solicitados:
 
 ---
