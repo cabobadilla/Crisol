@@ -33,6 +33,14 @@
       "duracion": "—",
       "resultado": "ok",
       "nota": "G1 APROBADO. Con la aprobación llegó un requisito nuevo: reutilizar el diseño Pizarra del proyecto anterior. Verificado primero QUÉ es Pizarra antes de escribir nada: es la piel 'slate' de MyHermesTest (label 'Pizarra', Inter/Inter), no una suposición. Se extrajeron los 13 tokens exactos de index.html:191-221 y las convenciones de componentes, a docs/DISENO-PIZARRA.md con procedencia y línea. Se calcularon los 16 pares de contraste: 14 pasan AA, los 2 que no son border/surface (1.35 claro · 1.32 oscuro) — y eso produjo un requisito duro: los 4 estados del wizard NO pueden distinguirse solo por color. Se registró también que Pizarra arrastra H-1 (barra desborda a 375px) como requisito de corrección. HU-7 nueva."
+    },
+    {
+      "n": 5,
+      "ciclo": "Ciclo 1 · despliegue (harness v0.15)",
+      "modelo": "(Hermes, rol Arquitecto)",
+      "duracion": "—",
+      "resultado": "ok",
+      "nota": "Aprendizaje del usuario incorporado: el despliegue es un tema a definir, y Cloudflare es su servicio preferido. Se creó la skill cloudflare-architecture (9.3 KB) con datos VERIFICADOS, no de memoria: Cloudflare hoy dice 'start new projects with Workers', no Pages — Pages sigue vivo pero las features nuevas van a Workers. Límites del plan free documentados (100k req/día, 10 ms de CPU, 3 MB, 50 subrequests, KV 1.000 escrituras/día). El despliegue entró como sección OBLIGATORIA de 04-DISENO.md y como ítem de G2, y como HU-8 en Crisol. Lección registrada: una skill sin gancho en el proceso no se usa — se conectó al gate que la exige."
     }
   ]
 }

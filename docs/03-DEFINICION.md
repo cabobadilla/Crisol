@@ -236,6 +236,56 @@ si el Coder se aparta de un token, el diseño está mal aunque se vea bien.
   **entonces** **no** se reutilizó la estructura de la landing, ni el selector de
   pieles, ni las otras 9 pieles
 
+## HU-8 · Despliegue local y en Cloudflare
+
+**Como** autor
+**quiero** que Crisol corra en mi máquina **y** se despliegue en Cloudflare, con los
+dos caminos definidos
+**para** no descubrir en el momento del deploy qué falta, y para que «en mi máquina
+funciona» no sea la única garantía
+
+**Fuente de verdad:** la skill `cloudflare-architecture` y la sección **Despliegue**
+de `04-DISENO.md`. **El diseño no pasa G2 sin ella.**
+
+**Criterios de aceptación:**
+
+- **Dado** el repo clonado en una máquina sin nada instalado más que Node
+  **cuando** sigo el comando de desarrollo documentado
+  **entonces** la app corre localmente y puedo recorrer el wizard
+
+- **Dado** que quiero publicar
+  **cuando** ejecuto el comando de despliegue documentado
+  **entonces** la app queda accesible en una URL de Cloudflare
+
+- **Dado** el diseño
+  **cuando** leo la sección de despliegue
+  **entonces** declara **explícitamente qué corre en local y qué NO corre igual**,
+  en vez de dejar la diferencia como supuesto
+
+- **Dado** el diseño
+  **cuando** reviso la forma elegida del Worker
+  **entonces** está justificada, y una app estática sin backend **no** paga
+  invocaciones por servir assets
+
+- **Dado** el plan gratuito de Cloudflare
+  **cuando** el diseño enumera sus límites
+  **entonces** nombra **el límite que podría romper este diseño** y **qué pasa**
+  cuando se agota
+
+- **Dado** que hay que volver atrás tras un deploy malo
+  **cuando** ejecuto el rollback documentado
+  **entonces** vuelve la versión anterior **completa** (HTML, CSS y assets juntos)
+
+- **Dado** el repositorio
+  **cuando** busco credenciales
+  **entonces** **no hay ninguna**: los secretos viven en `.dev.vars` (local, en
+  `.gitignore`) o en `wrangler secret` (producción), y nada en el directorio de
+  assets
+
+- **Dado** el diseño
+  **cuando** reviso el directorio de assets
+  **entonces** declara si hay algo ahí que **no** debería ser público
+
 ## Etapas
 
 > **Obligatorio si el diseño tiene complejidad combinada.** Sí la hay.
@@ -327,6 +377,12 @@ no es más trabajo, es **más superficie donde algo puede fallar en silencio**.
 - [ ] **Foco visible** en todo lo interactivo
 - [ ] **La barra no desborda a 375px** (H-1 corregido, no heredado)
 - [ ] Crisol y MyHermesTest se reconocen como **el mismo sistema visual**
+- [ ] **Corre en local** con un comando documentado, desde un clon limpio
+- [ ] **Se despliega en Cloudflare** con un comando documentado, y queda accesible
+- [ ] El diseño declara **qué NO corre igual en local**
+- [ ] El diseño nombra **el límite del plan** que podría romperlo y su consecuencia
+- [ ] **Rollback** documentado: vuelve la versión anterior completa
+- [ ] **Cero credenciales en el repo**, y nada sensible en el directorio de assets
 
 ## Fuera de esta iteración
 
@@ -334,6 +390,9 @@ no es más trabajo, es **más superficie donde algo puede fallar en silencio**.
   configurable, multiusuario, exportación, búsqueda asistida de referencias.
 - **Las otras 9 pieles** del proyecto anterior, su selector y su contador `NN/10`:
   de MyHermesTest se reutiliza **una** piel (Pizarra), no el estudio de pieles.
+- **Backend y almacenamiento en Cloudflare** (KV / D1 / R2 / DO): la Etapa 1 persiste
+  en `localStorage` del navegador. El despliegue entra **ahora**; el almacenamiento
+  remoto, cuando haya algo que guardar del lado del servidor.
 
 ---
 
