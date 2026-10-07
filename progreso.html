@@ -106,10 +106,10 @@
     <p class="sub">Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.</p>
     <div class="meta">
       <div class="kpi"><b>0%</b><span>Tareas del ciclo</span></div>
-      <div class="kpi"><b>0/0</b><span>Completadas</span></div>
+      <div class="kpi"><b>0/8</b><span>Completadas</span></div>
       <div class="kpi"><b>Ciclo 1</b><span>Ciclo activo</span></div>
       <div class="kpi"><b>Etapa 1 — el wizard con el mecanismo completo</b><span>Alcance</span></div>
-      <div class="kpi"><b>Diseño (G2) — G1 aprobado por el usuario</b><span>Fase actual</span></div>
+      <div class="kpi"><b>Implementación (G3) — G2 aprobado</b><span>Fase actual</span></div>
     </div>
     <div class="barra"><i></i></div>
   </header>
@@ -135,20 +135,60 @@
       <p class="resumen">7 historias con criterios verificables, los 7 pasos del framework, corte en etapas y 14 casos borde. Aprobado por el usuario.</p>
       <ul class="puntos"><li>El paso de valor y metrica es obligatorio: que cambia, para quien, y como se mide con valor objetivo</li><li>HU-7: reutiliza el diseno Pizarra del proyecto anterior, con sus tokens exactos</li><li>El challenger rechaza de verdad: 4 reglas, una por gap estructural</li><li>Responsive 375px en el DoD: aprendizaje de H-1</li></ul>
     </section>
-    <section class="fase wait">
-      <header><span class="chip wait">○ Pendiente</span><span class="gate gate-wait">G2</span></header>
+    <section class="fase ok">
+      <header><span class="chip ok">✓ Listo</span><span class="gate gate-ok">G2</span></header>
       <h3>4 · Diseño</h3>
-      <p class="resumen">Debe incluir la MATRIZ DE CASOS (v0.13) y la seccion de DESPLIEGUE local + Cloudflare (v0.15). Sera el primer proyecto que usa las dos.</p>
-      <ul class="puntos"><li>Casos con ID y observable medible</li><li>El Coder los traduce y no puede omitirlos (check-coverage.sh)</li><li>Despliegue: forma del Worker, bindings, limite del plan que podria romperlo, como se revierte</li><li>El arquitecto decide con la skill cloudflare-architecture</li></ul>
+      <p class="resumen">PRIMER proyecto que usa la matriz de casos y la seccion de Despliegue. 85 casos, 4 ADR, 8 tareas.</p>
+      <ul class="puntos"><li>Matriz de 85 casos (56 explicitos + 29 por formula), todos con observable medible</li><li>Despliegue: Worker solo-assets en ./public; cero limites de plan en Etapa 1</li><li>Suite en local, smoke contra la URL real (ADR-003)</li><li>Solo Hermes despliega al cloud; el token nunca entra al entorno del Coder (ADR-004)</li></ul>
     </section>
     <section class="fase wait">
-      <header><span class="chip wait">○ Pendiente</span><span class="gate gate-wait">G5</span></header>
+      <header><span class="chip wait">○ Pendiente</span><span class="gate gate-wait">G3</span></header>
       <h3>5 · Implementación y pruebas</h3>
-      <p class="resumen">Rama por ciclo; el Coder nunca toca main.</p>
-      <ul class="puntos"><li>G5 en contexto aislado</li><li>Verificación en navegador real: Chrome por CDP, sin instalar nada</li></ul>
+      <p class="resumen">8 tareas, una por ciclo TDD. La suite corre en local; el deploy lo hace Hermes.</p>
+      <ul class="puntos"><li>El Coder traduce los 85 casos y no puede omitir ninguno</li><li>Cada test se nombra con su ID (C-01...) para que la cobertura sea comprobable</li><li>G5 en contexto aislado + smoke en el edge</li></ul>
     </section></div>
 
-  
+  <h2>Tareas del ciclo</h2><ul class="lista"><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-1</span>
+      <span class="tk-titulo">Esqueleto del wizard y sus 7 pasos</span>
+      
+    </li><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-2</span>
+      <span class="tk-titulo">Valor y metrica</span>
+      
+    </li><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-3</span>
+      <span class="tk-titulo">Bloqueo con mensajes que nombran el requisito</span>
+      
+    </li><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-4</span>
+      <span class="tk-titulo">Referencias: fuente y conclusion</span>
+      
+    </li><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-5</span>
+      <span class="tk-titulo">El challenger: 4 reglas que rechazan de verdad</span>
+      
+    </li><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-6</span>
+      <span class="tk-titulo">Persistencia y reapertura</span>
+      
+    </li><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-7</span>
+      <span class="tk-titulo">El diseno Pizarra</span>
+      
+    </li><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-8</span>
+      <span class="tk-titulo">Empaquetado y despliegue</span>
+      
+    </li></ul>
   <h2>Historias de usuario</h2><ul class="lista"><li class="prop">
       <span class="tk-estado">◇</span>
       <span class="tk-id">HU-1</span>
@@ -263,11 +303,19 @@
       <td class="num">—</td>
       <td><span class="chip ok">OK</span></td>
       <td class="nota">Aprendizaje del usuario incorporado: el despliegue es un tema a definir, y Cloudflare es su servicio preferido. Se creó la skill cloudflare-architecture (9.3 KB) con datos VERIFICADOS, no de memoria: Cloudflare hoy dice 'start new projects with Workers', no Pages — Pages sigue vivo pero las features nuevas van a Workers. Límites del plan free documentados (100k req/día, 10 ms de CPU, 3 MB, 50 subrequests, KV 1.000 escrituras/día). El despliegue entró como sección OBLIGATORIA de 04-DISENO.md y como ítem de G2, y como HU-8 en Crisol. Lección registrada: una skill sin gancho en el proceso no se usa — se conectó al gate que la exige.</td>
+    </tr>
+    <tr>
+      <td class="num">6</td>
+      <td>Ciclo 1 · G2 (diseño)</td>
+      <td><code>(Hermes, rol Arquitecto)</code></td>
+      <td class="num">—</td>
+      <td><span class="chip ok">OK</span></td>
+      <td class="nota">G2 cerrado. 04-DISENO.md con 85 casos en la matriz (56 explícitos + 29 por fórmula, y la guardia los expande: los detectó los 85). Cuatro ADR, cada uno con alternativas descartadas. La sección de Despliegue resuelve las tres dudas del usuario: (1) el diseño Pizarra es para el producto, el tablero queda como está; (2) la suite corre en LOCAL (determinista, sin cuota) y el smoke contra la URL real — porque el emulador NO aplica los límites del plan, así que pasar en local no prueba que sobreviva al edge; (3) el Coder despliega en local con `wrangler dev` (sin cuenta ni token) y SOLO Hermes despliega a Cloudflare. Arquitectura elegida: Worker solo-assets en ./public — cero límites de plan en Etapa 1. Hallazgo de proceso: las plantillas copiadas al crear el proyecto quedan congeladas; una mejora posterior del harness no llega al proyecto. Se refrescaron las 4 que seguían vacías.</td>
     </tr></tbody>
   </table>
 
   <footer>
-    <p><strong>Siguiente:</strong> G1 cerrado: 7 historias aprobadas (incluida HU-7, diseño Pizarra). Sigue el diseño con la MATRIZ DE CASOS — primer proyecto que la usa.</p>
+    <p><strong>Siguiente:</strong> El diseño está cerrado: 85 casos en la matriz, 4 ADR y la sección de Despliegue con local vs cloud. Sigue el Ciclo: rama, tests primero por el Coder, y la suite corre en local.</p>
     <p>Actualizado 07-10-2026, 10:30 a. m. · estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.</p>
   </footer>
 
