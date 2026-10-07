@@ -49,6 +49,22 @@
       "duracion": "—",
       "resultado": "ok",
       "nota": "G2 cerrado. 04-DISENO.md con 85 casos en la matriz (56 explícitos + 29 por fórmula, y la guardia los expande: los detectó los 85). Cuatro ADR, cada uno con alternativas descartadas. La sección de Despliegue resuelve las tres dudas del usuario: (1) el diseño Pizarra es para el producto, el tablero queda como está; (2) la suite corre en LOCAL (determinista, sin cuota) y el smoke contra la URL real — porque el emulador NO aplica los límites del plan, así que pasar en local no prueba que sobreviva al edge; (3) el Coder despliega en local con `wrangler dev` (sin cuenta ni token) y SOLO Hermes despliega a Cloudflare. Arquitectura elegida: Worker solo-assets en ./public — cero límites de plan en Etapa 1. Hallazgo de proceso: las plantillas copiadas al crear el proyecto quedan congeladas; una mejora posterior del harness no llega al proyecto. Se refrescaron las 4 que seguían vacías."
+    },
+    {
+      "n": 7,
+      "ciclo": "Ciclo 2 · arranque (requerimiento a mitad de la implementación)",
+      "modelo": "(Hermes, rol PO + Arquitecto)",
+      "duracion": "—",
+      "resultado": "ok",
+      "nota": "PRIMER requerimiento que llega con la implementación EN CURSO, no al principio. Se registró como ciclo nuevo (no como parche al Ciclo 1) porque cambia la arquitectura, y además es exactamente lo que la iteración anterior había diferido a propósito («Backend y almacenamiento en Cloudflare… la Etapa 1 persiste en localStorage»). La verificación pedida se hizo propia, no de memoria: D1 es la base más pequeña del plan Free (500 MB por BD, 5M filas leídas/día, 100k escritas/día, 10 BD por cuenta); KV no es una base de datos y su techo de 1.000 escrituras/día es la trampa conocida; Durable Objects es por entidad y existe para coordinación; R2 es almacenamiento de objetos. HALLAZGO del ciclo: D1 exige un binding y por lo tanto main, así que el Worker deja de ser solo-assets y MUEREN tres afirmaciones del diseño aprobado — «cero límites de plan», «presupuesto de CPU: cero» y «bindings: ninguno». Los 100.000 requests/día, los 10 ms de CPU y las 50 consultas por invocación vuelven a aplicar. Se aplicó la regla v0.29: se para el trabajo que asume la premisa muerta y se corrige con un ADR nuevo, no en silencio. G1 aprobado con la decisión de producto del usuario: la base queda ABIERTA (es un POC, sin datos sensibles) — declarado, no descubierto."
+    },
+    {
+      "n": 8,
+      "ciclo": "Ciclo 2 · G2 (diseño)",
+      "modelo": "(Hermes, rol Arquitecto)",
+      "duracion": "—",
+      "resultado": "ok",
+      "nota": "ADR-007 supersede PARCIALMENTE a ADR-002 y ADR-006: mueren «sin main» y «cero límites»; NO muere la plataforma (sigue Workers) ni la elección por runtime. El Worker pasa a forma B con binding DB, y run_worker_first acota el script a /api/* para que servir assets siga siendo gratis e ilimitado. Contrato de dos operaciones (POST y GET sobre /api/ideas) con upsert por id, y un formato de error declarado (cuota_diaria, base_no_disponible) para que un fallo de la base NO se manifieste como pérdida silenciosa. Matriz: 9 casos nuevos (C-89..C-97) y C-50 marcado superseded (decía «no tiene main»). 4 tareas nuevas (T-10..T-13). El diseño declara el límite que ahora manda —la cuota diaria de D1, con corte DURO desde 2026-09-01— y que el emulador local NO lo aplica: por eso el smoke verifica la persistencia contra la URL real."
     }
   ]
 }

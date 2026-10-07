@@ -140,6 +140,8 @@ produjo. No es una opinión, es una regla con nombre.
 
 ### Esquema de persistencia
 
+**Ciclo 1 — borrador local (`localStorage`):**
+
 ```js
 // clave: "crisol.v1"
 { version: 1, ideas: [ Idea, ... ] }
@@ -149,6 +151,58 @@ produjo. No es una opinión, es una regla con nombre.
 - Contenido **corrupto** (JSON inválido) → se ignora, sin romper la app.
 - `localStorage` **bloqueado** (modo privado) → la app funciona **en memoria** y
   **avisa** que no va a persistir.
+
+**Ciclo 2 — la fuente de verdad es la base (`ADR-007`).** El esquema de arriba **deja de
+ser el almacén**: queda como **borrador del paso en curso**, para que un fallo de la red
+o de la base **no borre lo que el usuario escribió**.
+
+`migrations/0001_ideas.sql`:
+
+```sql
+CREATE TABLE ideas (
+  id             TEXT PRIMARY KEY,        -- uuid generado en el Worker (crypto.randomUUID)
+  titulo         TEXT NOT NULL,
+  estado         TEXT NOT NULL,           -- en_curso | definida | rechazada
+  paso_alcanzado INTEGER NOT NULL,        -- 1..7
+  idea_json      TEXT NOT NULL,           -- la Idea estructurada completa (los 7 pasos)
+  veredicto      TEXT,                    -- null | aprobado | rechazado
+  veredicto_json TEXT,                    -- objeciones con su id de regla
+  creado_en      TEXT NOT NULL,           -- ISO-8601
+  actualizado_en TEXT NOT NULL
+);
+CREATE INDEX idx_ideas_actualizado ON ideas (actualizado_en DESC);
+```
+
+**Por qué una tabla y no siete.** El wizard ya tiene una estructura de idea definida en
+§ *Estructura de una idea*; la tabla la guarda **entera** en `idea_json` y solo **sube a
+columnas** lo que se consulta o se filtra (estado, paso alcanzado, fechas). Normalizar
+los 7 pasos en 7 tablas no compraría nada y multiplicaría la superficie de fallo.
+
+**El índice no es decorativo:** D1 factura **filas leídas**, y listar ordenado sin índice
+obliga a escanear la tabla entera.
+
+### Contrato de la API (Ciclo 2)
+
+> El script es una **API de dos operaciones** en `/api/*`. Todo lo demás sigue siendo
+> assets servidos gratis.
+
+| Método y ruta | Cuerpo | Respuesta | Notas |
+|---|---|---|---|
+| `POST /api/ideas` | la Idea completa | `201` + `{ id, actualizado_en }` | **Upsert** por `id`: guardar dos veces **no duplica** |
+| `GET /api/ideas` | — | `200` + `{ ideas: [ … ] }` | Ordenadas por `actualizado_en DESC` |
+| `GET /api/ideas/:id` | — | `200` + la Idea, o `404` | Para reabrir |
+
+**Formato de error — declarado, no adivinado:**
+
+```json
+{ "error": "cuota_diaria", "mensaje": "Se agotó el límite diario de la base. Podés seguir escribiendo; se guardará después de las 00:00 UTC." }
+```
+
+- `cuota_diaria` → la base rechazó la consulta por límite del plan (`C-93`)
+- `base_no_disponible` → binding mal configurado o error del servicio (`C-94`)
+
+**El cliente nunca descarta lo escrito:** ante cualquiera de estos errores, conserva el
+borrador local y **muestra el mensaje**, en vez de dar por guardado lo que no se guardó.
 
 ## Stack y dependencias
 
@@ -172,7 +226,7 @@ produjo. No es una opinión, es una regla con nombre.
 
 | Qué | Dónde | Quién | Cómo |
 |---|---|---|---|
-| **El producto** (Crisol) | **Cloudflare** (Worker solo-assets) | **Hermes** | `npx wrangler deploy` |
+| **El producto** (Crisol) | **Cloudflare** (Worker **forma B**, con `main` y binding `DB`) | **Hermes** | `npx wrangler deploy` |
 | **El tablero** (`progreso.html`) | **GitHub Pages** | **Hermes** (vía el harness) | `scripts/update-status.sh --push` |
 
 **Por qué no van juntos.** El tablero es un artefacto **del harness**, no del producto:
@@ -186,28 +240,46 @@ publicarían el tablero y los `docs/`, que es exactamente lo que `C-51`/`C-56` p
 
 ### Forma del Worker
 
-**Elegida: A — Worker solo-assets (sin `main`).**
+**Elegida en el Ciclo 1: A — Worker solo-assets (sin `main`).** ⚠ **SUPERADA en el
+Ciclo 2 por `ADR-007`** (la persistencia en D1 exige un binding y, por lo tanto,
+`main`). Se conserva el razonamiento porque **explica de dónde salió «cero límites»**,
+y ese es justo el punto que dejó de ser cierto.
 
-**Por qué:** Crisol Etapa 1 es una app completamente cliente (sin backend, sin red,
-persistencia en `localStorage`). Un Worker solo-assets sirve el HTML **sin ejecutar
+**Por qué entonces:** Crisol Etapa 1 es una app completamente cliente (sin backend, sin
+red, persistencia en `localStorage`). Un Worker solo-assets sirve el HTML **sin ejecutar
 código**: los requests son **gratis e ilimitados**, no consumen las 100.000 diarias, y
-no hay presupuesto de CPU que agotar. Meter un script no daría ninguna capacidad y
-**sí** crearía un límite nuevo.
+no hay presupuesto de CPU que agotar.
 
 **Y se elige Workers y no Pages** porque Cloudflare hoy dice *«start new projects with
 Workers»*: Pages sigue funcionando, pero las features nuevas aterrizan en Workers.
+*(Esto NO lo toca `ADR-007`: la plataforma sigue siendo Workers.)*
+
+**Forma vigente desde el Ciclo 2: B — assets + Worker** (`ADR-007`)
 
 ```jsonc
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "crisol",
   "compatibility_date": "2026-10-07",
+  "main": "./src/worker.js",
   "assets": {
     "directory": "./public",
-    "not_found_handling": "single-page-application"
-  }
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "crisol-ideas", "database_id": "<id>" }
+  ]
 }
 ```
+
+> **`run_worker_first: ["/api/*"]` es deliberado.** El script **solo** entra al camino
+> del request en `/api/*`. Los requests de assets **siguen sin tocar el script** y
+> siguen siendo gratis. Si el script entrara en todas las rutas, cada carga de página
+> consumiría una de las 100.000 diarias — y en Free, agotar la cuota con
+> `run_worker_first` devuelve **429 y no cae de vuelta a los assets**: el sitio se cae
+> entero.
 
 > **`directory: "./public"` y NO `"."`.** Apuntar a la raíz publicaría `docs/`,
 > `tests/` y `wrangler.jsonc`. **Todo lo que está en el directorio de assets se
@@ -222,9 +294,10 @@ Workers»*: Pages sigue funcionando, pero las features nuevas aterrizan en Worke
 | **Qué NO corre igual** | **No aplica los límites del plan** (ni cuotas ni CPU). No hay CDN ni latencias reales. No hay TLS/DNS | — |
 | **Credenciales** | **Ninguna** (ni cuenta ni token) | **Un token**, de Hermes |
 
-> **Paridad declarada.** `wrangler dev` **no corta a los 10 ms de CPU**. En Etapa 1
-> esto no puede morder (no hay script), pero la diferencia queda declarada para la
-> Etapa 2, cuando entre el agente real.
+> **Paridad declarada.** `wrangler dev` emula D1 **offline y sin cuenta**, pero **no
+> aplica los límites del plan**: no corta a los 10 ms de CPU ni cuenta requests. Un verde
+> local **no prueba** que el request sobreviva al edge — eso lo prueba el smoke (`C-97`).
+> Es exactamente la trampa que dejó escrito el `ADR-003`.
 
 ### Dónde corren las pruebas  ⭐ OBLIGATORIA
 
@@ -252,28 +325,45 @@ Workers»*: Pages sigue funcionando, pero las features nuevas aterrizan en Worke
 
 ### Bindings
 
-**Ninguno.** Un Worker solo-assets no bindea nada. Si en la Etapa 2 entra el agente,
-acá aparecerán los bindings — y ese cambio es el que justifica pasar de la opción A a
-la B.
+**Ciclo 1: ninguno.** ⚠ **SUPERADO por `ADR-007`.**
+
+**Ciclo 2 — un binding:**
+
+| Binding | Tipo | Para qué |
+|---|---|---|
+| `DB` | **D1** (`d1_databases`) | La tabla `ideas`: guardar, listar y reabrir |
+| `ASSETS` | assets | Servir `public/` desde el Worker (lo agrega la forma B) |
+
+Los assets **siguen sin pasar por el script** salvo en `/api/*` (`run_worker_first`).
 
 ### Límite que puede romperlo
 
-- **Límite: 100.000 requests/día** → **NO APLICA.** Al ser un Worker solo-assets sin
-  `main`, los requests **no se facturan ni consumen cuota**: se sirven como assets,
-  gratis e ilimitados. Es exactamente el motivo de elegir la opción A.
-- **Límite: 20.000 archivos por versión · 25 MiB por archivo** → no aplica (1 archivo).
-- **En Etapa 1 este diseño no tiene límite que lo rompa** — y eso es deliberado: se
-  eligió la forma que **no tiene** límite.
+**Ciclo 1: ninguno** (Worker solo-assets, sin `main`, sin código). ⚠ **Eso dejó de ser
+cierto en el Ciclo 2** (`ADR-007`). Los límites que **ahora sí aplican**:
+
+| Límite (Free) | Cuándo muerde | Qué pasa cuando se agota |
+|---|---|---|
+| **100.000 requests/día** | Solo las rutas `/api/*` consumen. Con `run_worker_first: ["/api/*"]`, cargar la página **no** gasta cuota | `/api/*` falla; si el contador se agota, devuelve **429** y **no** cae de vuelta a los assets |
+| **10 ms de CPU por invocación** | Validar y serializar. Consultar D1 es **I/O y no cuenta** | **Error 1102** en el request que lo exceda |
+| **50 consultas por invocación** | Una operación por request (guardar una idea) | El request que las exceda falla |
+| **Cuota diaria de D1** (5 M filas leídas / 100.000 escritas) | Insignificante para este uso | Desde **2026-09-01** el corte es **duro**: las consultas fallan hasta 00:00 UTC. **Los datos no se borran**; la app no los puede tocar |
+
+**El límite que puede romper esto de verdad: la cuota diaria de D1.** No por volumen —
+una persona no escribe 100.000 filas por día — sino porque **un corte duro se
+manifiesta como una app que no guarda**. La app lo tiene que **decir**, no fallar en
+silencio (`C-93`).
 
 ### Presupuesto de CPU
 
-**Cero.** No hay `main`, así que **ningún request ejecuta código**. Los 10 ms de CPU
-del plan free no se tocan: el trabajo del wizard corre en **el navegador del usuario**,
-no en el edge.
+**Ciclo 2: real y acotado.** El script corre **solo en `/api/*`** y hace una cosa:
+validar el cuerpo, y una consulta a D1 (I/O, que **no** consume CPU de la invocación).
+Lo que sí consume: parsear el JSON del cuerpo y serializar la respuesta. Para una idea
+de pocos KB, está muy por debajo de 10 ms — pero eso **no se supone: se mide** contra
+el edge (`C-97`).
 
-> Si en Etapa 2 entra el agente, esto cambia por completo: un Worker con `main` **sí**
-> consume cuota y **sí** tiene 10 ms de presupuesto. **Ese es el límite que decidirá la
-> arquitectura de la Etapa 2.**
+> El trabajo pesado del wizard (render, validación de los 7 pasos, challenger) sigue
+> corriendo **en el navegador del usuario**, no en el edge. El script es una **API de
+> dos operaciones**, no la app.
 
 ### Secretos
 
@@ -311,9 +401,12 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 ## Decisiones (ADRs)
 
 - `ADR-001-un-solo-archivo.md` — todo el producto en `public/index.html`, sin build
-- `ADR-002-worker-solo-assets.md` — Worker solo-assets, en vez de Pages o de un Worker con script
+- `ADR-002-worker-solo-assets.md` — Worker solo-assets, en vez de Pages o de un Worker con script · ⚠ **parcialmente superseded por `ADR-007`** (en «sin `main` / cero límites»)
 - `ADR-003-pruebas-local-smoke-edge.md` — la suite en local, el smoke en el edge
 - `ADR-004-despliegue-solo-hermes.md` — solo Hermes despliega al cloud; el token nunca entra al entorno del Coder
+- `ADR-005-pages-etapa1-cloudflare-etapa2.md` — ⤳ superado por `ADR-006`
+- `ADR-006-cloudflare-workers.md` — Crisol se despliega en Cloudflare Workers · ⚠ **parcialmente superseded por `ADR-007`**
+- `ADR-007-d1-persistencia.md` — **persistencia en D1: forma B, binding `DB`, y la muerte de «cero límites de plan»**
 
 ## Matriz de casos de prueba  ⭐ OBLIGATORIA
 
@@ -412,13 +505,27 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 
 | ID | Caso | Criterio de origen | Tipo | Observable esperado |
 |---|---|---|---|---|
-| `C-50` | La config declara un Worker solo-assets | HU-8 / #4 | estructura | `wrangler.jsonc` tiene `assets.directory` y **no** tiene `main` |
+| `C-50` | La config declara un Worker solo-assets | HU-8 / #4 | estructura | ⚠ **SUPERADO por `C-89`** (`ADR-007`, Ciclo 2): «**no** tiene `main`» dejó de ser cierto. Se conserva como registro de lo que regía en el Ciclo 1 |
 | `C-51` | El directorio de assets es `./public` | HU-8 / #8 | estructura | `assets.directory === \"./public\"` — no `\".\"` |
 | `C-52` | `public/` contiene solo lo publicable | HU-8 / #8 | estructura | En `public/` está `index.html` y **nada** de `docs/`, `tests/` ni la config |
 | `C-53` | El comando local está documentado | HU-8 / #1 | empaquetado | El README indica `npx wrangler dev` y su puerto |
 | `C-54` | El comando de despliegue está documentado | HU-8 / #2 | empaquetado | El README indica `npx wrangler deploy` y **quién** lo corre (Hermes) |
 | `C-55` | Cero credenciales en el repo | HU-8 / #7 | **umbral** | Ningún archivo versionado matchea las formas de token **de ESTE proyecto**: `cfat_` (Cloudflare) · `sk-` (OpenAI) · `ghp_` (GitHub) · `glpat-` (GitLab) · `AKIA` (AWS) · `Bearer <20+>`; y `.env` / `.dev.vars` / `.wrangler/` en `.gitignore`. *(Corregido: la v1 sólo buscaba `sk-`/`ghp_`/`glpat-` y **no veía `cfat_`** — no detectaba el token que este proyecto usa.)* |
 | `C-56` | El smoke verifica que lo publicado **ES** lo construido | HU-8 / #8 | **umbral** | El HTML servido en la URL real tiene el **mismo hash** que el del repo |
+
+### Grupo I — Persistencia en base de datos (HU-9 · Ciclo 2)
+
+| ID | Caso | Criterio de origen | Tipo | Observable esperado |
+|---|---|---|---|---|
+| `C-89` | La config declara la forma B con su binding | HU-9 / #4 | estructura | `wrangler.jsonc` tiene `main`, `d1_databases[0].binding === "DB"`, y `assets.run_worker_first` incluye `/api/*` |
+| `C-90` | El diseño declara el límite que **ahora** aplica | HU-9 / #4 | estructura | `04-DISENO.md` nombra los 100.000 requests/día, los 10 ms de CPU y la cuota diaria de D1, y **no** afirma «cero límites de plan» para el Ciclo 2 |
+| `C-91` | Guardar escribe en la base, **no** en el navegador | HU-9 / #1 | **comportamiento** | Guardada una idea, `GET /api/ideas` la devuelve; **borrando `localStorage`** la idea sigue ahí |
+| `C-92` | Guardar dos veces no duplica | HU-9 / #7 | **comportamiento** | Dos `POST` con el mismo `id` → `GET /api/ideas` devuelve **1** idea |
+| `C-93` | Cuota agotada: fallo declarado, sin pérdida | HU-9 / #5 | **comportamiento** | Con la base forzada al error `cuota_diaria`, la app muestra el mensaje que **nombra el límite** y lo escrito **sigue en pantalla** |
+| `C-94` | Base no disponible: el borrador sobrevive | HU-9 / #6 | **comportamiento** | Con el binding roto, tras recargar **lo escrito sigue** (borrador local) y se ve el error |
+| `C-95` | Editar invalida el veredicto **en la base** | HU-9 / #7 | **comportamiento** | Editar una idea aprobada → su `veredicto` queda nulo en la base y en la lista |
+| `C-96` | La migración existe y es versionada | HU-9 (DoD) | estructura | Existe `migrations/0001_ideas.sql` con `CREATE TABLE ideas` **y** el índice |
+| `C-97` | El smoke verifica persistencia contra la URL real | HU-9 / #3 | **umbral** | Contra la URL real: guardar una idea con marca conocida, **redeploy**, y la idea **sigue**; el request de `/api/*` queda **bajo 10 ms** de CPU |
 
 ### Cobertura combinada
 
@@ -451,6 +558,14 @@ debe ser **uniforme**. Un paso que no valide es un hueco silencioso.
 | HU-6 / #1..#3 | `C-34`..`C-39` | T-6 | `C-34 · …` |
 | HU-7 / #1..#8 | `C-40`..`C-49` | T-7 | `C-40 · …` |
 | HU-8 / #1..#8 | `C-50`..`C-56` | T-8 | `C-50 · …` |
+| **HU-9** / #1, #3 | `C-91`, `C-97` | T-11, T-12 | `C-91 · …` |
+| **HU-9** / #2 | `C-91` | T-11 | `C-91 · …` |
+| **HU-9** / #4 | `C-89`, `C-90` | T-10 | `C-89 · …` |
+| **HU-9** / #5 | `C-93` | T-12 | `C-93 · …` |
+| **HU-9** / #6 | `C-94` | T-12 | `C-94 · …` |
+| **HU-9** / #7 | `C-92`, `C-95` | T-11, T-12 | `C-92 · …` |
+| **HU-9** / #8 | `C-55` *(existente, sigue valiendo)* | T-10 | `C-55 · …` |
+| **HU-9** (DoD) | `C-96` | T-10 | `C-96 · …` |
 
 ---
 

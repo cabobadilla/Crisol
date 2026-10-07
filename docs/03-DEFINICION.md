@@ -534,11 +534,11 @@ Sin aprobación explícita del usuario, no se avanza a diseño.
 
 ## Aprobación — Ciclo 2
 
-- [ ] **Aprobado por el usuario** — fecha:
-- [ ] Cambios solicitados:
-- ⚠ **Decisión de producto pendiente (D-5):** sin identidad, **cualquiera con la
-  URL ve todas las ideas**. Se acepta, se mitiga, o se difiere la persistencia
-  remota hasta que haya login.
+- [x] **Aprobado por el usuario** — fecha: **2026-10-07** *(«Aprobado — pasa a diseño»)*
+- [ ] Cambios solicitados: ninguno
+- [x] **D-5 resuelto por el usuario:** **los datos quedan en la base abierta** — es un
+      POC y no hay datos sensibles. Queda **declarado, no descubierto:** mientras no haya
+      identidad, quien tenga la URL ve todas las ideas guardadas.
 
 ---
 
