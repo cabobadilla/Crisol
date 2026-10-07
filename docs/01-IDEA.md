@@ -58,3 +58,47 @@
 ---
 
 **Gate G0:** existe esta idea, sin interpretación agregada.
+
+---
+
+# Idea 2 — Persistencia de las ideas en una base de datos (Ciclo 2)
+
+- **Proyecto:** Crisol
+- **Fecha:** 2026-10-07
+- **Origen:** mensaje del usuario (Telegram), **con el Ciclo 1 en implementación**
+- **Ciclo:** 2 (propuesto — se registra acá porque el proyecto ya está en marcha)
+
+## Requerimiento crudo
+
+> «incorpora la capacidad de persistir las ideas en una base de datos minima
+> (verifica que tipo de BD -la mas pequeña- se puede usar el Cloudflare)»
+
+## Contexto adicional
+
+- Se pide **para probar el flujo** del harness con un requerimiento que llega
+  **a mitad de la implementación**, no al principio.
+- **Trae exactamente lo que la iteración anterior difirió.** `03-DEFINICION.md`,
+  § *Fuera de esta iteración*: «**Backend y almacenamiento en Cloudflare**
+  (KV / D1 / R2 / DO): la Etapa 1 persiste en `localStorage` del navegador».
+- Trae una **tarea de verificación explícita**: no se acepta un supuesto sobre
+  qué base usar. «Verifica» es parte del requerimiento, no una recomendación.
+
+## Lo que explícitamente se pidió
+
+- [ ] **Persistir las ideas** en una **base de datos**
+- [ ] Que sea **mínima** («la más pequeña»)
+- [ ] **Verificar** qué tipos de BD ofrece Cloudflare y cuál es la más pequeña
+- [ ] La base es de **Cloudflare**
+
+## Lo que explícitamente NO se dijo
+
+> Se anota acá para no resolverlo por cuenta propia en la fase 3.
+
+- Si la base **reemplaza** a `localStorage` o **convive** con él
+- **Quién** puede leer esas ideas (no se menciona identidad ni usuarios)
+- Si la idea se guarda **entera** en la base o solo un puntero
+- Si hay que **migrar** lo ya guardado en el navegador
+
+---
+
+**Gate G0:** existe esta idea, sin interpretación agregada.

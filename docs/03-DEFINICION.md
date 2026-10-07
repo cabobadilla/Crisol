@@ -438,3 +438,109 @@ no es más trabajo, es **más superficie donde algo puede fallar en silencio**.
 
 **Gate G1 ⭐ (humano):** cada criterio se puede convertir en un test concreto.
 Sin aprobación explícita del usuario, no se avanza a diseño.
+
+---
+
+# Revisión 4 — Ciclo 2: persistencia en base de datos
+
+> **Esta revisión NO toca la aprobación de la Revisión 3.** El Ciclo 1 sigue
+> vigente tal como está aprobado. Esto **agrega** el alcance del Ciclo 2 y
+> **corrige un ítem que dejó de ser cierto** (§ *Fuera de esta iteración*:
+> «Backend y almacenamiento en Cloudflare (KV / D1 / R2 / DO)…»).
+>
+> **Fuente de verdad técnica:** `02-ANALISIS.md` § *Análisis 2*, con la
+> verificación de las opciones de Cloudflare del 2026-10-07.
+
+## HU-9 · Las ideas persisten en una base de datos
+
+**Como** autor
+**quiero** que las ideas se guarden en una base de datos del servidor
+**para** que no se pierdan al cambiar de equipo, de navegador o al limpiar datos
+
+**Criterios de aceptación:**
+
+- **Dado** que guardo una idea
+  **cuando** abro la app **desde otro navegador o desde otro equipo**
+  **entonces** la idea está en la lista, con su paso alcanzado y su veredicto
+
+- **Dado** que la app corre en local
+  **cuando** guardo una idea
+  **entonces** se guarda en la **base local (D1 emulada)** y se lee de ahí, **no**
+  del navegador
+
+- **Dado** que la app está desplegada
+  **cuando** guardo una idea y después se vuelve a desplegar
+  **entonces** la idea **sigue ahí** (está en la base, no en el bundle)
+
+- **Dado** el diseño
+  **cuando** leo la sección de despliegue
+  **entonces** declara **la forma del Worker (B/C), el binding `DB`** y **el límite
+  del plan que ahora SÍ aplica** — 100.000 requests/día, 10 ms de CPU, 50 consultas
+  por invocación en Free — en vez de seguir afirmando «cero límites»
+
+- **Dado** que se agota la cuota diaria de D1
+  **cuando** la app intenta guardar
+  **entonces** falla **de forma declarada y visible**, nombrando el límite, y **no**
+  se pierde lo escrito en pantalla
+
+- **Dado** que la base no responde (binding mal configurado, error del servicio)
+  **cuando** estoy a mitad del wizard
+  **entonces** **no pierdo lo escrito**: el borrador sobrevive y el error se muestra
+
+- **Dado** una idea ya guardada
+  **cuando** la edito y guardo
+  **entonces** el cambio persiste en la base y su **veredicto de challenge se
+  invalida** (misma regla que HU-6)
+
+- **Dado** el repositorio
+  **cuando** busco credenciales
+  **entonces** **no hay ninguna**: la base no pide token, y el token de despliegue
+  sigue **fuera del entorno del Coder** (ADR-004 vigente)
+
+## Casos borde y de error (Ciclo 2)
+
+| Caso | Comportamiento esperado |
+|---|---|
+| Binding ausente o mal configurado | Falla explícita al guardar; el borrador local se conserva |
+| Cuota diaria de D1 agotada | Mensaje que **nombra el límite**; no se pierde lo escrito |
+| Guardar dos veces la misma idea | **No duplica**: actualiza la fila existente |
+| Listar con la base vacía | Lista vacía, **no** error |
+| `localStorage` con ideas de la versión anterior | **No** se migran (S-9); se ignoran sin borrarlas |
+| Texto de idea fuera de límite (2 MB por fila / 100 KB por sentencia) | Rechazo explícito (no hay caso real: los límites son enormes para este uso) |
+| Sin red y con la app abierta | El wizard sigue usable; guardar avisa que no pudo persistir |
+
+## Definición de «terminado» para el Ciclo 2
+
+- [ ] Existe una tabla `ideas` y una **migración versionada**
+- [ ] Guardar, listar y reabrir **leen y escriben en D1**, verificado abriendo la
+      app **desde otro navegador**
+- [ ] Corre en local con `wrangler dev` (D1 emulada, **sin cuenta**) y despliega
+      con el binding real
+- [ ] **`ADR-007` supersede a `ADR-002`/`ADR-006`** en lo que dejó de ser cierto, y
+      `04-DISENO.md` **deja de afirmar «cero límites de plan»**
+- [ ] El diseño **nombra el límite que ahora aplica** y qué pasa al agotarse
+- [ ] La **suite corre en local**; el **smoke** verifica contra la URL real que lo
+      guardado **persiste entre requests**
+- [ ] Cero credenciales en el repo, y nada sensible en el directorio de assets
+
+## Fuera de este ciclo (Etapa 2)
+
+- **Identidad, cuentas, login, permisos, multiusuario.**
+- **Migración** de `localStorage`.
+- **Búsqueda y filtros** sobre las ideas.
+- **Otra base que no sea D1.**
+
+---
+
+## Aprobación — Ciclo 2
+
+- [ ] **Aprobado por el usuario** — fecha:
+- [ ] Cambios solicitados:
+- ⚠ **Decisión de producto pendiente (D-5):** sin identidad, **cualquiera con la
+  URL ve todas las ideas**. Se acepta, se mitiga, o se difiere la persistencia
+  remota hasta que haya login.
+
+---
+
+**Gate G1 ⭐ (humano):** cada criterio se puede convertir en un test concreto.
+Sin aprobación explícita del usuario, no se avanza a diseño.
