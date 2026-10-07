@@ -1,0 +1,136 @@
+✖ C-01 · los 7 pasos se muestran en orden (508.881042ms)
+✖ C-02 · al cargar sin datos, solo el paso 1 es accesible (85.585667ms)
+✖ C-03 · los pasos futuros son visibles, no ocultos (87.188959ms)
+✖ C-04 · se indica el total de pasos (85.150541ms)
+✖ C-05 · completar un paso avanza al siguiente (87.691042ms)
+✖ C-06 · completar los 7 pasos registra la idea (86.655417ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 0
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2540.163667
+
+✖ failing tests:
+
+test at tests/ciclo1.test.mjs:36:1
+✖ C-01 · los 7 pasos se muestran en orden (508.881042ms)
+  AssertionError [ERR_ASSERTION]: el DOM debe tener exactamente 7 pasos; hay 0: []
+  
+  0 !== 7
+  
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo1.test.mjs:45:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 7,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/ciclo1.test.mjs:59:1
+✖ C-02 · al cargar sin datos, solo el paso 1 es accesible (85.585667ms)
+  AssertionError [ERR_ASSERTION]: los pasos 2..7 deben existir en el DOM; se hallaron 0 pasos
+  
+  0 !== 7
+  
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo1.test.mjs:91:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 7,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/ciclo1.test.mjs:125:1
+✖ C-03 · los pasos futuros son visibles, no ocultos (87.188959ms)
+  AssertionError [ERR_ASSERTION]: deben existir los 7 pasos; se hallaron 0
+  
+  0 !== 7
+  
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo1.test.mjs:145:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 7,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/ciclo1.test.mjs:167:1
+✖ C-04 · se indica el total de pasos (85.150541ms)
+  AssertionError [ERR_ASSERTION]: debe existir un contador de pasos ([data-contador]) con el total
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo1.test.mjs:181:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/ciclo1.test.mjs:191:1
+✖ C-05 · completar un paso avanza al siguiente (87.691042ms)
+  AssertionError [ERR_ASSERTION]: el paso activo al cargar debe ser idea
+  
+  null !== 'idea'
+  
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo1.test.mjs:215:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 'idea',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/ciclo1.test.mjs:227:1
+✖ C-06 · completar los 7 pasos registra la idea (86.655417ms)
+  AssertionError [ERR_ASSERTION]: las 7 confirmaciones deben recorrer los 7 pasos en orden; recorrido: [null,null,null,null,null,null,null]
+  + actual - expected
+  
+    [
+  +   null,
+  +   null,
+  +   null,
+  +   null,
+  +   null,
+  +   null,
+  +   null
+  -   'idea',
+  -   'problema',
+  -   'valor',
+  -   'referencias',
+  -   'alcance',
+  -   'terminado',
+  -   'challenge'
+    ]
+  
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo1.test.mjs:248:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [
+      null, null,
+      null, null,
+      null, null,
+      null
+    ],
+    expected: [ 'idea', 'problema', 'valor', 'referencias', 'alcance', 'terminado', 'challenge' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
