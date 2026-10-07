@@ -38,6 +38,32 @@
   .paso[data-estado="activo"] { border-color: #1f5fbf; box-shadow: 0 0 0 1px #1f5fbf; }
   .paso[data-estado="completo"] { background: #f2f6fc; }
   .paso[data-estado="bloqueado"] { background: #f7f7f8; color: #4a4f57; }
+
+  .barra-indicadores {
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+    padding: 0 1rem;
+    overflow-x: auto;
+    border-bottom: 1px solid #c9ced6;
+    background: #f5f6f8;
+  }
+  .indicador {
+    display: inline-flex;
+    align-items: center;
+    padding: .4rem .6rem;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid #b8bec7;
+    background: #ffffff;
+    color: #14161a;
+  }
+  .indicador[data-estado-indicador="activo"] { border-color: #1f5fbf; box-shadow: 0 0 0 1px #1f5fbf; }
+  .indicador[data-estado-indicador="completo"] { background: #f2f6fc; border-color: #3f7d3f; }
+  .indicador[data-estado-indicador="bloqueado"] { background: #f7f7f8; color: #4a4f57; border-color: #b8bec7; }
+  .indicador .paso-numero { margin-right: .35rem; }
   .paso-titulo { margin: 0 0 0.15rem; font-size: 1.05rem; }
   .paso-estado {
     display: inline-block;
@@ -114,6 +140,7 @@
 <main>
   <section class="panel" aria-labelledby="titulo-wizard">
     <h2 id="titulo-wizard">Definir la idea</h2>
+    <ul class="barra-indicadores" id="barra-indicadores" aria-label="Pasos del asistente"></ul>
     <ol class="pasos" id="pasos"></ol>
   </section>
   <section class="panel" aria-labelledby="titulo-ideas">
@@ -165,6 +192,7 @@
   const REFERENCIAS_POR_DEFECTO = 2;
 
   const contenedorPasos = document.getElementById('pasos');
+  const barraIndicadores = document.getElementById('barra-indicadores');
   const contador = document.querySelector('[data-contador]');
   const listaIdeas = document.querySelector('[data-lista-ideas]');
   const avisoVacio = document.getElementById('lista-vacia');
@@ -241,10 +269,17 @@
   }
 
   function construir() {
+    const barra = barraIndicadores;
     PASOS.forEach((paso, indice) => {
       const li = document.createElement('li');
-      li.className = 'paso';
-      li.setAttribute('data-paso', paso.id);
+      li.setAttribute('data-paso-indicador', paso.id);
+      li.className = 'indicador';
+      li.innerHTML = '<span class="paso-numero">' + (indice + 1) + '</span><span class="paso-nombre">' + paso.titulo + '</span>';
+      barra.appendChild(li);
+
+      const liPaso = document.createElement('li');
+      liPaso.className = 'paso';
+      liPaso.setAttribute('data-paso', paso.id);
 
       const titulo = document.createElement('h3');
       titulo.className = 'paso-titulo';
@@ -275,8 +310,8 @@
       confirmar.textContent = indice === PASOS.length - 1 ? 'Registrar idea' : 'Confirmar paso';
       confirmar.addEventListener('click', confirmarPaso);
 
-      li.append(titulo, etiquetaEstado, exige, campos, mensaje, confirmar);
-      contenedorPasos.appendChild(li);
+      liPaso.append(titulo, etiquetaEstado, exige, campos, mensaje, confirmar);
+      contenedorPasos.appendChild(liPaso);
     });
   }
 
@@ -350,6 +385,16 @@
         control.value = leer(estadoPaso, control.getAttribute('data-campo'));
       });
       nodo.querySelector('.paso-mensaje').hidden = true;
+
+      const indicador = barraIndicadores.querySelector('[data-paso-indicador="' + paso.id + '"]');
+      if (indicador) {
+        indicador.setAttribute('data-estado-indicador', estado);
+        if (estado === 'activo') {
+          indicador.setAttribute('aria-current', 'step');
+        } else {
+          indicador.removeAttribute('aria-current');
+        }
+      }
     });
     contador.querySelector('[data-paso-actual]').textContent = String(pasoActual + 1);
     contador.querySelector('[data-total]').textContent = String(PASOS.length);
