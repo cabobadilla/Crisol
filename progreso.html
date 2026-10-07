@@ -138,8 +138,8 @@
     <section class="fase wait">
       <header><span class="chip wait">○ Pendiente</span><span class="gate gate-wait">G2</span></header>
       <h3>4 · Diseño</h3>
-      <p class="resumen">Debe incluir la MATRIZ DE CASOS (v0.13) — será el primer proyecto que la use.</p>
-      <ul class="puntos"><li>Casos con ID y observable medible</li><li>El Coder los traduce y no puede omitirlos (check-coverage.sh)</li></ul>
+      <p class="resumen">Debe incluir la MATRIZ DE CASOS (v0.13) y la seccion de DESPLIEGUE local + Cloudflare (v0.15). Sera el primer proyecto que usa las dos.</p>
+      <ul class="puntos"><li>Casos con ID y observable medible</li><li>El Coder los traduce y no puede omitirlos (check-coverage.sh)</li><li>Despliegue: forma del Worker, bindings, limite del plan que podria romperlo, como se revierte</li><li>El arquitecto decide con la skill cloudflare-architecture</li></ul>
     </section>
     <section class="fase wait">
       <header><span class="chip wait">○ Pendiente</span><span class="gate gate-wait">G5</span></header>
@@ -177,6 +177,10 @@
       <span class="tk-estado">◇</span>
       <span class="tk-id">HU-7</span>
       <span class="tk-titulo">La app usa el diseno Pizarra del proyecto anterior</span>
+    </li><li class="prop">
+      <span class="tk-estado">◇</span>
+      <span class="tk-id">HU-8</span>
+      <span class="tk-titulo">Despliegue local y en Cloudflare</span>
     </li></ul>
 
   
@@ -212,7 +216,7 @@
       </div>
   </div>
 
-  <h2>Decisiones</h2><div class="caja"><ul><li><strong>El framework es el del harness</strong> — No se inventa uno nuevo: se productiza el que ya funciona (supuesto S-3)</li><li><strong>Valor y metrica son Etapa 1, no diferido</strong> — Correccion del usuario: una idea que no dice que cambia y como se mide no esta definida</li><li><strong>El challenger tiene 4 reglas, una por gap estructural</strong> — R1 sin problema, R2 sin valor o metrica medible, R3 sin referencias, R4 sin criterio de terminado</li><li><strong>Challenger determinístico por reglas</strong> — El mecanismo que importa es que RECHACE, no que use un LLM (supuesto S-4)</li><li><strong>Un solo artefacto, sin backend</strong> — POC estático, igual que MyHermesTest</li><li><strong>Anti-alcance: no ejecuta, solo define</strong> — Su dominio termina donde empieza la construcción</li><li><strong>Se reutiliza el diseno Pizarra (piel slate) de MyHermesTest</strong> — Pedido del usuario al aprobar G1. Fuente de verdad: docs/DISENO-PIZARRA.md, extraido del index.html con procedencia y linea</li><li><strong>Un diseno reutilizado arrastra sus defectos</strong> — Pizarra trae H-1 (la barra desborda a 375px) como requisito de correccion, no como herencia</li></ul></div>
+  <h2>Decisiones</h2><div class="caja"><ul><li><strong>El framework es el del harness</strong> — No se inventa uno nuevo: se productiza el que ya funciona (supuesto S-3)</li><li><strong>Valor y metrica son Etapa 1, no diferido</strong> — Correccion del usuario: una idea que no dice que cambia y como se mide no esta definida</li><li><strong>El challenger tiene 4 reglas, una por gap estructural</strong> — R1 sin problema, R2 sin valor o metrica medible, R3 sin referencias, R4 sin criterio de terminado</li><li><strong>Challenger determinístico por reglas</strong> — El mecanismo que importa es que RECHACE, no que use un LLM (supuesto S-4)</li><li><strong>Un solo artefacto, sin backend</strong> — POC estático, igual que MyHermesTest</li><li><strong>Anti-alcance: no ejecuta, solo define</strong> — Su dominio termina donde empieza la construcción</li><li><strong>Se reutiliza el diseno Pizarra (piel slate) de MyHermesTest</strong> — Pedido del usuario al aprobar G1. Fuente de verdad: docs/DISENO-PIZARRA.md, extraido del index.html con procedencia y linea</li><li><strong>Un diseno reutilizado arrastra sus defectos</strong> — Pizarra trae H-1 (la barra desborda a 375px) como requisito de correccion, no como herencia</li><li><strong>El despliegue es un requisito, no un pendiente</strong> — Pedido del usuario: Cloudflare es su servicio preferido. Se define local Y cloud desde el diseno (HU-8)</li><li><strong>Cloudflare Workers con static assets, no Pages</strong> — Cloudflare recomienda 'start new projects with Workers'. Una app estatica sin backend no paga invocaciones: los requests de assets son gratis</li><li><strong>El arquitecto tiene skill de Cloudflare</strong> — cloudflare-architecture, instalada desde el harness: limites reales del plan free, eleccion de bindings, paridad local/cloud y trampas verificadas</li></ul></div>
 
   
   <h2>3 · Histórico de corridas</h2>
@@ -251,6 +255,14 @@
       <td class="num">—</td>
       <td><span class="chip ok">OK</span></td>
       <td class="nota">G1 APROBADO. Con la aprobación llegó un requisito nuevo: reutilizar el diseño Pizarra del proyecto anterior. Verificado primero QUÉ es Pizarra antes de escribir nada: es la piel 'slate' de MyHermesTest (label 'Pizarra', Inter/Inter), no una suposición. Se extrajeron los 13 tokens exactos de index.html:191-221 y las convenciones de componentes, a docs/DISENO-PIZARRA.md con procedencia y línea. Se calcularon los 16 pares de contraste: 14 pasan AA, los 2 que no son border/surface (1.35 claro · 1.32 oscuro) — y eso produjo un requisito duro: los 4 estados del wizard NO pueden distinguirse solo por color. Se registró también que Pizarra arrastra H-1 (barra desborda a 375px) como requisito de corrección. HU-7 nueva.</td>
+    </tr>
+    <tr>
+      <td class="num">5</td>
+      <td>Ciclo 1 · despliegue (harness v0.15)</td>
+      <td><code>(Hermes, rol Arquitecto)</code></td>
+      <td class="num">—</td>
+      <td><span class="chip ok">OK</span></td>
+      <td class="nota">Aprendizaje del usuario incorporado: el despliegue es un tema a definir, y Cloudflare es su servicio preferido. Se creó la skill cloudflare-architecture (9.3 KB) con datos VERIFICADOS, no de memoria: Cloudflare hoy dice 'start new projects with Workers', no Pages — Pages sigue vivo pero las features nuevas van a Workers. Límites del plan free documentados (100k req/día, 10 ms de CPU, 3 MB, 50 subrequests, KV 1.000 escrituras/día). El despliegue entró como sección OBLIGATORIA de 04-DISENO.md y como ítem de G2, y como HU-8 en Crisol. Lección registrada: una skill sin gancho en el proceso no se usa — se conectó al gate que la exige.</td>
     </tr></tbody>
   </table>
 

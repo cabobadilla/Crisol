@@ -37,8 +37,8 @@
       "nombre": "4 · Diseño",
       "estado": "pendiente",
       "gate": "G2",
-      "resumen": "Debe incluir la MATRIZ DE CASOS (v0.13) — será el primer proyecto que la use.",
-      "puntos": ["Casos con ID y observable medible", "El Coder los traduce y no puede omitirlos (check-coverage.sh)"]
+      "resumen": "Debe incluir la MATRIZ DE CASOS (v0.13) y la seccion de DESPLIEGUE local + Cloudflare (v0.15). Sera el primer proyecto que usa las dos.",
+      "puntos": ["Casos con ID y observable medible", "El Coder los traduce y no puede omitirlos (check-coverage.sh)", "Despliegue: forma del Worker, bindings, limite del plan que podria romperlo, como se revierte", "El arquitecto decide con la skill cloudflare-architecture"]
     },
     {
       "id": "implementacion",
@@ -57,7 +57,8 @@
     { "id": "HU-4", "titulo": "Buscar referencias antes de seguir", "estado": "propuesto" },
     { "id": "HU-5", "titulo": "El challenger objeta las definiciones", "estado": "propuesto" },
     { "id": "HU-6", "titulo": "Guardar y reabrir una idea", "estado": "propuesto" },
-    { "id": "HU-7", "titulo": "La app usa el diseno Pizarra del proyecto anterior", "estado": "propuesto" }
+    { "id": "HU-7", "titulo": "La app usa el diseno Pizarra del proyecto anterior", "estado": "propuesto" },
+    { "id": "HU-8", "titulo": "Despliegue local y en Cloudflare", "estado": "propuesto" }
   ],
   "siguientes_ciclos": [
     {
@@ -94,7 +95,10 @@
     { "titulo": "Un solo artefacto, sin backend", "texto": "POC estático, igual que MyHermesTest" },
     { "titulo": "Anti-alcance: no ejecuta, solo define", "texto": "Su dominio termina donde empieza la construcción" },
     { "titulo": "Se reutiliza el diseno Pizarra (piel slate) de MyHermesTest", "texto": "Pedido del usuario al aprobar G1. Fuente de verdad: docs/DISENO-PIZARRA.md, extraido del index.html con procedencia y linea" },
-    { "titulo": "Un diseno reutilizado arrastra sus defectos", "texto": "Pizarra trae H-1 (la barra desborda a 375px) como requisito de correccion, no como herencia" }
+    { "titulo": "Un diseno reutilizado arrastra sus defectos", "texto": "Pizarra trae H-1 (la barra desborda a 375px) como requisito de correccion, no como herencia" },
+    { "titulo": "El despliegue es un requisito, no un pendiente", "texto": "Pedido del usuario: Cloudflare es su servicio preferido. Se define local Y cloud desde el diseno (HU-8)" },
+    { "titulo": "Cloudflare Workers con static assets, no Pages", "texto": "Cloudflare recomienda 'start new projects with Workers'. Una app estatica sin backend no paga invocaciones: los requests de assets son gratis" },
+    { "titulo": "El arquitecto tiene skill de Cloudflare", "texto": "cloudflare-architecture, instalada desde el harness: limites reales del plan free, eleccion de bindings, paridad local/cloud y trampas verificadas" }
   ],
   "diferido": [
     "Agente LLM real (necesita backend o key)",
