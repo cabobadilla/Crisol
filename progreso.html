@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avance · Crisol</title>
+<style>
+  :root{
+    --bg:#0d1117; --surface:#161b22; --surface2:#1c2128; --border:#30363d;
+    --text:#e6edf3; --muted:#8b949e; --accent:#58a6ff;
+    --ok:#3fb950; --run:#d29922; --wait:#6e7681; --def:#a371f7; --blk:#f85149; --prop:#58a6ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--text);
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1280px; margin:0 auto; padding:32px 24px 64px}
+  header.top{border-bottom:1px solid var(--border); padding-bottom:24px; margin-bottom:32px}
+  .eyebrow{color:var(--muted); font-size:12px; letter-spacing:.12em; text-transform:uppercase}
+  h1{margin:8px 0 4px; font-size:32px; letter-spacing:-.02em}
+  .sub{color:var(--muted); font-size:14px; margin:0}
+  .meta{margin-top:18px; display:flex; flex-wrap:wrap; gap:26px; align-items:center}
+  .kpi{display:flex; flex-direction:column}
+  .kpi b{font-size:21px; font-weight:600}
+  .kpi span{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em}
+  .barra{height:6px; background:var(--surface2); border-radius:99px; overflow:hidden; margin-top:18px}
+  .barra i{display:block; height:100%; background:var(--accent); width:0%}
+  h2{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+     margin:44px 0 6px; font-weight:600}
+  .h2sub{color:var(--muted); font-size:13px; margin:0 0 16px; max-width:70ch}
+  .fases{display:grid; grid-template-columns:repeat(5,1fr); gap:14px}
+  @media(max-width:1000px){.fases{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:620px){.fases{grid-template-columns:1fr}}
+  .fase{background:var(--surface); border:1px solid var(--border); border-radius:10px;
+        padding:16px; display:flex; flex-direction:column; gap:10px}
+  .fase.ok{border-top:3px solid var(--ok)} .fase.run{border-top:3px solid var(--run)}
+  .fase.wait{border-top:3px solid var(--wait)} .fase.def{border-top:3px solid var(--def)}
+  .fase.blk{border-top:3px solid var(--blk)}
+  .fase header{display:flex; justify-content:space-between; align-items:center; gap:8px}
+  .fase h3{margin:0; font-size:16px; letter-spacing:-.01em}
+  .resumen{margin:0; color:var(--muted); font-size:13px}
+  .puntos{margin:0; padding-left:18px; color:var(--muted); font-size:13px}
+  .puntos li{margin:4px 0}
+  .chip{font-size:11px; font-weight:600; padding:3px 8px; border-radius:99px;
+        text-transform:uppercase; letter-spacing:.06em; white-space:nowrap}
+  .chip.ok{background:rgba(63,185,80,.15); color:var(--ok)}
+  .chip.run{background:rgba(210,153,34,.15); color:var(--run)}
+  .chip.wait{background:rgba(110,118,129,.15); color:var(--wait)}
+  .chip.def{background:rgba(163,113,247,.15); color:var(--def)}
+  .chip.blk{background:rgba(248,81,73,.15); color:var(--blk)}
+  .chip.prop{background:rgba(88,166,255,.15); color:var(--prop)}
+  .gate{font-size:11px; color:var(--muted); border:1px solid var(--border); padding:2px 7px; border-radius:5px}
+  .gate-ok{color:var(--ok); border-color:rgba(63,185,80,.4)}
+
+  .fork{display:grid; grid-template-columns:1fr 1fr; gap:0; align-items:stretch;
+        border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--surface)}
+  @media(max-width:820px){.fork{grid-template-columns:1fr}}
+  .rama{position:relative; padding:22px 22px 22px 46px}
+  .rama + .rama{border-left:1px solid var(--border)}
+  @media(max-width:820px){.rama + .rama{border-left:none; border-top:1px solid var(--border)}}
+  .rama::before{content:''; position:absolute; left:18px; top:0; bottom:0; width:2px; background:var(--border)}
+  .rama::after{content:''; position:absolute; left:18px; top:56px; width:20px; height:2px; background:var(--border)}
+  .rama.activa::before{background:linear-gradient(var(--ok) 56px, var(--border) 56px)}
+  .rama.pausa::before{background:linear-gradient(var(--def) 56px, var(--border) 56px)}
+  .rama h3{margin:12px 0 6px; font-size:17px}
+  .tamano{font-size:11px; color:var(--muted); border:1px solid var(--border);
+          padding:2px 7px; border-radius:5px; margin-left:6px}
+  .validacion{margin:12px 0 0; font-size:12px; color:var(--prop)}
+
+  table{width:100%; border-collapse:collapse; font-size:13px}
+  th{text-align:left; color:var(--muted); font-weight:600; font-size:11px;
+     text-transform:uppercase; letter-spacing:.08em; padding:8px 10px;
+     border-bottom:1px solid var(--border)}
+  td{padding:10px; border-bottom:1px solid var(--surface2); vertical-align:top}
+  td.num{font-variant-numeric:tabular-nums; color:var(--muted); white-space:nowrap}
+  td.nota{color:var(--muted)}
+  code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--accent);
+       background:var(--surface2); padding:2px 6px; border-radius:4px; white-space:nowrap}
+
+  ul.lista{list-style:none; margin:0; padding:0; display:grid; gap:6px}
+  ul.lista li{display:grid; grid-template-columns:22px 52px 1fr auto; gap:10px;
+              align-items:baseline; background:var(--surface); border:1px solid var(--border);
+              border-radius:8px; padding:10px 14px; font-size:14px}
+  @media(max-width:620px){ul.lista li{grid-template-columns:22px 1fr; gap:6px}}
+  .tk-estado{color:var(--muted)}
+  li.ok .tk-estado{color:var(--ok)} li.run .tk-estado{color:var(--run)}
+  li.def .tk-estado{color:var(--def)} li.blk .tk-estado{color:var(--blk)}
+  .tk-id{color:var(--muted); font-variant-numeric:tabular-nums; font-size:13px}
+  li.ok .tk-titulo{color:var(--muted)}
+  .tk-nota{color:var(--muted); font-size:12px}
+  @media(max-width:620px){.tk-nota{grid-column:2}}
+  .caja{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px}
+  .caja ul{margin:0; padding-left:18px; color:var(--muted); font-size:14px}
+  .caja li{margin:6px 0}
+  .caja li strong{color:var(--text)}
+  footer{margin-top:48px; padding-top:20px; border-top:1px solid var(--border);
+         color:var(--muted); font-size:13px}
+  footer p{margin:6px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">Tablero de avance · proceso idea → pruebas</div>
+    <h1>Crisol</h1>
+    <p class="sub">Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.</p>
+    <div class="meta">
+      <div class="kpi"><b>0%</b><span>Tareas del ciclo</span></div>
+      <div class="kpi"><b>0/0</b><span>Completadas</span></div>
+      <div class="kpi"><b>Ciclo 1</b><span>Ciclo activo</span></div>
+      <div class="kpi"><b>Etapa 1 — el wizard con el mecanismo completo</b><span>Alcance</span></div>
+      <div class="kpi"><b>Definición — esperando G1 (aprobación humana)</b><span>Fase actual</span></div>
+    </div>
+    <div class="barra"><i></i></div>
+  </header>
+
+  <h2>1 · El ciclo actual</h2>
+  <p class="h2sub">Capa <strong>viva</strong>: se reinicia en cada ciclo. Responde «¿en qué va lo que estamos haciendo?».</p>
+  <div class="fases">
+    <section class="fase ok">
+      <header><span class="chip ok">✓ Listo</span><span class="gate gate-ok">G0</span></header>
+      <h3>1 · Idea</h3>
+      <p class="resumen">Requerimiento crudo capturado sin interpretación, más lo que explícitamente NO se dijo.</p>
+      <ul class="puntos"><li>Wizard + framework determinístico + referencias + challenger</li><li>Segundo proyecto del harness: ejercita new-project.sh y la matriz de casos</li></ul>
+    </section>
+    <section class="fase ok">
+      <header><span class="chip ok">✓ Listo</span><span class="gate gate-ok">G1a</span></header>
+      <h3>2 · Análisis</h3>
+      <p class="resumen">El problema es la falta de definición, no la falta de ideas. Costo de la inacción: ideas perdidas y sobre todo ideas zombie.</p>
+      <ul class="puntos"><li>5 preguntas abiertas y 5 supuestos declarados</li><li>Anti-alcance explícito: no es gestor de proyectos ni chat ni generador de código</li><li>Evidencia de primera mano: el fallo ya lo vivimos en MyHermesTest</li></ul>
+    </section>
+    <section class="fase run">
+      <header><span class="chip run">◐ En curso</span><span class="gate gate-wait">G1</span></header>
+      <h3>3 · Definición</h3>
+      <p class="resumen">5 historias con criterios verificables, corte en etapas documentado y 10 casos borde.</p>
+      <ul class="puntos"><li>El challenger debe RECHAZAR de verdad, no ser un sello de goma</li><li>El paso de referencias exige fuente y conclusión</li><li>Responsive 375px en el DoD: aprendizaje de H-1</li></ul>
+    </section>
+    <section class="fase wait">
+      <header><span class="chip wait">○ Pendiente</span><span class="gate gate-wait">G2</span></header>
+      <h3>4 · Diseño</h3>
+      <p class="resumen">Debe incluir la MATRIZ DE CASOS (v0.13) — será el primer proyecto que la use.</p>
+      <ul class="puntos"><li>Casos con ID y observable medible</li><li>El Coder los traduce y no puede omitirlos (check-coverage.sh)</li></ul>
+    </section>
+    <section class="fase wait">
+      <header><span class="chip wait">○ Pendiente</span><span class="gate gate-wait">G5</span></header>
+      <h3>5 · Implementación y pruebas</h3>
+      <p class="resumen">Rama por ciclo; el Coder nunca toca main.</p>
+      <ul class="puntos"><li>G5 en contexto aislado</li><li>Verificación en navegador real: Chrome por CDP, sin instalar nada</li></ul>
+    </section></div>
+
+  
+  <h2>Historias de usuario</h2><ul class="lista"><li class="prop">
+      <span class="tk-estado">◇</span>
+      <span class="tk-id">HU-1</span>
+      <span class="tk-titulo">Registrar una idea paso a paso</span>
+    </li><li class="prop">
+      <span class="tk-estado">◇</span>
+      <span class="tk-id">HU-2</span>
+      <span class="tk-titulo">El proceso no deja avanzar con huecos</span>
+    </li><li class="prop">
+      <span class="tk-estado">◇</span>
+      <span class="tk-id">HU-3</span>
+      <span class="tk-titulo">Buscar referencias antes de seguir</span>
+    </li><li class="prop">
+      <span class="tk-estado">◇</span>
+      <span class="tk-id">HU-4</span>
+      <span class="tk-titulo">El challenger objeta las definiciones</span>
+    </li><li class="prop">
+      <span class="tk-estado">◇</span>
+      <span class="tk-id">HU-5</span>
+      <span class="tk-titulo">Guardar y reabrir una idea</span>
+    </li></ul>
+
+  
+  <h2>2 · La bifurcación — lo que queda pendiente</h2>
+  <p class="h2sub">Lo diferido <strong>no se borra</strong>: se propone como ciclo siguiente. Ninguno arranca sin validación del usuario.</p>
+  <div class="fork">
+    <div class="rama activa">
+      <span class="chip run">◐ Activo</span>
+      <h3>Etapa 1 — el wizard con el mecanismo completo</h3>
+      <p class="resumen">Cerrar y verificar lo que ya está construido. Único ciclo en marcha.</p>
+      <div class="fases" style="grid-template-columns:1fr; margin-top:14px">
+        <section class="fase wait" style="background:var(--surface2)">
+          <header><span class="chip wait">○ Pendiente</span><span class="gate">G5</span></header>
+          <h3>Verificación independiente</h3>
+          <p class="resumen">QA en contexto aislado, contra los criterios de la fase 3.</p>
+        </section>
+      </div>
+    </div>
+    <div class="rama pausa">
+        <span class="chip prop">◇ Propuesto</span>
+        <span class="tamano">requiere backend o key</span>
+        <h3>Agente LLM real para el challenge</h3>
+        <p class="resumen">Una app estática no puede guardar una credencial sin exponerla. El challenger determinístico por reglas prueba el mecanismo; el LLM es una capa encima.</p>
+        <ul class="puntos"><li>Backend mínimo o proxy que guarde la key</li><li>Un LLM real que objete sobre las reglas ya verificadas</li><li>Mantener el veredicto determinístico como base auditable</li></ul>
+        <p class="validacion">→ Requiere tu OK. Depende de decidir dónde vive la key.</p>
+      </div><div class="rama pausa">
+        <span class="chip def">⏸ En pausa</span>
+        <span class="tamano">agregar reglas</span>
+        <h3>Reglas de challenger 4..N + framework configurable</h3>
+        <p class="resumen">La Etapa 1 trae 3 reglas, una por gap estructural. Las demás son la misma máquina con otra condición — no cambian la arquitectura.</p>
+        <ul class="puntos"><li>Calidad de la métrica, tamaño, apalancamiento real en agentes, riesgo de dependencia del proveedor</li><li>Permitir definir el framework en vez de tenerlo fijo</li></ul>
+        <p class="validacion">→ Sin fecha. Se decide tras ver la Etapa 1 en uso.</p>
+      </div>
+  </div>
+
+  <h2>Decisiones</h2><div class="caja"><ul><li><strong>El framework es el del harness</strong> — No se inventa uno nuevo: se productiza el que ya funciona (supuesto S-3)</li><li><strong>Challenger determinístico por reglas</strong> — El mecanismo que importa es que RECHACE, no que use un LLM (supuesto S-4)</li><li><strong>Un solo artefacto, sin backend</strong> — POC estático, igual que MyHermesTest</li><li><strong>Anti-alcance: no ejecuta, solo define</strong> — Su dominio termina donde empieza la construcción</li></ul></div>
+
+  
+  <h2>3 · Histórico de corridas</h2>
+  <p class="h2sub">Capa <strong>inmutable</strong>: nunca se reinicia. Es el registro de lo que realmente pasó — modelo, duración y resultado de cada corrida.</p>
+  <table>
+    <thead><tr><th>#</th><th>Ciclo</th><th>Modelo</th><th>Dur.</th><th>Resultado</th><th>Qué pasó</th></tr></thead>
+    <tbody>
+    <tr>
+      <td class="num">1</td>
+      <td>Ciclo 0 · arranque</td>
+      <td><code>(Hermes)</code></td>
+      <td class="num">—</td>
+      <td><span class="chip ok">OK</span></td>
+      <td class="nota">PRIMER uso real de new-project.sh de punta a punta. Funcionó a la primera: repo público creado, 8 artefactos y 7 guardias copiadas, commit 'Scaffold from HermesHarness @313af19'. Verificado por Hermes: el repo existe en GitHub y check-coverage.sh corre solo, sin el repo del harness. Cierra el hueco de 'nunca ejercitado'.</td>
+    </tr>
+    <tr>
+      <td class="num">2</td>
+      <td>Ciclo 1 · fases 1-3</td>
+      <td><code>(Hermes, rol PO)</code></td>
+      <td class="num">—</td>
+      <td><span class="chip ok">OK</span></td>
+      <td class="nota">G0 y G1a escritos: requerimiento crudo, 5 preguntas abiertas, 5 supuestos, anti-alcance y veredicto. Fase 3 con 5 historias y criterios verificables, corte en etapas documentado. Espera G1 (aprobación humana).</td>
+    </tr></tbody>
+  </table>
+
+  <footer>
+    <p><strong>Siguiente:</strong> El PO escribió las 5 historias con criterios verificables. Falta tu aprobación explícita: sin G1 no se avanza a diseño.</p>
+    <p>Actualizado 07-10-2026, 10:30 a. m. · estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.</p>
+  </footer>
+
+</div>
+</body>
+</html>
