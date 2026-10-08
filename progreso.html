@@ -23,7 +23,7 @@
   .kpi b{font-size:21px; font-weight:600}
   .kpi span{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em}
   .barra{height:6px; background:var(--surface2); border-radius:99px; overflow:hidden; margin-top:18px}
-  .barra i{display:block; height:100%; background:var(--accent); width:31%}
+  .barra i{display:block; height:100%; background:var(--accent); width:38%}
   h2{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
      margin:44px 0 6px; font-weight:600}
   .h2sub{color:var(--muted); font-size:13px; margin:0 0 16px; max-width:70ch}
@@ -105,11 +105,11 @@
     <h1>Crisol</h1>
     <p class="sub">Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.</p>
     <div class="meta">
-      <div class="kpi"><b>31%</b><span>Tareas del ciclo</span></div>
-      <div class="kpi"><b>4/13</b><span>Completadas</span></div>
+      <div class="kpi"><b>38%</b><span>Tareas del ciclo</span></div>
+      <div class="kpi"><b>5/13</b><span>Completadas</span></div>
       <div class="kpi"><b>Ciclo 1 (implementación en curso) + Ciclo 2 (persistencia en D1)</b><span>Ciclo activo</span></div>
       <div class="kpi"><b>Etapa 1 — el wizard con el mecanismo completo · con el Ciclo 2 arranca la Etapa 2</b><span>Alcance</span></div>
-      <div class="kpi"><b>Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10 aprobado (la base D1 y su migración, en pie y ejercitada)</b><span>Fase actual</span></div>
+      <div class="kpi"><b>Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10 y T-11 aprobados (la base D1 y la API de dos operaciones) — 25/25 tests</b><span>Fase actual</span></div>
     </div>
     <div class="barra"><i></i></div>
   </header>
@@ -198,11 +198,11 @@
       <span class="tk-id">T-10</span>
       <span class="tk-titulo">Ciclo 2 · La base y su migracion</span>
       <span class="tk-nota">Aprobado en el 2º intento. El 1º se RECHAZO con evidencia medida: (a) C-50 quedaba insatisfacible —la matriz lo marca superseded por C-89 pero su test seguia en la suite: un error de DISENO mio, que G2 debia haber atrapado—; (b) C-98 no mordia en su mitad 'conteo real': hardcodear ideas:0 con tabla vacia daba verde. El Coder reporto ambos honestamente y no toco nada. Correccion: retirado el test de C-50 y C-98 endurecido insertando 3 filas conocidas. Verificado por Hermes: verify-red real por asercion, sello INTACTOS, C-89/C-96/C-98 muerden por mutacion, suite 22/22, y el propio Coder reporto como BLOQUEO que mutar con el MISMO valor esperado no puede dar rojo (la instruccion era mia y estaba mal)</span>
-    </li><li class="wait">
-      <span class="tk-estado">○</span>
+    </li><li class="ok">
+      <span class="tk-estado">✓</span>
       <span class="tk-id">T-11</span>
       <span class="tk-titulo">Ciclo 2 · El Worker: la API de dos operaciones</span>
-      <span class="tk-nota">src/worker.js: POST y GET sobre /api/ideas, upsert por id</span>
+      <span class="tk-nota">Aprobado. Tests 406643f / implementación a53e8c6, en commits separados. La corrida MURIO a mitad (el Coder intento escribir en /tmp durante la mutacion; el sandbox rechaza el permiso y ese rechazo CORTA la corrida) y hubo que cerrarla con un run corto. Hermes verifico el TRABAJO, no el reporte: verify-red real por asercion, sello INTACTOS, y tres mutaciones que muerden (id distinto -&gt; C-91 y C-92 rojas; clasificador ciego -&gt; C-99 roja; lista vacia -&gt; C-91 y C-92 rojas). El md5 del worker commiteado es IDENTICO al que se muto, asi que la verificacion vale sobre el commit y no sobre un arbol intermedio. 25/25</span>
     </li><li class="wait">
       <span class="tk-estado">○</span>
       <span class="tk-id">T-12</span>
@@ -371,12 +371,20 @@
       <td class="num">—</td>
       <td><span class="chip wait">rechazado y luego aprobado</span></td>
       <td class="nota">PRIMERA corrida del harness RECHAZADA en G3 por evidencia medida, no por el reporte. El Coder hizo las cosas bien: 2 commits (tests primero, implementación después), no tocó main, no tocó docs/, no usó /tmp, y NO mintió — reportó honestamente que su GREEN quedaba en 22/23. El rechazo fue por tres hallazgos, dos de ellos del Arquitecto: (1) C-50 quedaba INSATISFACIBLE: la matriz lo marca superseded por C-89 desde ADR-007 pero su TEST seguía en la suite, así que exigía lo contrario de C-89. Es un error de DISEÑO mío y es la regla de satisfacibilidad (v0.10) al pie de la letra: al ampliar el alcance hay que revisar todo literal del alcance anterior. Lo debía atrapar G2 y lo atrapó G3. (2) C-98 NO MORDÍA en su mitad 'conteo real': hardcodeando ideas:0 en el Worker la suite seguía verde, porque el test afirmaba ideas===0 contra una tabla VACÍA — un conteo inventado es indistinguible del real. Lo cazó la PRUEBA DE MUTACIÓN (v0.22), que es para lo que existe. Corrección: retirado el test de C-50 (autorizado, matriz cambiada) y C-98 endurecido insertando 3 filas conocidas. (3) DESCUBRIMIENTO DEL CICLO, el más grave: las GUARDIAS de Crisol estaban CONGELADAS en la versión del día de creación del proyecto — freeze-tests.sh de 3 KB contra 7 KB del harness, sin seal-from-commit ni verify-red, que son las verificaciones OBLIGATORIAS de G3 desde v0.20/v0.21; y faltaba deploy.sh. Ya sabíamos que las plantillas copiadas quedan congeladas (#61); los scripts también, y es peor porque los scripts SON las guardias: un proyecto con los artefactos y sin las guardias queda documentado pero indefenso. Refrescadas desde el harness v0.31. HALLAZGO de método: la instrucción del Arquitecto al Coder puede ser ella misma insatisfacible — le pedí mutar con ideas:3 cuando el valor esperado era 3, y el Coder lo reportó como BLOQUEO en vez de fingir un rojo. La asimetría funciona: el Coder honesto es más útil que el Coder obediente. Verificado por Hermes: verify-red real POR ASERCIÓN, sello INTACTOS, C-89 y C-96 muerden (quitar run_worker_first / quitar el índice), C-98 muerde con la mutación que sí difiere del esperado, suite 22/22, review.sh consistente.</td>
+    </tr>
+    <tr>
+      <td class="num">9</td>
+      <td>Ciclo 2 · T-11 (la API de dos operaciones en el Worker)</td>
+      <td><code>opencode/big-pickle (N3, preflight vivo)</code></td>
+      <td class="num">—</td>
+      <td><span class="chip wait">ok (con la corrida abortada y reanudada)</span></td>
+      <td class="nota">Tercera corrida del ciclo y la primera que MURIO A MITAD por una regla, no por lógica. El Coder hizo lo correcto durante casi todo: tests en commit propio (406643f), RED real por aserción, implementación aparte. Y en la verificación de mutación intentó escribir en /tmp — prohibido — y el sandbox RECHAZO EL PERMISO, y ese rechazo CORTA LA CORRIDA ENTERA. Murió ahí, sin reporte, con la implementación sin commitear en el árbol de trabajo. HALLAZGO: la prohibición de /tmp no es un warning que se saltea, es un corte. Quedó demostrado que la regla es más fuerte de lo que la lección decía. RECUPERACION: Hermes verificó el TRABAJO ENTERO antes de gastar otra corrida — verify-red real por aserción, sello INTACTOS, y TRES mutaciones propias (id distinto en cada insert -&gt; C-91 y C-92 rojas; clasificador ciego a la cuota -&gt; C-99 roja; lista vacía -&gt; C-91 y C-92 rojas). Y una precaución que casi se paga cara: el Worker estaba SIN COMMITEAR, así que 'git checkout -- src/worker.js' para restaurar la mutación lo habría DESTRUIDO; se guardó copia en ./.tmp/ y se restauró desde ahí. Después se despachó un run CORTO solo para commitear (el implementador commitea: si commitea el verificador, el verificador se vuelve autor y el sello pierde sentido). Y la verificación se ancló al COMMIT, no al árbol: el md5 del worker commiteado (9d03be8b...) es IDENTICO al que se mutó, así que lo verificado es lo que quedó. Suena obvio y es justo el hueco por donde se cuela un verde falso. ANTES de despachar se cerraron dos huecos del mismo tipo que mordió T-10: GET /api/ideas/:id estaba en el contrato SIN caso ni tarea (superficie sin contrato, retirada) y el error cuota_diaria estaba declarado SIN que nada lo produjera (sin clasificador, C-93 no podía pasar nunca) -&gt; nuevo caso C-99. Verificado: suite 25/25, review.sh consistente.</td>
     </tr></tbody>
   </table>
 
   <footer>
-    <p><strong>Siguiente:</strong> Ciclo 2: despachar T-11 (la API de dos operaciones: POST/GET /api/ideas con upsert). Antes: preflight del modelo. La suite del Ciclo 2 ya se verificó por mutación: C-89, C-96 y C-98 muerden. Recordá que el emulador local NO aplica la cuota diaria de D1 — eso lo prueba el smoke contra la URL real, en T-13.</p>
-    <p>Actualizado 07-10-2026, 9:49 p. m. · estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.</p>
+    <p><strong>Siguiente:</strong> Ciclo 2: despachar T-12 (la app lee y escribe en la base). Es la ÚNICA tarea que toca public/index.html; localStorage pasa a ser BORRADOR y los errores de la base se MUESTRAN nombrando el límite, sin fallar en silencio. Antes: preflight del modelo y sello de tests. Después queda T-13 (despliegue y smoke: una idea debe SOBREVIVIR a un redeploy).</p>
+    <p>Actualizado 07-10-2026, 10:16 p. m. · estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.</p>
   </footer>
 
 </div>

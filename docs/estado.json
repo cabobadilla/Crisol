@@ -1,11 +1,11 @@
 {
   "proyecto": "Crisol",
   "resumen": "Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.",
-  "actualizado": "2026-10-08T00:49:06Z",
+  "actualizado": "2026-10-08T01:16:57Z",
   "ciclo": "Ciclo 1 (implementación en curso) + Ciclo 2 (persistencia en D1)",
   "etapa": "Etapa 1 — el wizard con el mecanismo completo · con el Ciclo 2 arranca la Etapa 2",
-  "fase_actual": "Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10 aprobado (la base D1 y su migración, en pie y ejercitada)",
-  "siguiente": "Ciclo 2: despachar T-11 (la API de dos operaciones: POST/GET /api/ideas con upsert). Antes: preflight del modelo. La suite del Ciclo 2 ya se verificó por mutación: C-89, C-96 y C-98 muerden. Recordá que el emulador local NO aplica la cuota diaria de D1 — eso lo prueba el smoke contra la URL real, en T-13.",
+  "fase_actual": "Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10 y T-11 aprobados (la base D1 y la API de dos operaciones) — 25/25 tests",
+  "siguiente": "Ciclo 2: despachar T-12 (la app lee y escribe en la base). Es la ÚNICA tarea que toca public/index.html; localStorage pasa a ser BORRADOR y los errores de la base se MUESTRAN nombrando el límite, sin fallar en silencio. Antes: preflight del modelo y sello de tests. Después queda T-13 (despliegue y smoke: una idea debe SOBREVIVIR a un redeploy).",
   "nota_de_proceso": "estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.",
   "fases": [
     {
@@ -145,9 +145,9 @@
     {
       "id": "T-11",
       "titulo": "Ciclo 2 · El Worker: la API de dos operaciones",
-      "estado": "pendiente",
-      "casos": "C-91, C-92",
-      "nota": "src/worker.js: POST y GET sobre /api/ideas, upsert por id"
+      "estado": "listo",
+      "casos": "C-91, C-92, C-99",
+      "nota": "Aprobado. Tests 406643f / implementación a53e8c6, en commits separados. La corrida MURIO a mitad (el Coder intento escribir en /tmp durante la mutacion; el sandbox rechaza el permiso y ese rechazo CORTA la corrida) y hubo que cerrarla con un run corto. Hermes verifico el TRABAJO, no el reporte: verify-red real por asercion, sello INTACTOS, y tres mutaciones que muerden (id distinto -> C-91 y C-92 rojas; clasificador ciego -> C-99 roja; lista vacia -> C-91 y C-92 rojas). El md5 del worker commiteado es IDENTICO al que se muto, asi que la verificacion vale sobre el commit y no sobre un arbol intermedio. 25/25"
     },
     {
       "id": "T-12",
