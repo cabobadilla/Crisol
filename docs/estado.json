@@ -1,11 +1,11 @@
 {
   "proyecto": "Crisol",
   "resumen": "Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.",
-  "actualizado": "2026-10-08T04:46:29Z",
-  "ciclo": "Ciclo 1 (implementación en curso) + Ciclo 2 (persistencia en D1)",
+  "actualizado": "2026-10-08T10:35:06Z",
+  "ciclo": "Ciclo 2 CERRADO · Ciclo 1 abierto (T-2..T-5 + sellar la cobertura)",
   "etapa": "Etapa 1 — el wizard con el mecanismo completo · con el Ciclo 2 arranca la Etapa 2",
-  "fase_actual": "Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10, T-11 y T-12 aprobados (la base D1, la API de dos operaciones y la app que guarda contra la API) — 29/29 tests",
-  "siguiente": "Ciclo 2: despachar T-13 (despliegue y smoke contra la URL real). Una idea debe SOBREVIVIR a un redeploy, y el request de /api/* queda bajo 10 ms de CPU (caso C-97, reasignado desde T-11/T-12). Antes hay que crear la base D1 real y poner su database_id, que hoy está PENDIENTE. BLOQUEANTE declarado: el chequeo de cobertura está en ROJO (~70 casos del Ciclo 1 sin test y sin hueco en 06-QA-REPORT.md) y por doctrina eso impide integrar ciclo/2 a main — decisión del PO.",
+  "fase_actual": "Ciclo 2 · T-10, T-11, T-12 y T-13 aprobados — 29/29 tests en local y smoke contra https://crisol.mkvs.workers.dev con D1 real. CICLO 2 CERRADO. Queda el Ciclo 1: T-2..T-5 y los ~70 casos sin test (70 tras declarar C-97)",
+  "siguiente": "Ciclo 1 (el wizard que decide): T-2 valor/métrica · T-3 bloqueo con mensajes · T-4 referencias · T-5 el challenger (4 reglas) — y sellar la cobertura escribiendo los tests de los casos cuyo comportamiento YA existe (T-6 lo construyó el Ciclo 2; T-7 está parcial). Un solo ciclo abierto. Pendiente menor: el dato manual de CPU de T-13.",
   "nota_de_proceso": "estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.",
   "fases": [
     {
@@ -159,9 +159,9 @@
     {
       "id": "T-13",
       "titulo": "Ciclo 2 · Despliegue y smoke",
-      "estado": "pendiente",
+      "estado": "listo",
       "casos": "C-97",
-      "nota": "una idea con marca conocida debe SOBREVIVIR a un redeploy. Lo despliega Hermes (ADR-004)"
+      "nota": "desplegado y verificado contra la URL real: smoke C-97 fases 1 y 2 (la idea SOBREVIVE al redeploy, latencia de pared y sin error 1102). PENDIENTE declarado: el dato manual de CPU (cpuTimeP50 en el dashboard), que mide el PO — el smoke no lo puede ver por HTTP"
     }
   ],
   "historias": [

@@ -1,0 +1,15 @@
+→ Smoke C-97 (fase: verificar) contra https://crisol.mkvs.workers.dev
+
+  ✓ GET /api/ideas responde 200 tras el redeploy
+  ✓ la idea (c97-20261008T102959Z-22994) SOBREVIVIÓ al redeploy
+  ✓ la marca sigue en la respuesta
+  ℹ latencia de pared de /api/ideas: 0.367635s (proxy; la CPU se mide en el dashboard)
+  ✓ la latencia de pared está bajo 1 s
+  ✓ no apareció el error 1102 (límite de CPU)
+
+──────────────────────────────────────────
+  5 ok · 0 falla(s)
+
+✅ Smoke C-97 OK.
+   RECORDÁ el otro medio: la CPU de /api/* se mide A MANO en el dashboard
+   (cpuTimeP50) — este script no la puede ver por HTTP.

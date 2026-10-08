@@ -216,12 +216,26 @@ local_hash="$(md5de "$REPO/public/index.html")"
 check "lo servido tiene el MISMO hash que public/index.html" "$local_hash" "$servido"
 
 # ── 6 · NADA de lo que no debe publicarse quedó público ──────────────────────
-# El check más importante. Si responde 200, el archivo ES público y esto falla.
+# El check más importante, y el más fácil de escribir mal.
+#
+# La forma B del Worker usa `not_found_handling: single-page-application`: una ruta que
+# NO existe devuelve **200 con el index.html del SPA**. Mirar SOLO el código de estado
+# da seis falsos positivos seguidos, y un verificador que grita en falso se termina
+# ignorando — peor que no tenerlo. (Es la misma trampa que la v1 de este script, que
+# comparaba el texto "no-200" contra el código real.)
+#
+# Lo que hay que comparar es el **CUERPO**: si responde 200 y el cuerpo es el index, es
+# el fallback del SPA y NO hay fuga; si el cuerpo es OTRA cosa, el archivo es público.
+hash_index="$(md5de "$REPO/public/index.html")"
 for ruta in /docs/03-DEFINICION.md /docs/04-DISENO.md /docs/estado.json /wrangler.jsonc /tests /scripts; do
-  c=$(curl -s -o /dev/null -w '%{http_code}' "$URL$ruta")
-  esperado="no-200"
-  obtenido="$([ "$c" = "200" ] && echo "200 (¡PUBLICADO!)" || echo "no-200")"
-  check "$ruta NO es público" "$esperado" "$obtenido"
+  c=$(curl -s -o "$TMP/priv.txt" -w '%{http_code}' "$URL$ruta")
+  if [ "$c" != "200" ]; then
+    check "$ruta NO es público" "si" "si ($c)"
+  elif [ "$(md5de "$TMP/priv.txt")" = "$hash_index" ]; then
+    check "$ruta NO es público (200 = fallback del SPA, sirve la app, no el archivo)" "si" "si"
+  else
+    check "$ruta NO es público" "si" "NO — el contenido es el del archivo (¡FUGA!)"
+  fi
 done
 
 echo
