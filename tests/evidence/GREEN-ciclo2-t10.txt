@@ -1,0 +1,52 @@
+✔ C-01 · los 7 pasos están en UNA fila horizontal (779.762458ms)
+✔ C-02 · al cargar sin datos, solo el paso 1 tiene formulario en pantalla (212.432ms)
+✔ C-03 · los 7 pasos se ven aunque estén bloqueados (geometría) (217.962792ms)
+✔ C-04 · se indica el paso actual y el total, y el activo está en la fila (206.74825ms)
+✔ C-05 · confirmar paso 1 muestra formulario del paso 2 y oculta el del paso 1 (212.825042ms)
+✔ C-06 · completar los 7 pasos registra la idea (210.589166ms)
+✔ C-86 · a 390 px la fila no desborda el viewport (337.281333ms)
+✔ C-87 · a 390 px el contenido respeta el margen de 16 px (332.502208ms)
+✔ C-88 · a 1200 px los 7 pasos caben sin recortar en su contenedor (333.146709ms)
+✔ C-89 · la config declara la forma B: main, binding DB y run_worker_first con /api/* (0.866625ms)
+✔ C-90 · el diseño declara el límite que ahora aplica y no afirma "cero límites de plan" (0.234709ms)
+✔ C-96 · la migración existe y es versionada: CREATE TABLE ideas + el índice (0.09575ms)
+✔ C-98 · GET /api/salud responde contra la tabla: con migración 200 y conteo real; sin migración falla (13616.775666ms)
+✖ C-50 · wrangler.jsonc tiene assets.directory y no tiene main (0.711708ms)
+✔ C-51 · assets.directory === "./public" (0.14925ms)
+✔ C-52 · public/ contiene index.html y nada de docs/, tests/, scripts/ (0.096583ms)
+✔ C-53 · el README menciona npx wrangler dev (0.067459ms)
+✔ C-54 · el README menciona npx wrangler deploy y que lo corre Hermes (0.064916ms)
+✔ C-55 · ningún archivo versionado contiene un token; .env y .dev.vars están ignorados (15.925708ms)
+✔ C-40 · modo claro expone los 13 tokens exactos en :root[data-mode="light"] (726.187834ms)
+✔ C-41 · modo oscuro expone los 13 tokens exactos en :root[data-mode="dark"] (556.45625ms)
+✔ C-42 · todo el CSS usa var(--…) en lugar de hex sueltos (527.449542ms)
+✔ C-48 · el contenedor usa max-width: var(--container) (535.541541ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 22
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13705.431666
+
+✖ failing tests:
+
+test at tests/despliegue.test.mjs:23:1
+✖ C-50 · wrangler.jsonc tiene assets.directory y no tiene main (0.711708ms)
+  AssertionError [ERR_ASSERTION]: wrangler.jsonc NO debe tener clave "main" (worker solo-assets)
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/despliegue.test.mjs:29:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

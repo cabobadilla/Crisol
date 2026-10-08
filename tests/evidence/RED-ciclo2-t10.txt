@@ -1,0 +1,90 @@
+✔ C-01 · los 7 pasos están en UNA fila horizontal (1497.384417ms)
+✔ C-02 · al cargar sin datos, solo el paso 1 tiene formulario en pantalla (211.406208ms)
+✔ C-03 · los 7 pasos se ven aunque estén bloqueados (geometría) (213.089416ms)
+✔ C-04 · se indica el paso actual y el total, y el activo está en la fila (210.099542ms)
+✔ C-05 · confirmar paso 1 muestra formulario del paso 2 y oculta el del paso 1 (213.451208ms)
+✔ C-06 · completar los 7 pasos registra la idea (226.295458ms)
+✔ C-86 · a 390 px la fila no desborda el viewport (340.506542ms)
+✔ C-87 · a 390 px el contenido respeta el margen de 16 px (396.381625ms)
+✔ C-88 · a 1200 px los 7 pasos caben sin recortar en su contenedor (331.991625ms)
+✖ C-89 · la config declara la forma B: main, binding DB y run_worker_first con /api/* (1.109625ms)
+✔ C-90 · el diseño declara el límite que ahora aplica y no afirma "cero límites de plan" (0.1405ms)
+✖ C-96 · la migración existe y es versionada: CREATE TABLE ideas + el índice (0.065375ms)
+✖ C-98 · GET /api/salud responde contra la tabla: con migración 200 y conteo real; sin migración falla (6240.75325ms)
+✔ C-50 · wrangler.jsonc tiene assets.directory y no tiene main (0.446416ms)
+✔ C-51 · assets.directory === "./public" (0.384375ms)
+✔ C-52 · public/ contiene index.html y nada de docs/, tests/, scripts/ (0.1145ms)
+✔ C-53 · el README menciona npx wrangler dev (0.246625ms)
+✔ C-54 · el README menciona npx wrangler deploy y que lo corre Hermes (0.074083ms)
+✔ C-55 · ningún archivo versionado contiene un token; .env y .dev.vars están ignorados (19.276542ms)
+✔ C-40 · modo claro expone los 13 tokens exactos en :root[data-mode="light"] (1520.568542ms)
+✔ C-41 · modo oscuro expone los 13 tokens exactos en :root[data-mode="dark"] (584.513583ms)
+✔ C-42 · todo el CSS usa var(--…) en lugar de hex sueltos (591.561875ms)
+✔ C-48 · el contenedor usa max-width: var(--container) (533.559833ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 20
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6330.904125
+
+✖ failing tests:
+
+test at tests/ciclo2-t10.test.mjs:90:1
+✖ C-89 · la config declara la forma B: main, binding DB y run_worker_first con /api/* (1.109625ms)
+  AssertionError [ERR_ASSERTION]: wrangler.jsonc debe tener main "./src/worker.js"
+  + actual - expected
+  
+  + undefined
+  - './src/worker.js'
+  
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t10.test.mjs:95:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: './src/worker.js',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/ciclo2-t10.test.mjs:123:1
+✖ C-96 · la migración existe y es versionada: CREATE TABLE ideas + el índice (0.065375ms)
+  AssertionError [ERR_ASSERTION]: debe existir migrations/0001_ideas.sql
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t10.test.mjs:125:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/ciclo2-t10.test.mjs:138:1
+✖ C-98 · GET /api/salud responde contra la tabla: con migración 200 y conteo real; sin migración falla (6240.75325ms)
+  AssertionError [ERR_ASSERTION]: sin migración /api/salud debe fallar con 500 (no devolver un conteo inventado)
+  
+  404 !== 500
+  
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t10.test.mjs:154:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 500,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
