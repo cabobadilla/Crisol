@@ -8,6 +8,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:f
 import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { EventEmitter } from 'node:events';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -57,8 +58,9 @@ function servirApp() {
   });
 }
 
-class Sesion {
+class Sesion extends EventEmitter {
   constructor(webSocket) {
+    super();
     this.ws = webSocket;
     this.siguienteId = 0;
     this.pendientes = new Map();
@@ -69,6 +71,8 @@ class Sesion {
         this.pendientes.delete(mensaje.id);
         if (mensaje.error) rechazar(new Error(`CDP: ${mensaje.error.message}`));
         else resolver(mensaje.result);
+      } else if (!mensaje.id && mensaje.method) {
+        this.emit(mensaje.method, mensaje.params);
       }
     };
   }
@@ -213,11 +217,56 @@ export async function abrirNavegador() {
     rmSync(perfil, { recursive: true, force: true });
   }
 
+  let interceptando = false;
+  let patronIntercept = null;
+  let respuestaIntercept = null;
+
+  async function interceptarApi(patron, respuesta) {
+    if (interceptando) {
+      throw new Error('Ya hay una interceptación activa. Llame a liberarInterceptacion() primero.');
+    }
+    patronIntercept = patron;
+    respuestaIntercept = respuesta;
+    interceptando = true;
+
+    await sesion.enviar('Fetch.enable', { patterns: [{ urlPattern: patron, requestStage: 'Request' }] });
+
+    sesion.on('Fetch.requestPaused', async (params) => {
+      if (!interceptando) return;
+      const { requestId, request } = params;
+      const url = request.url;
+      if (typeof patronIntercept === 'string' ? url.includes(patronIntercept) : patronIntercept.test(url)) {
+        await sesion.enviar('Fetch.fulfillRequest', {
+          requestId,
+          responseCode: respuestaIntercept.status || 200,
+          responseHeaders: [
+            { name: 'Content-Type', value: 'application/json' },
+            ...(respuestaIntercept.headers || []),
+          ],
+          body: Buffer.from(JSON.stringify(respuestaIntercept.body || {})).toString('base64'),
+        });
+      } else {
+        await sesion.enviar('Fetch.continueRequest', { requestId });
+      }
+    });
+  }
+
+  async function liberarInterceptacion() {
+    if (!interceptando) return;
+    interceptando = false;
+    patronIntercept = null;
+    respuestaIntercept = null;
+    await sesion.enviar('Fetch.disable');
+    sesion.removeAllListeners('Fetch.requestPaused');
+  }
+
   return {
     direccion,
     evaluar: expresion => sesion.evaluar(expresion),
     irAlaApp,
     tamano,
     cerrar,
+    interceptarApi,
+    liberarInterceptacion,
   };
 }

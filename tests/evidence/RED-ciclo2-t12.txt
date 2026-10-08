@@ -1,0 +1,30 @@
+node --test tests/
+✔ C-01 · los 7 pasos están en UNA fila horizontal
+✔ C-02 · al cargar sin datos, solo el paso 1 tiene formulario en pantalla
+✔ C-03 · los 7 pasos se ven aunque estén bloqueados (geometría)
+✔ C-04 · se indica el paso actual y el total, y el activo está en la fila
+✔ C-05 · confirmar paso 1 muestra formulario del paso 2 y oculta el del paso 1
+✔ C-06 · completar los 7 pasos registra la idea
+✔ C-86 · a 390 px la fila no desborda el viewport
+✔ C-87 · a 390 px el contenido respeta el margen de 16 px
+✔ C-88 · a 1200 px los 7 pasos caben sin recortar en su contenedor
+✔ C-89 · la config declara la forma B: main, binding DB y run_worker_first con /api/*
+✔ C-90 · el diseño declara el límite que ahora aplica y no afirma "cero límites de plan"
+✔ C-96 · la migración existe y es versionada: CREATE TABLE ideas + el índice
+✔ C-98 · GET /api/salud responde contra la tabla: con migración 200 y conteo real; sin migración falla
+✔ C-91 · Guardar escribe en la base, no en el navegador
+✔ C-92 · Guardar dos veces no duplica
+✔ C-99 · clasificarError: cuota_diaria vs base_no_disponible
+
+✖ C-91 · la app guarda contra la API y no en el navegador (tests/ciclo2-t12.test.mjs)
+✖ C-93 · cuota agotada: fallo declarado, sin pérdida (tests/ciclo2-t12.test.mjs)
+✖ C-94 · base no disponible: el borrador sobrevive (tests/ciclo2-t12.test.mjs)
+✖ C-95 · editar invalida el veredicto en la base (tests/ciclo2-t12.test.mjs)
+
+ℹ tests 30
+ℹ suites 0
+ℹ pass 25
+ℹ fail 4
+ℹ cancelled 1
+ℹ skipped 0
+ℹ todo 0
