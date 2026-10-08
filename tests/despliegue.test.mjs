@@ -20,15 +20,6 @@ function getTrackedFiles() {
   }
 }
 
-test('C-50 · wrangler.jsonc tiene assets.directory y no tiene main', () => {
-  const wranglerPath = path.join(REPO_ROOT, 'wrangler.jsonc');
-  assert.ok(fs.existsSync(wranglerPath), 'wrangler.jsonc debe existir en la raíz del repo');
-  const config = readJsonc(wranglerPath);
-  assert.ok('assets' in config, 'wrangler.jsonc debe tener clave "assets"');
-  assert.ok('directory' in config.assets, 'wrangler.jsonc debe tener assets.directory');
-  assert.equal('main' in config, false, 'wrangler.jsonc NO debe tener clave "main" (worker solo-assets)');
-});
-
 test('C-51 · assets.directory === "./public"', () => {
   const wranglerPath = path.join(REPO_ROOT, 'wrangler.jsonc');
   const config = readJsonc(wranglerPath);

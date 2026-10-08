@@ -174,6 +174,29 @@ test('C-98 · GET /api/salud responde contra la tabla: con migración 200 y cont
     const salidaAplicar = (aplicar.stdout || '') + (aplicar.stderr || '');
     assert.equal(aplicar.status, 0, `la migración local debe aplicar; salida: ${salidaAplicar.slice(-1500)}`);
 
+    // 2b) Insertar 3 filas CONOCIDAS en la misma base emulada (mismo --persist-to),
+    //     ANTES de levantar el worker migrado, para que el conteo no pueda acertarse
+    //     con una tabla vacía: con 0 filas un conteo inventado coincide con el real.
+    const insertar = spawnSync(
+      'npx',
+      [
+        'wrangler', 'd1', 'execute', 'crisol-ideas', '--local',
+        '--persist-to', dirMigrado,
+        '--command',
+        'INSERT INTO ideas (id, titulo, estado, paso_alcanzado, idea_json, creado_en, actualizado_en) VALUES ' +
+          "('c98-1','idea 1','definida',1,'{}','2026-01-01T00:00:00Z','2026-01-01T00:00:00Z')," +
+          "('c98-2','idea 2','definida',2,'{}','2026-01-01T00:00:00Z','2026-01-01T00:00:00Z')," +
+          "('c98-3','idea 3','definida',3,'{}','2026-01-01T00:00:00Z','2026-01-01T00:00:00Z')",
+      ],
+      { cwd: REPO_ROOT, env: { ...process.env, CI: 'true' }, encoding: 'utf-8' },
+    );
+    const salidaInsertar = (insertar.stdout || '') + (insertar.stderr || '');
+    assert.equal(
+      insertar.status,
+      0,
+      `las 3 filas deben insertarse en la base emulada; salida: ${salidaInsertar.slice(-1500)}`,
+    );
+
     devMigrado = iniciarWranglerDev(puertoMigrado, dirMigrado);
     const respuestaMigrado = await esperarRespuesta(devMigrado, puertoMigrado);
     const cuerpoMigrado = await cuerpoJson(respuestaMigrado);
@@ -181,8 +204,8 @@ test('C-98 · GET /api/salud responde contra la tabla: con migración 200 y cont
     assert.equal(cuerpoMigrado.ok, true, 'el cuerpo debe ser {"ok":true,"ideas":<n>}');
     assert.equal(
       cuerpoMigrado.ideas,
-      0,
-      'la base emulada recién migrada tiene 0 ideas: el conteo debe ser el real, no inventado',
+      3,
+      'se insertaron exactamente 3 filas: el conteo debe ser 3 (real), no 0 ni un valor inventado',
     );
   } finally {
     terminarWranglerDev(devSinMigracion?.proceso);
