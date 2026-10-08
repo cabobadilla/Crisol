@@ -87,11 +87,23 @@ class Sesion extends EventEmitter {
         }
       }, 15000);
       this.pendientes.set(id, {
+        reloj: registrar,
         resolver: valor => { clearTimeout(registrar); resolver(valor); },
         rechazar: error => { clearTimeout(registrar); rechazar(error); },
       });
       this.ws.send(JSON.stringify({ id, method: metodo, params: parametros }));
     });
+  }
+
+  // Cierra de forma determinista las promesas de `enviar` que sigan en vuelo:
+  // si no se resuelven, quedan pendientes para siempre (p. ej. `Browser.close`
+  // durante el apagado del navegador) y su temporizador mantiene vivo el loop.
+  resolverPendientes() {
+    for (const { resolver, reloj } of this.pendientes.values()) {
+      clearTimeout(reloj);
+      resolver(undefined);
+    }
+    this.pendientes.clear();
   }
 
   // Evalúa una expresión en la página ya renderizada y devuelve su valor.
@@ -201,19 +213,33 @@ export async function abrirNavegador() {
     await dormir(120);
   }
 
+  let cerrado = false;
+
   async function cerrar() {
-    try {
-      await Promise.race([sesion.enviar('Browser.close'), dormir(1500)]);
-    } catch {
-      // Si Browser.close no se puede desde la página, se mata el proceso.
-    }
+    if (cerrado) return;
+    cerrado = true;
+
+    // 1. Resolver cualquier `enviar` en vuelo antes de cortar el transporte:
+    //    `Browser.close` puede no responder nunca durante el apagado y su
+    //    promesa (y su temporizador de 15 s) quedarían pendientes.
+    sesion.resolverPendientes();
+
+    // 2. Cerrar Chrome por señal: determinista, sin depender de CDP.
     if (chrome.exitCode === null) chrome.kill('SIGTERM');
     const finProceso = Date.now() + 3000;
     while (chrome.exitCode === null && Date.now() < finProceso) await dormir(50);
     if (chrome.exitCode === null) chrome.kill('SIGKILL');
+
     try { ws.close(); } catch { /* ya cerrado */ }
+
+    // 3. Cerrar el servidor HTTP: primero se sueltan las conexiones keep-alive
+    //    para que `close` invoque el callback y la promesa siempre resuelva.
     if (servidor.closeAllConnections) servidor.closeAllConnections();
-    await new Promise(resolver => servidor.close(resolver));
+    await new Promise(resolver => {
+      if (!servidor.listening) return resolver();
+      servidor.close(() => resolver());
+    });
+
     rmSync(perfil, { recursive: true, force: true });
   }
 

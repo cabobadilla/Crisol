@@ -2,13 +2,28 @@
 // Los casos negativos se FUERZAN interceptando la API con CDP Fetch.enable + Fetch.fulfillRequest.
 // El emulador local no aplica la cuota: el error cuota_diaria no llega nunca solo.
 
-import test from 'node:test';
+import test, { afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { abrirNavegador } from './helpers/cdp.mjs';
 
 const dormir = (ms) => new Promise((resolver) => setTimeout(resolver, ms));
 
 let app;
+
+// El cierre es parte del harness: pase o falle el caso, el navegador y el
+// servidor se cierran. Sin esto, un caso que falla por aserción (como el RED
+// a propósito de C-91/C-93/C-94/C-95) deja handles referenciados y el proceso
+// de test nunca drena el event loop.
+afterEach(async () => {
+  if (!app) return;
+  const abierto = app;
+  app = null;
+  try {
+    await abierto.cerrar();
+  } catch {
+    // Cierre best-effort: no debe enmascarar el resultado del caso.
+  }
+});
 
 test('C-91 · la app guarda contra la API y no en el navegador', async () => {
   app = await abrirNavegador();

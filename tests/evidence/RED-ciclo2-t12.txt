@@ -1,30 +1,98 @@
 node --test tests/
-✔ C-01 · los 7 pasos están en UNA fila horizontal
-✔ C-02 · al cargar sin datos, solo el paso 1 tiene formulario en pantalla
-✔ C-03 · los 7 pasos se ven aunque estén bloqueados (geometría)
-✔ C-04 · se indica el paso actual y el total, y el activo está en la fila
-✔ C-05 · confirmar paso 1 muestra formulario del paso 2 y oculta el del paso 1
-✔ C-06 · completar los 7 pasos registra la idea
-✔ C-86 · a 390 px la fila no desborda el viewport
-✔ C-87 · a 390 px el contenido respeta el margen de 16 px
-✔ C-88 · a 1200 px los 7 pasos caben sin recortar en su contenedor
-✔ C-89 · la config declara la forma B: main, binding DB y run_worker_first con /api/*
-✔ C-90 · el diseño declara el límite que ahora aplica y no afirma "cero límites de plan"
-✔ C-96 · la migración existe y es versionada: CREATE TABLE ideas + el índice
-✔ C-98 · GET /api/salud responde contra la tabla: con migración 200 y conteo real; sin migración falla
-✔ C-91 · Guardar escribe en la base, no en el navegador
-✔ C-92 · Guardar dos veces no duplica
-✔ C-99 · clasificarError: cuota_diaria vs base_no_disponible
+(termina solo, sin --test-force-exit; cancelado 0; 25 viejos verdes + 4 rojos a proposito)
 
-✖ C-91 · la app guarda contra la API y no en el navegador (tests/ciclo2-t12.test.mjs)
-✖ C-93 · cuota agotada: fallo declarado, sin pérdida (tests/ciclo2-t12.test.mjs)
-✖ C-94 · base no disponible: el borrador sobrevive (tests/ciclo2-t12.test.mjs)
-✖ C-95 · editar invalida el veredicto en la base (tests/ciclo2-t12.test.mjs)
-
-ℹ tests 30
+✔ C-01 · los 7 pasos están en UNA fila horizontal (966.631333ms)
+✔ C-02 · al cargar sin datos, solo el paso 1 tiene formulario en pantalla (214.014458ms)
+✔ C-03 · los 7 pasos se ven aunque estén bloqueados (geometría) (215.877416ms)
+✔ C-04 · se indica el paso actual y el total, y el activo está en la fila (208.664875ms)
+✔ C-05 · confirmar paso 1 muestra formulario del paso 2 y oculta el del paso 1 (220.4715ms)
+✔ C-06 · completar los 7 pasos registra la idea (215.602666ms)
+✔ C-86 · a 390 px la fila no desborda el viewport (340.754666ms)
+✔ C-87 · a 390 px el contenido respeta el margen de 16 px (388.458917ms)
+✔ C-88 · a 1200 px los 7 pasos caben sin recortar en su contenedor (341.747791ms)
+✔ C-89 · la config declara la forma B: main, binding DB y run_worker_first con /api/* (0.779834ms)
+✔ C-90 · el diseño declara el límite que ahora aplica y no afirma "cero límites de plan" (0.129375ms)
+✔ C-96 · la migración existe y es versionada: CREATE TABLE ideas + el índice (0.079042ms)
+✔ C-98 · GET /api/salud responde contra la tabla: con migración 200 y conteo real; sin migración falla (14589.890166ms)
+✔ C-91 · Guardar escribe en la base, no en el navegador (7981.88075ms)
+✔ C-92 · Guardar dos veces no duplica (6990.462542ms)
+✔ C-99 · clasificarError: cuota_diaria vs base_no_disponible (0.530708ms)
+✖ C-91 · la app guarda contra la API y no en el navegador (2931.866459ms)
+✖ C-93 · cuota agotada: fallo declarado, sin pérdida (1076.215584ms)
+✖ C-94 · base no disponible: el borrador sobrevive (1088.791166ms)
+✖ C-95 · editar invalida el veredicto en la base (3159.523334ms)
+✔ C-51 · assets.directory === "./public" (0.430959ms)
+✔ C-52 · public/ contiene index.html y nada de docs/, tests/, scripts/ (0.428333ms)
+✔ C-53 · el README menciona npx wrangler dev (0.140833ms)
+✔ C-54 · el README menciona npx wrangler deploy y que lo corre Hermes (0.126375ms)
+✔ C-55 · ningún archivo versionado contiene un token; .env y .dev.vars están ignorados (17.035041ms)
+✔ C-40 · modo claro expone los 13 tokens exactos en :root[data-mode="light"] (958.969834ms)
+✔ C-41 · modo oscuro expone los 13 tokens exactos en :root[data-mode="dark"] (568.242166ms)
+✔ C-42 · todo el CSS usa var(--…) en lugar de hex sueltos (604.861542ms)
+✔ C-48 · el contenedor usa max-width: var(--container) (559.249083ms)
+ℹ tests 29
 ℹ suites 0
 ℹ pass 25
 ℹ fail 4
-ℹ cancelled 1
+ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
+ℹ duration_ms 15076.137166
+
+✖ failing tests:
+
+test at tests/ciclo2-t12.test.mjs:28:1
+✖ C-91 · la app guarda contra la API y no en el navegador (2931.866459ms)
+  AssertionError [ERR_ASSERTION]: tras borrar localStorage la idea debe seguir en la lista
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t12.test.mjs:74:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/ciclo2-t12.test.mjs:80:1
+✖ C-93 · cuota agotada: fallo declarado, sin pérdida (1076.215584ms)
+  AssertionError [ERR_ASSERTION]: debe mostrarse un mensaje que nombre el límite de cuota; mensaje: ""
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t12.test.mjs:114:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/ciclo2-t12.test.mjs:138:1
+✖ C-94 · base no disponible: el borrador sobrevive (1088.791166ms)
+  AssertionError [ERR_ASSERTION]: debe mostrarse un mensaje de error de base; mensaje: ""
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t12.test.mjs:172:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/ciclo2-t12.test.mjs:213:1
+✖ C-95 · editar invalida el veredicto en la base (3159.523334ms)
+  AssertionError [ERR_ASSERTION]: RED: la app debe enviar veredicto=null al editar una idea aprobada (implementación pendiente)
+      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t12.test.mjs:323:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
