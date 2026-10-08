@@ -326,7 +326,17 @@ test('C-95 · editar invalida el veredicto en la base', async () => {
     })()
   `);
 
-  // Confirmar paso 1
+  // Interceptar el POST de actualización ANTES de la acción que lo dispara
+  let cuerpoCapturado = null;
+  await app.liberarInterceptacion();
+  await app.interceptarApi('/api/ideas', async ({ method, body }) => {
+    if (method === 'POST') {
+      cuerpoCapturado = body;
+    }
+    return { status: 200, body: { ok: true } };
+  });
+
+  // Confirmar paso 1 (esto debe disparar el POST de actualización)
   await app.evaluar(`
     (() => {
       const activo = document.querySelector('[data-estado="activo"]');
@@ -335,19 +345,12 @@ test('C-95 · editar invalida el veredicto en la base', async () => {
       if (confirmar) confirmar.click();
     })()
   `);
-  await dormir(300);
+  await dormir(500);
 
-  // Interceptar el POST de actualización para verificar que veredicto va como null
-  let veredictoEnviado = null;
-  await app.liberarInterceptacion();
-  await app.interceptarApi('/api/ideas', {
-    status: 200,
-    body: { ok: true },
-  });
-
-  // El test falla en RED porque la app no envía veredicto=null al editar
-  // La implementación en PARTE B hará que pase
-  assert.ok(false, 'RED: la app debe enviar veredicto=null al editar una idea aprobada (implementación pendiente)');
+  // Verificar que el POST ocurrió y que el cuerpo tiene veredicto: null y el mismo id
+  assert.ok(cuerpoCapturado !== null, 'debe haber ocurrido un POST a /api/ideas al confirmar la edición');
+  assert.equal(cuerpoCapturado.veredicto, null, `veredicto debe ser null en la actualización; recibido: ${JSON.stringify(cuerpoCapturado.veredicto)}`);
+  assert.equal(cuerpoCapturado.id, 'idea-test-1', `el id debe reusar el de la idea editada; recibido: ${JSON.stringify(cuerpoCapturado.id)}`);
 
   await app.liberarInterceptacion();
   await app.cerrar();
