@@ -10,6 +10,6 @@
     "run_worker_first": ["/api/*"]
   },
   "d1_databases": [
-    { "binding": "DB", "database_name": "crisol-ideas", "database_id": "PENDIENTE" }
+    { "binding": "DB", "database_name": "crisol-ideas", "database_id": "42ae882e-4fba-4be8-8502-a19677e33715" }
   ]
 }
