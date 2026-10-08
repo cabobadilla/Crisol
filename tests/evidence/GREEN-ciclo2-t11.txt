@@ -1,0 +1,11 @@
+✔ C-91 · Guardar escribe en la base, no en el navegador (7012.711042ms)
+✔ C-92 · Guardar dos veces no duplica (7326.50325ms)
+✔ C-99 · clasificarError: cuota_diaria vs base_no_disponible (0.580417ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14421.496583
