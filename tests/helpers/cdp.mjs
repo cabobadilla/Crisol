@@ -255,7 +255,10 @@ export async function abrirNavegador() {
     respuestaIntercept = respuesta;
     interceptando = true;
 
-    await sesion.enviar('Fetch.enable', { patterns: [{ urlPattern: patron, requestStage: 'Request' }] });
+    // Fetch.enable matchea contra URL ABSOLUTA (http://host:puerto/...), por eso necesita comodines.
+    // El filtro JS de abajo usa el literal que pasó el test (p.ej. '/api/ideas').
+    // Son dos usos distintos del mismo valor → se construyen distinto.
+    await sesion.enviar('Fetch.enable', { patterns: [{ urlPattern: '*' + String(patron) + '*', requestStage: 'Request' }] });
 
     sesion.on('Fetch.requestPaused', async (params) => {
       if (!interceptando) return;
