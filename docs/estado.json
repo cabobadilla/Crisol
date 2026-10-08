@@ -1,11 +1,11 @@
 {
   "proyecto": "Crisol",
   "resumen": "Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.",
-  "actualizado": "2026-10-08T01:16:57Z",
+  "actualizado": "2026-10-08T04:46:29Z",
   "ciclo": "Ciclo 1 (implementación en curso) + Ciclo 2 (persistencia en D1)",
   "etapa": "Etapa 1 — el wizard con el mecanismo completo · con el Ciclo 2 arranca la Etapa 2",
-  "fase_actual": "Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10 y T-11 aprobados (la base D1 y la API de dos operaciones) — 25/25 tests",
-  "siguiente": "Ciclo 2: despachar T-12 (la app lee y escribe en la base). Es la ÚNICA tarea que toca public/index.html; localStorage pasa a ser BORRADOR y los errores de la base se MUESTRAN nombrando el límite, sin fallar en silencio. Antes: preflight del modelo y sello de tests. Después queda T-13 (despliegue y smoke: una idea debe SOBREVIVIR a un redeploy).",
+  "fase_actual": "Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10, T-11 y T-12 aprobados (la base D1, la API de dos operaciones y la app que guarda contra la API) — 29/29 tests",
+  "siguiente": "Ciclo 2: despachar T-13 (despliegue y smoke contra la URL real). Una idea debe SOBREVIVIR a un redeploy, y el request de /api/* queda bajo 10 ms de CPU (caso C-97, reasignado desde T-11/T-12). Antes hay que crear la base D1 real y poner su database_id, que hoy está PENDIENTE. BLOQUEANTE declarado: el chequeo de cobertura está en ROJO (~70 casos del Ciclo 1 sin test y sin hueco en 06-QA-REPORT.md) y por doctrina eso impide integrar ciclo/2 a main — decisión del PO.",
   "nota_de_proceso": "estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.",
   "fases": [
     {
@@ -152,7 +152,7 @@
     {
       "id": "T-12",
       "titulo": "Ciclo 2 · La app lee y escribe en la base",
-      "estado": "pendiente",
+      "estado": "listo",
       "casos": "C-91, C-93, C-94, C-95",
       "nota": "localStorage queda como borrador; los errores de la base se MUESTRAN nombrando el limite, nunca fallan en silencio"
     },

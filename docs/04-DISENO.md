@@ -575,7 +575,7 @@ debe ser **uniforme**. Un paso que no valide es un hueco silencioso.
 | HU-6 / #1..#3 | `C-34`..`C-39` | T-6 | `C-34 · …` |
 | HU-7 / #1..#8 | `C-40`..`C-49` | T-7 | `C-40 · …` |
 | HU-8 / #1..#8 | `C-50`..`C-56` | T-8 | `C-50 · …` |
-| **HU-9** / #1, #3 | `C-91`, `C-97` | T-11, T-12 | `C-91 · …` |
+| **HU-9** / #1, #3 | `C-91`, `C-97` | T-11, T-12, T-13 | `C-91 · …` |
 | **HU-9** / #2 | `C-91`, `C-98` | T-10, T-11 | `C-91 · …` |
 | **HU-9** / #4 | `C-89`, `C-90` | T-10 | `C-89 · …` |
 | **HU-9** / #5 | `C-93`, `C-99` | T-11, T-12 | `C-93 · …` |
@@ -583,6 +583,11 @@ debe ser **uniforme**. Un paso que no valide es un hueco silencioso.
 | **HU-9** / #7 | `C-92`, `C-95` | T-11, T-12 | `C-92 · …` |
 | **HU-9** / #8 | `C-55` *(existente, sigue valiendo)* | T-10 | `C-55 · …` |
 | **HU-9** (DoD) | `C-96` | T-10 | `C-96 · …` |
+
+> **`C-91` tiene DOS tests, y es a propósito:** el caso dice dos cosas — «`GET /api/ideas` la
+> devuelve» (la **API**, `tests/ciclo2-t11.test.mjs`) y «borrando `localStorage` la idea sigue ahí»
+> (la **app**, `tests/ciclo2-t12.test.mjs`). Es un caso, dos capas, y cada test nombra la suya.
+> La matriz de arriba nombra su ID una sola vez; el caso se cubre cuando **los dos** existen.
 
 ---
 
