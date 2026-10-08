@@ -29,6 +29,32 @@ test('C-91 · la app guarda contra la API y no en el navegador', async () => {
   app = await abrirNavegador();
   await app.tamano(1200, 800);
 
+  // Almacén en memoria para la API interceptada
+  const almacen = { ideas: [] };
+  let siguienteId = 1;
+
+  await app.interceptarApi('/api/ideas', async ({ method, body }) => {
+    if (method === 'POST') {
+      const idea = {
+        id: `idea-test-${siguienteId++}`,
+        titulo: body?.paso1 || 'Sin título',
+        estado: 'borrador',
+        paso_alcanzado: 7,
+        idea_json: JSON.stringify(body),
+        veredicto: null,
+        veredicto_json: null,
+        creado_en: new Date().toISOString(),
+        actualizado_en: new Date().toISOString(),
+      };
+      almacen.ideas.push(idea);
+      return { status: 201, body: { ok: true, id: idea.id } };
+    }
+    if (method === 'GET') {
+      return { status: 200, body: { ideas: almacen.ideas } };
+    }
+    return { status: 405, body: { error: 'metodo_no_permitido' } };
+  });
+
   // Completar los 7 pasos para guardar una idea
   for (let i = 0; i < 7; i++) {
     await app.evaluar(`
@@ -73,6 +99,7 @@ test('C-91 · la app guarda contra la API y no en el navegador', async () => {
   `);
   assert.ok(listaDespues !== null && listaDespues.length > 0, 'tras borrar localStorage la idea debe seguir en la lista');
 
+  await app.liberarInterceptacion();
   await app.cerrar();
   app = null;
 });

@@ -262,14 +262,26 @@ export async function abrirNavegador() {
       const { requestId, request } = params;
       const url = request.url;
       if (typeof patronIntercept === 'string' ? url.includes(patronIntercept) : patronIntercept.test(url)) {
+        let respuestaFinal = respuestaIntercept;
+        if (typeof respuestaIntercept === 'function') {
+          let body = null;
+          if (request.postData) {
+            try {
+              body = JSON.parse(request.postData);
+            } catch {
+              body = request.postData;
+            }
+          }
+          respuestaFinal = await respuestaIntercept({ method: request.method, body, url: request.url });
+        }
         await sesion.enviar('Fetch.fulfillRequest', {
           requestId,
-          responseCode: respuestaIntercept.status || 200,
+          responseCode: respuestaFinal.status || 200,
           responseHeaders: [
             { name: 'Content-Type', value: 'application/json' },
-            ...(respuestaIntercept.headers || []),
+            ...(respuestaFinal.headers || []),
           ],
-          body: Buffer.from(JSON.stringify(respuestaIntercept.body || {})).toString('base64'),
+          body: Buffer.from(JSON.stringify(respuestaFinal.body || {})).toString('base64'),
         });
       } else {
         await sesion.enviar('Fetch.continueRequest', { requestId });
