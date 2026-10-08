@@ -5,7 +5,7 @@
 
 - **Proyecto:** Crisol
 - **Fecha:** 2026-10-07
-- **Basado en:** `04-DISENO.md` (**94 casos** declarados: los 85 del Ciclo 1 + `C-89`..`C-97` del Ciclo 2). ⚠ `C-50` quedó **superseded** por `C-89` (`ADR-007`): **93 vigentes**.
+- **Basado en:** `04-DISENO.md` (**95 casos** declarados: los 85 del Ciclo 1 + `C-89`..`C-98` del Ciclo 2). ⚠ `C-50` quedó **superseded** por `C-89` (`ADR-007`): **94 vigentes**.
 
 ## Reglas
 
@@ -146,15 +146,23 @@
 
 ### T-10 — La base y su migración
 
-- **Cubre:** HU-9 / #4, #8, y el DoD (migración versionada)
-- **Casos que debe cubrir:** `C-89`, `C-90`, `C-96`, `C-55` *(sigue valiendo)*
-- **Entrada:** `ADR-007`, `04-DISENO.md` § *Esquema de persistencia* y § *Forma del Worker*
+- **Cubre:** HU-9 / #2, #4, #8, y el DoD (migración versionada)
+- **Casos que debe cubrir:** `C-89`, `C-90`, `C-96`, `C-98`, `C-55` *(sigue valiendo)*
+- **Entrada:** `ADR-007`, `04-DISENO.md` § *Esquema de persistencia*, § *Forma del Worker* y § *Contrato de la API*
 - **Salida:** `wrangler.jsonc` con `main` + binding `DB` + `run_worker_first`, la
-  migración `migrations/0001_ideas.sql`, y el README con el comando local que **crea y
-  migra la base emulada** (sin cuenta y sin token)
+  migración `migrations/0001_ideas.sql`, **`src/worker.js` con la ruta de diagnóstico
+  `GET /api/salud`** (una consulta real: `SELECT count(*) FROM ideas`), y el README con
+  el comando local que **crea y migra la base emulada** (sin cuenta y sin token)
 - **Test primero:** la config tiene `main`, `d1_databases[0].binding === "DB"` y
-  `/api/*` en `run_worker_first`; la migración existe con su `CREATE TABLE` **y** el índice
-- **Criterio de terminado:** `npx wrangler dev` levanta con la base emulada y la tabla creada
+  `/api/*` en `run_worker_first`; la migración existe con su `CREATE TABLE` **y** el índice;
+  `/api/salud` devuelve el **conteo real** y, sin migración, **falla**
+- **Criterio de terminado:** `npx wrangler dev` levanta, la tabla está creada y
+  `/api/salud` responde contra ella
+- **Nota de secuencia (corregida antes de despachar):** `wrangler.jsonc` apunta a
+  `src/worker.js`, así que **ese archivo tiene que existir en esta tarea** — sin él,
+  `wrangler dev` no levanta y la tarea no se puede verificar. No es un stub: es la ruta
+  de diagnóstico, y existe porque **un binding sin ejercitar es un supuesto, no un hecho**.
+  Las dos operaciones reales llegan en T-11
 - **Nota:** el Coder **no** despliega a Cloudflare (`ADR-004`); el `database_id` real lo
   completa Hermes al desplegar
 

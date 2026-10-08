@@ -191,6 +191,7 @@ obliga a escanear la tabla entera.
 | `POST /api/ideas` | la Idea completa | `201` + `{ id, actualizado_en }` | **Upsert** por `id`: guardar dos veces **no duplica** |
 | `GET /api/ideas` | — | `200` + `{ ideas: [ … ] }` | Ordenadas por `actualizado_en DESC` |
 | `GET /api/ideas/:id` | — | `200` + la Idea, o `404` | Para reabrir |
+| `GET /api/salud` | — | `200` + `{ ok: true, ideas: <n> }` | **Diagnóstico:** prueba el binding y la migración juntos con una consulta real (`SELECT count(*) FROM ideas`). Existe porque un binding sin ejercitar es un supuesto, no un hecho |
 
 **Formato de error — declarado, no adivinado:**
 
@@ -526,6 +527,7 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 | `C-95` | Editar invalida el veredicto **en la base** | HU-9 / #7 | **comportamiento** | Editar una idea aprobada → su `veredicto` queda nulo en la base y en la lista |
 | `C-96` | La migración existe y es versionada | HU-9 (DoD) | estructura | Existe `migrations/0001_ideas.sql` con `CREATE TABLE ideas` **y** el índice |
 | `C-97` | El smoke verifica persistencia contra la URL real | HU-9 / #3 | **umbral** | Contra la URL real: guardar una idea con marca conocida, **redeploy**, y la idea **sigue**; el request de `/api/*` queda **bajo 10 ms** de CPU |
+| `C-98` | El binding responde **en local**, contra la tabla | HU-9 / #2 | **comportamiento** | `GET /api/salud` responde `200` y devuelve el conteo real de `ideas`; con la migración sin aplicar, **falla** (no devuelve un conteo inventado) |
 
 ### Cobertura combinada
 
@@ -559,7 +561,7 @@ debe ser **uniforme**. Un paso que no valide es un hueco silencioso.
 | HU-7 / #1..#8 | `C-40`..`C-49` | T-7 | `C-40 · …` |
 | HU-8 / #1..#8 | `C-50`..`C-56` | T-8 | `C-50 · …` |
 | **HU-9** / #1, #3 | `C-91`, `C-97` | T-11, T-12 | `C-91 · …` |
-| **HU-9** / #2 | `C-91` | T-11 | `C-91 · …` |
+| **HU-9** / #2 | `C-91`, `C-98` | T-10, T-11 | `C-91 · …` |
 | **HU-9** / #4 | `C-89`, `C-90` | T-10 | `C-89 · …` |
 | **HU-9** / #5 | `C-93` | T-12 | `C-93 · …` |
 | **HU-9** / #6 | `C-94` | T-12 | `C-94 · …` |
