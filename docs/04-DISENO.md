@@ -304,6 +304,15 @@ Workers»*: Pages sigue funcionando, pero las features nuevas aterrizan en Worke
 > aplica los límites del plan**: no corta a los 10 ms de CPU ni cuenta requests. Un verde
 > local **no prueba** que el request sobreviva al edge — eso lo prueba el smoke (`C-97`).
 > Es exactamente la trampa que dejó escrito el `ADR-003`.
+>
+> **Los casos negativos se FUERZAN, no se esperan** (`C-93`, `C-94`). El emulador local
+> no aplica la cuota, así que el error de límite **no llega nunca** por sí solo: un test
+> que espere a que la base falle se queda esperando. La app se prueba **interceptando el
+> request en el navegador** — `Fetch.enable` + `Fetch.fulfillRequest` del CDP: la prueba
+> **responde por la API** con el error declarado y verifica qué hace el cliente. El helper
+> `tests/helpers/cdp.mjs` **hoy no intercepta**: enseñarle a hacerlo es parte de T-12.
+> Se prueba el **cliente**, que es donde vive el caso; el Worker ya está probado por su
+> lado (`C-99` clasifica, `C-91`/`C-92` escriben y leen).
 
 ### Dónde corren las pruebas  ⭐ OBLIGATORIA
 
@@ -527,8 +536,8 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 | `C-90` | El diseño declara el límite que **ahora** aplica | HU-9 / #4 | estructura | `04-DISENO.md` nombra los 100.000 requests/día, los 10 ms de CPU y la cuota diaria de D1, y **no** afirma «cero límites de plan» para el Ciclo 2 |
 | `C-91` | Guardar escribe en la base, **no** en el navegador | HU-9 / #1 | **comportamiento** | Guardada una idea, `GET /api/ideas` la devuelve; **borrando `localStorage`** la idea sigue ahí |
 | `C-92` | Guardar dos veces no duplica | HU-9 / #7 | **comportamiento** | Dos `POST` con el mismo `id` → `GET /api/ideas` devuelve **1** idea |
-| `C-93` | Cuota agotada: fallo declarado, sin pérdida | HU-9 / #5 | **comportamiento** | Con la base forzada al error `cuota_diaria`, la app muestra el mensaje que **nombra el límite** y lo escrito **sigue en pantalla** |
-| `C-94` | Base no disponible: el borrador sobrevive | HU-9 / #6 | **comportamiento** | Con el binding roto, tras recargar **lo escrito sigue** (borrador local) y se ve el error |
+| `C-93` | Cuota agotada: fallo declarado, sin pérdida | HU-9 / #5 | **comportamiento** | Con la API **interceptada** al error `cuota_diaria`, la app muestra el mensaje que **nombra el límite** y lo escrito **sigue en pantalla** |
+| `C-94` | Base no disponible: el borrador sobrevive | HU-9 / #6 | **comportamiento** | Con la API **interceptada** al error `base_no_disponible`, tras recargar **lo escrito sigue** (borrador local) y se ve el error |
 | `C-95` | Editar invalida el veredicto **en la base** | HU-9 / #7 | **comportamiento** | Editar una idea aprobada → su `veredicto` queda nulo en la base y en la lista |
 | `C-96` | La migración existe y es versionada | HU-9 (DoD) | estructura | Existe `migrations/0001_ideas.sql` con `CREATE TABLE ideas` **y** el índice |
 | `C-97` | El smoke verifica persistencia contra la URL real | HU-9 / #3 | **umbral** | Contra la URL real: guardar una idea con marca conocida, **redeploy**, y la idea **sigue**; el request de `/api/*` queda **bajo 10 ms** de CPU |

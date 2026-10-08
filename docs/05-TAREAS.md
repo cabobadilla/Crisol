@@ -199,8 +199,11 @@
 - **Salida:** el cliente guarda y lista **contra la API**; `localStorage` queda como
   **borrador del paso en curso**; los errores `cuota_diaria` y `base_no_disponible` se
   **muestran** nombrando el límite
-- **Test primero:** con la base forzada a fallar, lo escrito **sigue en pantalla** y se
-  ve el mensaje; editar una idea aprobada **invalida el veredicto en la base**
+- **Test primero:** con la API **interceptada** (`Fetch.fulfillRequest` del CDP) devolviendo
+  `cuota_diaria`, lo escrito **sigue en pantalla** y se ve el mensaje; editar una idea
+  aprobada **invalida el veredicto en la base**. Enseñarle a **interceptar** a
+  `tests/helpers/cdp.mjs` (hoy no sabe) es parte de esta tarea — ver `04-DISENO.md`
+  § *Paridad declarada*
 - **Criterio de terminado:** los 4 casos pasan, incluidos los **dos negativos** (cuota y
   base caída) — un guardado que falla en silencio es el fallo que esta tarea existe para evitar
 
