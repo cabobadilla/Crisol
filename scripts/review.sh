@@ -103,6 +103,32 @@ done
 echo "   (los reportes del Coder son AFIRMACIONES hasta que se verifican arriba)"
 echo
 
+# --- 6. Marcadores de RED disfrazados de test ------------------------------
+# Por qué existe (v0.35): un `assert.ok(false, 'RED: … (implementación pendiente)')`
+# deja un test que SIEMPRE falla. Se ve idéntico a un RED legítimo —«falla por
+# aserción»— y por eso pasó una verificación entera (Crisol, T-12, C-95): el caso
+# no verificaba nada y ninguna implementación podía ponerlo en verde. El marcador
+# de la fase RED hay que REEMPLAZARLO por la aserción real, no dejarlo.
+echo "6. MARCADORES DE RED (¿hay tests que no verifican nada?)"
+# Dos firmas, y solo dos — validar contra la suite ANTES de confiar en la guardia:
+#   assert.ok(false …)  → un `false` hardcodeado SIEMPRE falla, nunca es legítimo.
+#   assert.fail(…RED…)  → el marcador de la fase RED, por su convención de mensaje.
+# `assert.fail(` a secas NO se marca: dentro de un `if` es una aserción legítima
+# (p. ej. el test de despliegue que falla si un archivo versionado trae un token).
+# Una guardia que grita en falso se termina ignorando — es peor que no tenerla.
+MARCADORES="$(grep -rnE "assert\.ok\(false" "$P/tests" --include=*.mjs 2>/dev/null || true)"
+MARCADORES="$MARCADORES$(grep -rnE "assert\.fail\(.*(RED:|pendiente|implementación pendiente)" "$P/tests" --include=*.mjs 2>/dev/null || true)"
+if [ -n "$MARCADORES" ]; then
+  printf '%s\n' "$MARCADORES" | while read -r l; do nota "❌ marcador, no test: $l"; done
+  echo "   Un assert que siempre falla NO es un test en rojo: no verifica nada y"
+  echo "   ninguna implementación puede ponerlo en verde. Reemplazalo por la"
+  echo "   aserción real sobre el observable del caso."
+  PROBLEMAS=$((PROBLEMAS + 1))
+else
+  nota "✅ sin marcadores: todo test que falla lo hace por una aserción real"
+fi
+echo
+
 # --- Veredicto -------------------------------------------------------------
 echo "──────────────────────────────────────────────────────────────"
 if [ "$PROBLEMAS" -eq 0 ]; then
