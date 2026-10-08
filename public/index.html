@@ -528,7 +528,29 @@
       }
       break;
     }
-    return datos && datos.pasos ? datos : null;
+    if (datos && datos.pasos) return datos;
+    if (datos && (datos.paso1 !== undefined || datos.paso2 !== undefined || datos.paso3 !== undefined)) {
+      return convertirFormatoAntiguo(datos);
+    }
+    return null;
+  }
+
+  function convertirFormatoAntiguo(datos) {
+    const pasos = {
+      idea: { valor: datos.paso1 || '', completo: true },
+      problema: { quien: datos.paso2 || '', frecuencia: '', completo: true },
+      valor: { cambia: '', paraQuien: '', metrica: { que: '', como: '', objetivo: '' }, completo: true },
+      referencias: { items: [{ fuente: '', aporta: '' }, { fuente: '', aporta: '' }], completo: true },
+      alcance: { entra: '', noEntra: '', completo: true },
+      terminado: { criterio: '', completo: true },
+    };
+    return {
+      id: datos.id || nuevoId(),
+      creada: datos.creado_en || new Date().toISOString(),
+      pasos,
+      pasoActual: 0,
+      challenge: null,
+    };
   }
 
   function vistaDeFila(fila) {
@@ -540,6 +562,18 @@
       problema: '',
       creada: fila.creado_en || '',
     };
+  }
+
+  function editarIdea(vista) {
+    if (!vista._fila) return;
+    const idea = deserializarIdea(vista._fila.idea_json);
+    if (!idea) return;
+
+    ideaActual = idea;
+    pasoActual = 0;
+    ideaActual.pasoActual = 0;
+    limpiarBorrador();
+    actualizar();
   }
 
   function enviarIdea(idea) {
@@ -566,7 +600,11 @@
       .then(respuesta => (respuesta.ok ? respuesta.json() : null))
       .then(datos => {
         if (!datos || !Array.isArray(datos.ideas)) return;
-        ideas = datos.ideas.map(vistaDeFila);
+        ideas = datos.ideas.map(fila => {
+          const vista = vistaDeFila(fila);
+          vista._fila = fila;
+          return vista;
+        });
         renderizarIdeas();
       })
       .catch(() => {});
@@ -605,7 +643,12 @@
       const fecha = document.createElement('span');
       fecha.className = 'idea-fecha';
       fecha.textContent = vista.creada;
-      li.append(titulo, problema, fecha);
+      const btnEditar = document.createElement('button');
+      btnEditar.type = 'button';
+      btnEditar.setAttribute('data-accion', 'editar');
+      btnEditar.textContent = 'Editar';
+      btnEditar.addEventListener('click', () => editarIdea(vista));
+      li.append(titulo, problema, fecha, btnEditar);
       listaIdeas.appendChild(li);
     });
     avisoVacio.hidden = ideas.length > 0;
