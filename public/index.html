@@ -231,6 +231,36 @@
   let ideaActual = ideaNueva();
   let pasoActual = 0;
 
+  const BORRADOR_KEY = 'crisol-borrador';
+
+  function cargarBorrador() {
+    try {
+      const guardado = localStorage.getItem(BORRADOR_KEY);
+      if (guardado) {
+        const borrador = JSON.parse(guardado);
+        if (borrador && borrador.pasos && typeof borrador.pasoActual === 'number' && borrador.pasoActual === 0) {
+          ideaActual = borrador;
+          pasoActual = 0;
+          return true;
+        }
+      }
+    } catch {}
+    return false;
+  }
+
+  function guardarBorrador() {
+    try {
+      const borrador = { ...ideaActual, pasoActual };
+      localStorage.setItem(BORRADOR_KEY, JSON.stringify(borrador));
+    } catch {}
+  }
+
+  function limpiarBorrador() {
+    try {
+      localStorage.removeItem(BORRADOR_KEY);
+    } catch {}
+  }
+
   function nuevoId() {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
     return 'i-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
@@ -401,13 +431,74 @@
     }
     const estadoPaso = ideaActual.pasos[paso.id];
     if (estadoPaso) estadoPaso.completo = true;
-    if (pasoActual === PASOS.length - 1) {
-      registrar();
-      return;
+
+    const esUltimoPaso = pasoActual === PASOS.length - 1;
+
+    if (!esUltimoPaso) {
+      // Paso intermedio: avanzar sincrónicamente para la UI, luego guardar en API en background
+      const pasoAnterior = pasoActual;
+      pasoActual += 1;
+      ideaActual.pasoActual = pasoActual;
+      guardarBorrador();
+      actualizar();
+
+      // Guardar en API en background
+      enviarIdea(ideaActual)
+        .then(async (respuesta) => {
+          if (!respuesta.ok) {
+            const datos = await respuesta.json().catch(() => ({}));
+            const error = datos.error;
+            const esErrorConocido = error === 'cuota_diaria' || error === 'base_no_disponible';
+            if (esErrorConocido) {
+              // Error conocido: revertir paso, mostrar mensaje, guardar borrador
+              pasoActual = pasoAnterior;
+              ideaActual.pasoActual = pasoActual;
+              actualizar();  // Re-renderizar el paso anterior primero
+              let mensaje = datos.mensaje || 'Error al guardar';
+              if (error === 'cuota_diaria') {
+                mensaje = 'Cuota diaria agotada. Podés seguir escribiendo; se guardará después de las 00:00 UTC.';
+              } else if (error === 'base_no_disponible') {
+                mensaje = 'Base de datos no disponible. El borrador se guarda localmente.';
+              }
+              mostrarMensaje(mensaje);
+              guardarBorrador();
+            }
+            // Error desconocido: mantener avance silencioso
+          }
+        })
+        .catch(() => {
+          // Error de red: mantener avance silencioso en paso intermedio
+        });
+    } else {
+      // Último paso: UI optimista (agregar a lista local ya), luego enviar a API
+      const guardada = ideaActual;
+      ideas.unshift(vistaDeIdea(guardada));
+      renderizarIdeas();
+      limpiarBorrador();
+      ideaActual = ideaNueva();
+      pasoActual = 0;
+      actualizar();
+
+      // Enviar a API en background
+      enviarIdea(guardada)
+        .then(async (respuesta) => {
+          if (!respuesta.ok) {
+            const datos = await respuesta.json().catch(() => ({}));
+            const error = datos.error;
+            let mensaje = datos.mensaje || 'Error al guardar';
+            if (error === 'cuota_diaria') {
+              mensaje = 'Cuota diaria agotada. Podés seguir escribiendo; se guardará después de las 00:00 UTC.';
+            } else if (error === 'base_no_disponible') {
+              mensaje = 'Base de datos no disponible. El borrador se guarda localmente.';
+            }
+            mostrarMensaje(mensaje);
+            // No revertimos la lista local; el borrador ya se limpió
+          }
+        })
+        .catch(() => {
+          mostrarMensaje('Base de datos no disponible. El borrador se guarda localmente.');
+        });
     }
-    pasoActual += 1;
-    ideaActual.pasoActual = pasoActual;
-    actualizar();
   }
 
   function vistaDeIdea(idea, fila) {
@@ -467,7 +558,7 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(fila),
-    }).catch(() => {});
+    });
   }
 
   function cargarIdeas() {
@@ -479,17 +570,6 @@
         renderizarIdeas();
       })
       .catch(() => {});
-  }
-
-  function registrar() {
-    ideaActual.pasoActual = PASOS.length - 1;
-    const guardada = ideaActual;
-    ideas.unshift(vistaDeIdea(guardada));
-    renderizarIdeas();
-    enviarIdea(guardada);
-    ideaActual = ideaNueva();
-    pasoActual = 0;
-    actualizar();
   }
 
   function actualizar() {
@@ -538,9 +618,14 @@
     const estadoPaso = ideaActual.pasos[paso.getAttribute('data-paso')];
     if (estadoPaso) fijar(estadoPaso, control.getAttribute('data-campo'), control.value);
     paso.querySelector('.paso-mensaje').hidden = true;
+    guardarBorrador();
   });
 
   construir();
+  // Cargar borrador guardado antes de renderizar
+  if (cargarBorrador()) {
+    // Si hay borrador, usamos su pasoActual
+  }
   renderizarIdeas();
   actualizar();
   cargarIdeas();
