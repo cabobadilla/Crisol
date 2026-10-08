@@ -23,7 +23,7 @@
   .kpi b{font-size:21px; font-weight:600}
   .kpi span{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em}
   .barra{height:6px; background:var(--surface2); border-radius:99px; overflow:hidden; margin-top:18px}
-  .barra i{display:block; height:100%; background:var(--accent); width:25%}
+  .barra i{display:block; height:100%; background:var(--accent); width:31%}
   h2{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
      margin:44px 0 6px; font-weight:600}
   .h2sub{color:var(--muted); font-size:13px; margin:0 0 16px; max-width:70ch}
@@ -105,11 +105,11 @@
     <h1>Crisol</h1>
     <p class="sub">Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.</p>
     <div class="meta">
-      <div class="kpi"><b>25%</b><span>Tareas del ciclo</span></div>
-      <div class="kpi"><b>2/8</b><span>Completadas</span></div>
-      <div class="kpi"><b>Ciclo 1</b><span>Ciclo activo</span></div>
-      <div class="kpi"><b>Etapa 1 — el wizard con el mecanismo completo</b><span>Alcance</span></div>
-      <div class="kpi"><b>Implementación (G3) — Ciclo 1 en curso · T-1 y T-8 aprobados</b><span>Fase actual</span></div>
+      <div class="kpi"><b>31%</b><span>Tareas del ciclo</span></div>
+      <div class="kpi"><b>4/13</b><span>Completadas</span></div>
+      <div class="kpi"><b>Ciclo 1 (implementación en curso) + Ciclo 2 (persistencia en D1)</b><span>Ciclo activo</span></div>
+      <div class="kpi"><b>Etapa 1 — el wizard con el mecanismo completo · con el Ciclo 2 arranca la Etapa 2</b><span>Alcance</span></div>
+      <div class="kpi"><b>Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10 aprobado (la base D1 y su migración, en pie y ejercitada)</b><span>Fase actual</span></div>
     </div>
     <div class="barra"><i></i></div>
   </header>
@@ -121,31 +121,31 @@
       <header><span class="chip ok">✓ Listo</span><span class="gate gate-ok">G0</span></header>
       <h3>1 · Idea</h3>
       <p class="resumen">Requerimiento crudo capturado sin interpretación, más lo que explícitamente NO se dijo.</p>
-      <ul class="puntos"><li>Wizard + framework determinístico + referencias + challenger</li><li>Segundo proyecto del harness: ejercita new-project.sh y la matriz de casos</li></ul>
+      <ul class="puntos"><li>Wizard + framework determinístico + referencias + challenger</li><li>Segundo proyecto del harness: ejercita new-project.sh y la matriz de casos</li><li>IDEA 2 (Ciclo 2): persistir las ideas en una base de datos mínima de Cloudflare</li></ul>
     </section>
     <section class="fase ok">
       <header><span class="chip ok">✓ Listo</span><span class="gate gate-ok">G1a</span></header>
       <h3>2 · Análisis</h3>
       <p class="resumen">El problema es la falta de definición, no la falta de ideas. Costo de la inacción: ideas perdidas y sobre todo ideas zombie.</p>
-      <ul class="puntos"><li>5 preguntas abiertas y 5 supuestos declarados</li><li>Anti-alcance explícito: no es gestor de proyectos ni chat ni generador de código</li><li>Evidencia de primera mano: el fallo ya lo vivimos en MyHermesTest</li></ul>
+      <ul class="puntos"><li>5 preguntas abiertas y 5 supuestos declarados</li><li>Anti-alcance explícito: no es gestor de proyectos ni chat ni generador de código</li><li>Evidencia de primera mano: el fallo ya lo vivimos en MyHermesTest</li><li>ANÁLISIS 2 (Ciclo 2): la base elegida con la documentación de Cloudflare delante, no de memoria</li></ul>
     </section>
     <section class="fase ok">
       <header><span class="chip ok">✓ Listo</span><span class="gate gate-ok">G1</span></header>
       <h3>3 · Definición</h3>
-      <p class="resumen">7 historias con criterios verificables, los 7 pasos del framework, corte en etapas y 14 casos borde. Aprobado por el usuario.</p>
-      <ul class="puntos"><li>El paso de valor y metrica es obligatorio: que cambia, para quien, y como se mide con valor objetivo</li><li>HU-7: reutiliza el diseno Pizarra del proyecto anterior, con sus tokens exactos</li><li>El challenger rechaza de verdad: 4 reglas, una por gap estructural</li><li>Responsive 375px en el DoD: aprendizaje de H-1</li></ul>
+      <p class="resumen">9 historias con criterios verificables (HU-1..HU-8 y HU-9 del Ciclo 2), los 7 pasos del framework, corte en etapas y 14 casos borde. Aprobado por el usuario.</p>
+      <ul class="puntos"><li>El paso de valor y metrica es obligatorio: que cambia, para quien, y como se mide con valor objetivo</li><li>HU-7: reutiliza el diseno Pizarra del proyecto anterior, con sus tokens exactos</li><li>El challenger rechaza de verdad: 4 reglas, una por gap estructural</li><li>Responsive 375px en el DoD: aprendizaje de H-1</li><li>HU-9 (Ciclo 2): las ideas persisten en una base de datos — aprobado con la decisión de que la base queda abierta</li></ul>
     </section>
     <section class="fase ok">
       <header><span class="chip ok">✓ Listo</span><span class="gate gate-ok">G2</span></header>
       <h3>4 · Diseño</h3>
-      <p class="resumen">PRIMER proyecto que usa la matriz de casos y la seccion de Despliegue. 85 casos, 4 ADR, 8 tareas.</p>
-      <ul class="puntos"><li>Matriz de 85 casos (56 explicitos + 29 por formula), todos con observable medible</li><li>Despliegue: Worker solo-assets en ./public; cero limites de plan en Etapa 1</li><li>Suite en local, smoke contra la URL real (ADR-003)</li><li>Solo Hermes despliega al cloud; el token nunca entra al entorno del Coder (ADR-004)</li></ul>
+      <p class="resumen">PRIMER proyecto que usa la matriz de casos y la seccion de Despliegue. Ciclo 1: 85 casos, 4 ADR, 9 tareas. Ciclo 2: +9 casos, ADR-007, +4 tareas.</p>
+      <ul class="puntos"><li>Matriz de 94 casos declarados (85 del Ciclo 1 + C-89..C-97 del Ciclo 2); C-50 quedó superseded, 93 vigentes</li><li>Ciclo 1: Worker solo-assets en ./public</li><li>Ciclo 2 (ADR-007): Worker forma B con binding DB sobre D1, y run_worker_first acotado a /api/*</li><li>La premisa 'cero limites de plan' MURIO con el Ciclo 2: con main vuelven a aplicar 100.000 requests/dia, 10 ms de CPU y 50 consultas por invocacion</li><li>Suite en local, smoke contra la URL real (ADR-003)</li><li>Solo Hermes despliega al cloud; el token nunca entra al entorno del Coder (ADR-004)</li></ul>
     </section>
-    <section class="fase wait">
-      <header><span class="chip wait">○ Pendiente</span><span class="gate gate-wait">G3</span></header>
+    <section class="fase run">
+      <header><span class="chip run">◐ En curso</span><span class="gate gate-wait">G3</span></header>
       <h3>5 · Implementación y pruebas</h3>
-      <p class="resumen">8 tareas, una por ciclo TDD. La suite corre en local; el deploy lo hace Hermes.</p>
-      <ul class="puntos"><li>El Coder traduce los 85 casos y no puede omitir ninguno</li><li>Cada test se nombra con su ID (C-01...) para que la cobertura sea comprobable</li><li>G5 en contexto aislado + smoke en el edge</li></ul>
+      <p class="resumen">Ciclo 1: 9 tareas — T-1, T-8 y T-9 aprobadas. Ciclo 2: T-10..T-13 listas para despachar.</p>
+      <ul class="puntos"><li>El Coder traduce los casos de la matriz y no puede omitir ninguno</li><li>Cada test se nombra con su ID (C-01...) para que la cobertura sea comprobable</li><li>G5 en contexto aislado + smoke en el edge</li><li>Ciclo 2: la persistencia se verifica contra la URL real, porque el emulador NO aplica los límites del plan</li></ul>
     </section></div>
 
   <h2>Tareas del ciclo</h2><ul class="lista"><li class="ok">
@@ -153,6 +153,11 @@
       <span class="tk-id">T-1</span>
       <span class="tk-titulo">Esqueleto del wizard y sus 7 pasos</span>
       <span class="tk-nota">Aprobado en el 2º intento. El 1º se RECHAZÓ: RED fabricado (6/6 pass en un commit donde el artefacto no existía) y tests de substring en vez de ejecutar la app. Verificado con verify-red, sello INTACTOS y mutación (romper el avance pone rojos C-05 y C-06).</span>
+    </li><li class="ok">
+      <span class="tk-estado">✓</span>
+      <span class="tk-id">T-9</span>
+      <span class="tk-titulo">El cuerpo del wizard: un paso por vez</span>
+      <span class="tk-nota">correccion del PO: la v1 apilaba los 7 formularios. Reescrito: solo el paso activo se renderiza.</span>
     </li><li class="wait">
       <span class="tk-estado">○</span>
       <span class="tk-id">T-2</span>
@@ -177,7 +182,7 @@
       <span class="tk-estado">○</span>
       <span class="tk-id">T-6</span>
       <span class="tk-titulo">Persistencia y reapertura</span>
-      
+      <span class="tk-nota">Ciclo 1: persistencia local. El Ciclo 2 la reemplaza por la base y deja localStorage como borrador</span>
     </li><li class="wait">
       <span class="tk-estado">○</span>
       <span class="tk-id">T-7</span>
@@ -187,7 +192,27 @@
       <span class="tk-estado">✓</span>
       <span class="tk-id">T-8</span>
       <span class="tk-titulo">Empaquetado y despliegue</span>
-      <span class="tk-nota">verificado: 15/15 local, sello intacto, smoke con hash coincidente y nada privado publicado</span>
+      <span class="tk-nota">verificado: 15/15 local, sello intacto, smoke con hash coincidente y nada privado publicado. C-50 (config sin main) queda superseded por el Ciclo 2</span>
+    </li><li class="ok">
+      <span class="tk-estado">✓</span>
+      <span class="tk-id">T-10</span>
+      <span class="tk-titulo">Ciclo 2 · La base y su migracion</span>
+      <span class="tk-nota">Aprobado en el 2º intento. El 1º se RECHAZO con evidencia medida: (a) C-50 quedaba insatisfacible —la matriz lo marca superseded por C-89 pero su test seguia en la suite: un error de DISENO mio, que G2 debia haber atrapado—; (b) C-98 no mordia en su mitad 'conteo real': hardcodear ideas:0 con tabla vacia daba verde. El Coder reporto ambos honestamente y no toco nada. Correccion: retirado el test de C-50 y C-98 endurecido insertando 3 filas conocidas. Verificado por Hermes: verify-red real por asercion, sello INTACTOS, C-89/C-96/C-98 muerden por mutacion, suite 22/22, y el propio Coder reporto como BLOQUEO que mutar con el MISMO valor esperado no puede dar rojo (la instruccion era mia y estaba mal)</span>
+    </li><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-11</span>
+      <span class="tk-titulo">Ciclo 2 · El Worker: la API de dos operaciones</span>
+      <span class="tk-nota">src/worker.js: POST y GET sobre /api/ideas, upsert por id</span>
+    </li><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-12</span>
+      <span class="tk-titulo">Ciclo 2 · La app lee y escribe en la base</span>
+      <span class="tk-nota">localStorage queda como borrador; los errores de la base se MUESTRAN nombrando el limite, nunca fallan en silencio</span>
+    </li><li class="wait">
+      <span class="tk-estado">○</span>
+      <span class="tk-id">T-13</span>
+      <span class="tk-titulo">Ciclo 2 · Despliegue y smoke</span>
+      <span class="tk-nota">una idea con marca conocida debe SOBREVIVIR a un redeploy. Lo despliega Hermes (ADR-004)</span>
     </li></ul>
   <h2>Historias de usuario</h2><ul class="lista"><li class="prop">
       <span class="tk-estado">◇</span>
@@ -221,6 +246,10 @@
       <span class="tk-estado">◇</span>
       <span class="tk-id">HU-8</span>
       <span class="tk-titulo">Despliegue local y en Cloudflare</span>
+    </li><li class="ok">
+      <span class="tk-estado">▶</span>
+      <span class="tk-id">HU-9</span>
+      <span class="tk-titulo">Las ideas persisten en una base de datos</span>
     </li></ul>
 
   
@@ -229,34 +258,41 @@
   <div class="fork">
     <div class="rama activa">
       <span class="chip run">◐ Activo</span>
-      <h3>Etapa 1 — el wizard con el mecanismo completo</h3>
+      <h3>Etapa 1 — el wizard con el mecanismo completo · con el Ciclo 2 arranca la Etapa 2</h3>
       <p class="resumen">Cerrar y verificar lo que ya está construido. Único ciclo en marcha.</p>
       <div class="fases" style="grid-template-columns:1fr; margin-top:14px">
-        <section class="fase wait" style="background:var(--surface2)">
-          <header><span class="chip wait">○ Pendiente</span><span class="gate">G5</span></header>
+        <section class="fase run" style="background:var(--surface2)">
+          <header><span class="chip run">◐ En curso</span><span class="gate">G5</span></header>
           <h3>Verificación independiente</h3>
           <p class="resumen">QA en contexto aislado, contra los criterios de la fase 3.</p>
         </section>
       </div>
     </div>
     <div class="rama pausa">
+        <span class="chip wait">○ Pendiente</span>
+        <span class="tamano">binding + migracion + API de 2 operaciones</span>
+        <h3>Persistir las ideas en una base de datos (D1)</h3>
+        <p class="resumen">Es lo que la Etapa 1 habia diferido a proposito. D1 es la base mas pequeña que sigue siendo una base de datos: 500 MB por base en el plan Free.</p>
+        <ul class="puntos"><li>Worker forma B con binding DB (ADR-007)</li><li>Tabla ideas con migracion versionada</li><li>API POST/GET /api/ideas con upsert</li><li>localStorage como borrador, la base como fuente de verdad</li><li>Errores de la base declarados (cuota agotada, base caida)</li></ul>
+        <p class="validacion">→ G1 aprobado. Siguiente: despachar T-10</p>
+      </div><div class="rama pausa">
         <span class="chip prop">◇ Propuesto</span>
-        <span class="tamano">requiere backend o key</span>
+        <span class="tamano">requiere una key en el servidor</span>
         <h3>Agente LLM real para el challenge</h3>
-        <p class="resumen">Una app estática no puede guardar una credencial sin exponerla. El challenger determinístico por reglas prueba el mecanismo; el LLM es una capa encima.</p>
-        <ul class="puntos"><li>Backend mínimo o proxy que guarde la key</li><li>Un LLM real que objete sobre las reglas ya verificadas</li><li>Mantener el veredicto determinístico como base auditable</li></ul>
-        <p class="validacion">→ Requiere tu OK. Depende de decidir dónde vive la key.</p>
+        <p class="resumen">Una app estatica no puede guardar una credencial sin exponerla. El challenger determinístico por reglas prueba el mecanismo; el LLM es una capa encima. El Worker forma B ya existe desde el Ciclo 2, asi que el costo de entrar bajo.</p>
+        <ul class="puntos"><li>El LLM entra por el Worker: la key vive en el servidor, nunca en el navegador</li><li>Mantener el veredicto determinístico como base auditable</li></ul>
+        <p class="validacion">→ Requiere tu OK. Depende de decidir donde vive la key</p>
       </div><div class="rama pausa">
         <span class="chip def">⏸ En pausa</span>
         <span class="tamano">agregar reglas</span>
-        <h3>Reglas de challenger 4..N + framework configurable</h3>
-        <p class="resumen">La Etapa 1 trae 3 reglas, una por gap estructural. Las demás son la misma máquina con otra condición — no cambian la arquitectura.</p>
+        <h3>Reglas de challenger 5..N + framework configurable</h3>
+        <p class="resumen">La Etapa 1 trae 4 reglas, una por gap estructural. Las demas son la misma maquina con otra condicion — no cambian la arquitectura.</p>
         <ul class="puntos"><li>Calidad de la métrica, tamaño, apalancamiento real en agentes, riesgo de dependencia del proveedor</li><li>Permitir definir el framework en vez de tenerlo fijo</li></ul>
         <p class="validacion">→ Sin fecha. Se decide tras ver la Etapa 1 en uso.</p>
       </div>
   </div>
 
-  <h2>Decisiones</h2><div class="caja"><ul><li><strong>El framework es el del harness</strong> — No se inventa uno nuevo: se productiza el que ya funciona (supuesto S-3)</li><li><strong>Valor y metrica son Etapa 1, no diferido</strong> — Correccion del usuario: una idea que no dice que cambia y como se mide no esta definida</li><li><strong>El challenger tiene 4 reglas, una por gap estructural</strong> — R1 sin problema, R2 sin valor o metrica medible, R3 sin referencias, R4 sin criterio de terminado</li><li><strong>Challenger determinístico por reglas</strong> — El mecanismo que importa es que RECHACE, no que use un LLM (supuesto S-4)</li><li><strong>Un solo artefacto, sin backend</strong> — POC estático, igual que MyHermesTest</li><li><strong>Anti-alcance: no ejecuta, solo define</strong> — Su dominio termina donde empieza la construcción</li><li><strong>Se reutiliza el diseno Pizarra (piel slate) de MyHermesTest</strong> — Pedido del usuario al aprobar G1. Fuente de verdad: docs/DISENO-PIZARRA.md, extraido del index.html con procedencia y linea</li><li><strong>Un diseno reutilizado arrastra sus defectos</strong> — Pizarra trae H-1 (la barra desborda a 375px) como requisito de correccion, no como herencia</li><li><strong>El despliegue es un requisito, no un pendiente</strong> — Pedido del usuario: Cloudflare es su servicio preferido. Se define local Y cloud desde el diseno (HU-8)</li><li><strong>Cloudflare Workers con static assets, no Pages</strong> — Cloudflare recomienda 'start new projects with Workers'. Una app estatica sin backend no paga invocaciones: los requests de assets son gratis</li><li><strong>El arquitecto tiene skill de Cloudflare</strong> — cloudflare-architecture, instalada desde el harness: limites reales del plan free, eleccion de bindings, paridad local/cloud y trampas verificadas</li></ul></div>
+  <h2>Decisiones</h2><div class="caja"><ul><li><strong>El framework es el del harness</strong> — No se inventa uno nuevo: se productiza el que ya funciona (supuesto S-3)</li><li><strong>Valor y metrica son Etapa 1, no diferido</strong> — Correccion del usuario: una idea que no dice que cambia y como se mide no esta definida</li><li><strong>El challenger tiene 4 reglas, una por gap estructural</strong> — R1 sin problema, R2 sin valor o metrica medible, R3 sin referencias, R4 sin criterio de terminado</li><li><strong>Challenger determinístico por reglas</strong> — El mecanismo que importa es que RECHACE, no que use un LLM (supuesto S-4)</li><li><strong>Un solo artefacto, sin backend</strong> — POC estático, igual que MyHermesTest. ⚠ SUPERSEDED en el Ciclo 2: ahora hay dos artefactos (el cliente y el Worker) y una base. ADR-001 sigue vigente en lo que importa: sin build y sin framework</li><li><strong>Anti-alcance: no ejecuta, solo define</strong> — Su dominio termina donde empieza la construcción</li><li><strong>Se reutiliza el diseno Pizarra (piel slate) de MyHermesTest</strong> — Pedido del usuario al aprobar G1. Fuente de verdad: docs/DISENO-PIZARRA.md, extraido del index.html con procedencia y linea</li><li><strong>Un diseno reutilizado arrastra sus defectos</strong> — Pizarra trae H-1 (la barra desborda a 375px) como requisito de correccion, no como herencia</li><li><strong>El despliegue es un requisito, no un pendiente</strong> — Pedido del usuario: Cloudflare es su servicio preferido. Se define local Y cloud desde el diseno (HU-8)</li><li><strong>Cloudflare Workers con static assets, no Pages</strong> — Cloudflare recomienda 'start new projects with Workers'. La plataforma NO la toca el Ciclo 2: el criterio sigue siendo '¿que hace el artefacto en runtime?'</li><li><strong>El arquitecto tiene skill de Cloudflare</strong> — cloudflare-architecture, instalada desde el harness: limites reales del plan free, eleccion de bindings, paridad local/cloud y trampas verificadas</li><li><strong>Ciclo 2 · La base es D1, la mas pequeña que sigue siendo una base de datos</strong> — VERIFICADO contra developers.cloudflare.com: D1 plan Free = 5M filas leidas/dia, 100k escritas/dia, 5 GB por cuenta, 500 MB maximo por base, 10 bases por cuenta. KV no es una base de datos (y tiene 1.000 escrituras/dia); Durable Objects es por entidad y existe para coordinacion; R2 guarda objetos</li><li><strong>Ciclo 2 · Un requerimiento a mitad de la implementacion abre ciclo nuevo</strong> — Cambia la arquitectura (binding + main) y es exactamente lo que la iteracion anterior difirio a proposito. No se parchea el ciclo en curso</li><li><strong>Ciclo 2 · Murio la premisa 'cero limites de plan'</strong> — Con main el Worker ejecuta codigo: vuelven a aplicar 100.000 requests/dia, 10 ms de CPU y 50 consultas por invocacion. Se corrigio con ADR-007 (supersede parcial de ADR-002 y ADR-006), no parcheando la afirmacion en silencio (regla v0.29)</li><li><strong>Ciclo 2 · run_worker_first acotado a /api/*</strong> — Asi servir assets sigue siendo gratis e ilimitado y cargar la pagina no consume las 100.000 diarias. En Free, agotar la cuota con run_worker_first devuelve 429 sin caer de vuelta a los assets</li><li><strong>Ciclo 2 · La base queda ABIERTA (decision del usuario)</strong> — Es un POC y no hay datos sensibles. Declarado, no descubierto: mientras no haya identidad, quien tenga la URL ve todas las ideas guardadas</li><li><strong>Ciclo 2 · localStorage sobrevive como borrador, no como almacen</strong> — Un fallo de la base no puede manifestarse como perdida de lo que el usuario escribio: el cliente conserva el borrador y MUESTRA el error</li><li><strong>Ciclo 2 · La cuota de D1 tiene corte DURO desde 2026-09-01</strong> — Al agotar el limite diario las consultas fallan hasta las 00:00 UTC; los datos no se borran. Se declara en el diseno y se verifica el mensaje (C-93) en vez de descubrirlo en produccion</li></ul></div>
 
   
   <h2>3 · Histórico de corridas</h2>
@@ -311,12 +347,36 @@
       <td class="num">—</td>
       <td><span class="chip ok">OK</span></td>
       <td class="nota">G2 cerrado. 04-DISENO.md con 85 casos en la matriz (56 explícitos + 29 por fórmula, y la guardia los expande: los detectó los 85). Cuatro ADR, cada uno con alternativas descartadas. La sección de Despliegue resuelve las tres dudas del usuario: (1) el diseño Pizarra es para el producto, el tablero queda como está; (2) la suite corre en LOCAL (determinista, sin cuota) y el smoke contra la URL real — porque el emulador NO aplica los límites del plan, así que pasar en local no prueba que sobreviva al edge; (3) el Coder despliega en local con `wrangler dev` (sin cuenta ni token) y SOLO Hermes despliega a Cloudflare. Arquitectura elegida: Worker solo-assets en ./public — cero límites de plan en Etapa 1. Hallazgo de proceso: las plantillas copiadas al crear el proyecto quedan congeladas; una mejora posterior del harness no llega al proyecto. Se refrescaron las 4 que seguían vacías.</td>
+    </tr>
+    <tr>
+      <td class="num">7</td>
+      <td>Ciclo 2 · arranque (requerimiento a mitad de la implementación)</td>
+      <td><code>(Hermes, rol PO + Arquitecto)</code></td>
+      <td class="num">—</td>
+      <td><span class="chip ok">OK</span></td>
+      <td class="nota">PRIMER requerimiento que llega con la implementación EN CURSO, no al principio. Se registró como ciclo nuevo (no como parche al Ciclo 1) porque cambia la arquitectura, y además es exactamente lo que la iteración anterior había diferido a propósito («Backend y almacenamiento en Cloudflare… la Etapa 1 persiste en localStorage»). La verificación pedida se hizo propia, no de memoria: D1 es la base más pequeña del plan Free (500 MB por BD, 5M filas leídas/día, 100k escritas/día, 10 BD por cuenta); KV no es una base de datos y su techo de 1.000 escrituras/día es la trampa conocida; Durable Objects es por entidad y existe para coordinación; R2 es almacenamiento de objetos. HALLAZGO del ciclo: D1 exige un binding y por lo tanto main, así que el Worker deja de ser solo-assets y MUEREN tres afirmaciones del diseño aprobado — «cero límites de plan», «presupuesto de CPU: cero» y «bindings: ninguno». Los 100.000 requests/día, los 10 ms de CPU y las 50 consultas por invocación vuelven a aplicar. Se aplicó la regla v0.29: se para el trabajo que asume la premisa muerta y se corrige con un ADR nuevo, no en silencio. G1 aprobado con la decisión de producto del usuario: la base queda ABIERTA (es un POC, sin datos sensibles) — declarado, no descubierto.</td>
+    </tr>
+    <tr>
+      <td class="num">8</td>
+      <td>Ciclo 2 · G2 (diseño)</td>
+      <td><code>(Hermes, rol Arquitecto)</code></td>
+      <td class="num">—</td>
+      <td><span class="chip ok">OK</span></td>
+      <td class="nota">ADR-007 supersede PARCIALMENTE a ADR-002 y ADR-006: mueren «sin main» y «cero límites»; NO muere la plataforma (sigue Workers) ni la elección por runtime. El Worker pasa a forma B con binding DB, y run_worker_first acota el script a /api/* para que servir assets siga siendo gratis e ilimitado. Contrato de dos operaciones (POST y GET sobre /api/ideas) con upsert por id, y un formato de error declarado (cuota_diaria, base_no_disponible) para que un fallo de la base NO se manifieste como pérdida silenciosa. Matriz: 9 casos nuevos (C-89..C-97) y C-50 marcado superseded (decía «no tiene main»). 4 tareas nuevas (T-10..T-13). El diseño declara el límite que ahora manda —la cuota diaria de D1, con corte DURO desde 2026-09-01— y que el emulador local NO lo aplica: por eso el smoke verifica la persistencia contra la URL real.</td>
+    </tr>
+    <tr>
+      <td class="num">8</td>
+      <td>Ciclo 2 · T-10 (la base D1, su migración y el Worker que la ejercita)</td>
+      <td><code>opencode/big-pickle (N3, preflight vivo)</code></td>
+      <td class="num">—</td>
+      <td><span class="chip wait">rechazado y luego aprobado</span></td>
+      <td class="nota">PRIMERA corrida del harness RECHAZADA en G3 por evidencia medida, no por el reporte. El Coder hizo las cosas bien: 2 commits (tests primero, implementación después), no tocó main, no tocó docs/, no usó /tmp, y NO mintió — reportó honestamente que su GREEN quedaba en 22/23. El rechazo fue por tres hallazgos, dos de ellos del Arquitecto: (1) C-50 quedaba INSATISFACIBLE: la matriz lo marca superseded por C-89 desde ADR-007 pero su TEST seguía en la suite, así que exigía lo contrario de C-89. Es un error de DISEÑO mío y es la regla de satisfacibilidad (v0.10) al pie de la letra: al ampliar el alcance hay que revisar todo literal del alcance anterior. Lo debía atrapar G2 y lo atrapó G3. (2) C-98 NO MORDÍA en su mitad 'conteo real': hardcodeando ideas:0 en el Worker la suite seguía verde, porque el test afirmaba ideas===0 contra una tabla VACÍA — un conteo inventado es indistinguible del real. Lo cazó la PRUEBA DE MUTACIÓN (v0.22), que es para lo que existe. Corrección: retirado el test de C-50 (autorizado, matriz cambiada) y C-98 endurecido insertando 3 filas conocidas. (3) DESCUBRIMIENTO DEL CICLO, el más grave: las GUARDIAS de Crisol estaban CONGELADAS en la versión del día de creación del proyecto — freeze-tests.sh de 3 KB contra 7 KB del harness, sin seal-from-commit ni verify-red, que son las verificaciones OBLIGATORIAS de G3 desde v0.20/v0.21; y faltaba deploy.sh. Ya sabíamos que las plantillas copiadas quedan congeladas (#61); los scripts también, y es peor porque los scripts SON las guardias: un proyecto con los artefactos y sin las guardias queda documentado pero indefenso. Refrescadas desde el harness v0.31. HALLAZGO de método: la instrucción del Arquitecto al Coder puede ser ella misma insatisfacible — le pedí mutar con ideas:3 cuando el valor esperado era 3, y el Coder lo reportó como BLOQUEO en vez de fingir un rojo. La asimetría funciona: el Coder honesto es más útil que el Coder obediente. Verificado por Hermes: verify-red real POR ASERCIÓN, sello INTACTOS, C-89 y C-96 muerden (quitar run_worker_first / quitar el índice), C-98 muerde con la mutación que sí difiere del esperado, suite 22/22, review.sh consistente.</td>
     </tr></tbody>
   </table>
 
   <footer>
-    <p><strong>Siguiente:</strong> El diseño está cerrado: 85 casos en la matriz, 4 ADR y la sección de Despliegue con local vs cloud. Sigue el Ciclo: rama, tests primero por el Coder, y la suite corre en local.</p>
-    <p>Actualizado 07-10-2026, 10:30 a. m. · estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.</p>
+    <p><strong>Siguiente:</strong> Ciclo 2: despachar T-11 (la API de dos operaciones: POST/GET /api/ideas con upsert). Antes: preflight del modelo. La suite del Ciclo 2 ya se verificó por mutación: C-89, C-96 y C-98 muerden. Recordá que el emulador local NO aplica la cuota diaria de D1 — eso lo prueba el smoke contra la URL real, en T-13.</p>
+    <p>Actualizado 07-10-2026, 9:49 p. m. · estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.</p>
   </footer>
 
 </div>

@@ -1,11 +1,11 @@
 {
   "proyecto": "Crisol",
   "resumen": "Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.",
-  "actualizado": "2026-10-07T13:30:00Z",
-  "ciclo": "Ciclo 1",
-  "etapa": "Etapa 1 — el wizard con el mecanismo completo",
-  "fase_actual": "Implementación (G3) — Ciclo 1 en curso · T-1 y T-8 aprobados",
-  "siguiente": "El diseño está cerrado: 85 casos en la matriz, 4 ADR y la sección de Despliegue con local vs cloud. Sigue el Ciclo: rama, tests primero por el Coder, y la suite corre en local.",
+  "actualizado": "2026-10-08T00:49:06Z",
+  "ciclo": "Ciclo 1 (implementación en curso) + Ciclo 2 (persistencia en D1)",
+  "etapa": "Etapa 1 — el wizard con el mecanismo completo · con el Ciclo 2 arranca la Etapa 2",
+  "fase_actual": "Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10 aprobado (la base D1 y su migración, en pie y ejercitada)",
+  "siguiente": "Ciclo 2: despachar T-11 (la API de dos operaciones: POST/GET /api/ideas con upsert). Antes: preflight del modelo. La suite del Ciclo 2 ya se verificó por mutación: C-89, C-96 y C-98 muerden. Recordá que el emulador local NO aplica la cuota diaria de D1 — eso lo prueba el smoke contra la URL real, en T-13.",
   "nota_de_proceso": "estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.",
   "fases": [
     {
@@ -16,7 +16,8 @@
       "resumen": "Requerimiento crudo capturado sin interpretación, más lo que explícitamente NO se dijo.",
       "puntos": [
         "Wizard + framework determinístico + referencias + challenger",
-        "Segundo proyecto del harness: ejercita new-project.sh y la matriz de casos"
+        "Segundo proyecto del harness: ejercita new-project.sh y la matriz de casos",
+        "IDEA 2 (Ciclo 2): persistir las ideas en una base de datos mínima de Cloudflare"
       ]
     },
     {
@@ -28,7 +29,8 @@
       "puntos": [
         "5 preguntas abiertas y 5 supuestos declarados",
         "Anti-alcance explícito: no es gestor de proyectos ni chat ni generador de código",
-        "Evidencia de primera mano: el fallo ya lo vivimos en MyHermesTest"
+        "Evidencia de primera mano: el fallo ya lo vivimos en MyHermesTest",
+        "ANÁLISIS 2 (Ciclo 2): la base elegida con la documentación de Cloudflare delante, no de memoria"
       ]
     },
     {
@@ -36,12 +38,13 @@
       "nombre": "3 · Definición",
       "estado": "listo",
       "gate": "G1",
-      "resumen": "7 historias con criterios verificables, los 7 pasos del framework, corte en etapas y 14 casos borde. Aprobado por el usuario.",
+      "resumen": "9 historias con criterios verificables (HU-1..HU-8 y HU-9 del Ciclo 2), los 7 pasos del framework, corte en etapas y 14 casos borde. Aprobado por el usuario.",
       "puntos": [
         "El paso de valor y metrica es obligatorio: que cambia, para quien, y como se mide con valor objetivo",
         "HU-7: reutiliza el diseno Pizarra del proyecto anterior, con sus tokens exactos",
         "El challenger rechaza de verdad: 4 reglas, una por gap estructural",
-        "Responsive 375px en el DoD: aprendizaje de H-1"
+        "Responsive 375px en el DoD: aprendizaje de H-1",
+        "HU-9 (Ciclo 2): las ideas persisten en una base de datos — aprobado con la decisión de que la base queda abierta"
       ]
     },
     {
@@ -49,10 +52,12 @@
       "nombre": "4 · Diseño",
       "estado": "listo",
       "gate": "G2",
-      "resumen": "PRIMER proyecto que usa la matriz de casos y la seccion de Despliegue. 85 casos, 4 ADR, 8 tareas.",
+      "resumen": "PRIMER proyecto que usa la matriz de casos y la seccion de Despliegue. Ciclo 1: 85 casos, 4 ADR, 9 tareas. Ciclo 2: +9 casos, ADR-007, +4 tareas.",
       "puntos": [
-        "Matriz de 85 casos (56 explicitos + 29 por formula), todos con observable medible",
-        "Despliegue: Worker solo-assets en ./public; cero limites de plan en Etapa 1",
+        "Matriz de 94 casos declarados (85 del Ciclo 1 + C-89..C-97 del Ciclo 2); C-50 quedó superseded, 93 vigentes",
+        "Ciclo 1: Worker solo-assets en ./public",
+        "Ciclo 2 (ADR-007): Worker forma B con binding DB sobre D1, y run_worker_first acotado a /api/*",
+        "La premisa 'cero limites de plan' MURIO con el Ciclo 2: con main vuelven a aplicar 100.000 requests/dia, 10 ms de CPU y 50 consultas por invocacion",
         "Suite en local, smoke contra la URL real (ADR-003)",
         "Solo Hermes despliega al cloud; el token nunca entra al entorno del Coder (ADR-004)"
       ]
@@ -60,13 +65,14 @@
     {
       "id": "implementacion",
       "nombre": "5 · Implementación y pruebas",
-      "estado": "pendiente",
+      "estado": "en-curso",
       "gate": "G3",
-      "resumen": "8 tareas, una por ciclo TDD. La suite corre en local; el deploy lo hace Hermes.",
+      "resumen": "Ciclo 1: 9 tareas — T-1, T-8 y T-9 aprobadas. Ciclo 2: T-10..T-13 listas para despachar.",
       "puntos": [
-        "El Coder traduce los 85 casos y no puede omitir ninguno",
+        "El Coder traduce los casos de la matriz y no puede omitir ninguno",
         "Cada test se nombra con su ID (C-01...) para que la cobertura sea comprobable",
-        "G5 en contexto aislado + smoke en el edge"
+        "G5 en contexto aislado + smoke en el edge",
+        "Ciclo 2: la persistencia se verifica contra la URL real, porque el emulador NO aplica los límites del plan"
       ]
     }
   ],
@@ -77,6 +83,13 @@
       "estado": "listo",
       "casos": "C-01..C-06",
       "nota": "Aprobado en el 2º intento. El 1º se RECHAZÓ: RED fabricado (6/6 pass en un commit donde el artefacto no existía) y tests de substring en vez de ejecutar la app. Verificado con verify-red, sello INTACTOS y mutación (romper el avance pone rojos C-05 y C-06)."
+    },
+    {
+      "id": "T-9",
+      "titulo": "El cuerpo del wizard: un paso por vez",
+      "estado": "listo",
+      "casos": "C-02, C-05",
+      "nota": "correccion del PO: la v1 apilaba los 7 formularios. Reescrito: solo el paso activo se renderiza."
     },
     {
       "id": "T-2",
@@ -106,7 +119,8 @@
       "id": "T-6",
       "titulo": "Persistencia y reapertura",
       "estado": "pendiente",
-      "casos": "C-34..C-39"
+      "casos": "C-34..C-39",
+      "nota": "Ciclo 1: persistencia local. El Ciclo 2 la reemplaza por la base y deja localStorage como borrador"
     },
     {
       "id": "T-7",
@@ -119,7 +133,35 @@
       "titulo": "Empaquetado y despliegue",
       "estado": "listo",
       "casos": "C-50..C-56",
-      "nota": "verificado: 15/15 local, sello intacto, smoke con hash coincidente y nada privado publicado"
+      "nota": "verificado: 15/15 local, sello intacto, smoke con hash coincidente y nada privado publicado. C-50 (config sin main) queda superseded por el Ciclo 2"
+    },
+    {
+      "id": "T-10",
+      "titulo": "Ciclo 2 · La base y su migracion",
+      "estado": "listo",
+      "casos": "C-89, C-90, C-96, C-98, C-55",
+      "nota": "Aprobado en el 2º intento. El 1º se RECHAZO con evidencia medida: (a) C-50 quedaba insatisfacible —la matriz lo marca superseded por C-89 pero su test seguia en la suite: un error de DISENO mio, que G2 debia haber atrapado—; (b) C-98 no mordia en su mitad 'conteo real': hardcodear ideas:0 con tabla vacia daba verde. El Coder reporto ambos honestamente y no toco nada. Correccion: retirado el test de C-50 y C-98 endurecido insertando 3 filas conocidas. Verificado por Hermes: verify-red real por asercion, sello INTACTOS, C-89/C-96/C-98 muerden por mutacion, suite 22/22, y el propio Coder reporto como BLOQUEO que mutar con el MISMO valor esperado no puede dar rojo (la instruccion era mia y estaba mal)"
+    },
+    {
+      "id": "T-11",
+      "titulo": "Ciclo 2 · El Worker: la API de dos operaciones",
+      "estado": "pendiente",
+      "casos": "C-91, C-92",
+      "nota": "src/worker.js: POST y GET sobre /api/ideas, upsert por id"
+    },
+    {
+      "id": "T-12",
+      "titulo": "Ciclo 2 · La app lee y escribe en la base",
+      "estado": "pendiente",
+      "casos": "C-91, C-93, C-94, C-95",
+      "nota": "localStorage queda como borrador; los errores de la base se MUESTRAN nombrando el limite, nunca fallan en silencio"
+    },
+    {
+      "id": "T-13",
+      "titulo": "Ciclo 2 · Despliegue y smoke",
+      "estado": "pendiente",
+      "casos": "C-97",
+      "nota": "una idea con marca conocida debe SOBREVIVIR a un redeploy. Lo despliega Hermes (ADR-004)"
     }
   ],
   "historias": [
@@ -162,28 +204,49 @@
       "id": "HU-8",
       "titulo": "Despliegue local y en Cloudflare",
       "estado": "propuesto"
+    },
+    {
+      "id": "HU-9",
+      "titulo": "Las ideas persisten en una base de datos",
+      "estado": "aprobado",
+      "ciclo": "2",
+      "nota": "Aprobado en G1 (2026-10-07) con la decision de que la base queda ABIERTA — es un POC sin datos sensibles"
     }
   ],
   "siguientes_ciclos": [
     {
       "id": "ciclo-2",
-      "titulo": "Agente LLM real para el challenge",
-      "estado": "propuesto",
-      "tamano": "requiere backend o key",
-      "motivo": "Una app estática no puede guardar una credencial sin exponerla. El challenger determinístico por reglas prueba el mecanismo; el LLM es una capa encima.",
+      "titulo": "Persistir las ideas en una base de datos (D1)",
+      "estado": "disenado",
+      "tamano": "binding + migracion + API de 2 operaciones",
+      "motivo": "Es lo que la Etapa 1 habia diferido a proposito. D1 es la base mas pequeña que sigue siendo una base de datos: 500 MB por base en el plan Free.",
       "incluye": [
-        "Backend mínimo o proxy que guarde la key",
-        "Un LLM real que objete sobre las reglas ya verificadas",
-        "Mantener el veredicto determinístico como base auditable"
+        "Worker forma B con binding DB (ADR-007)",
+        "Tabla ideas con migracion versionada",
+        "API POST/GET /api/ideas con upsert",
+        "localStorage como borrador, la base como fuente de verdad",
+        "Errores de la base declarados (cuota agotada, base caida)"
       ],
-      "validacion": "Requiere tu OK. Depende de decidir dónde vive la key."
+      "validacion": "G1 aprobado. Siguiente: despachar T-10"
     },
     {
       "id": "ciclo-3",
-      "titulo": "Reglas de challenger 4..N + framework configurable",
+      "titulo": "Agente LLM real para el challenge",
+      "estado": "propuesto",
+      "tamano": "requiere una key en el servidor",
+      "motivo": "Una app estatica no puede guardar una credencial sin exponerla. El challenger determinístico por reglas prueba el mecanismo; el LLM es una capa encima. El Worker forma B ya existe desde el Ciclo 2, asi que el costo de entrar bajo.",
+      "incluye": [
+        "El LLM entra por el Worker: la key vive en el servidor, nunca en el navegador",
+        "Mantener el veredicto determinístico como base auditable"
+      ],
+      "validacion": "Requiere tu OK. Depende de decidir donde vive la key"
+    },
+    {
+      "id": "ciclo-4",
+      "titulo": "Reglas de challenger 5..N + framework configurable",
       "estado": "en-pausa",
       "tamano": "agregar reglas",
-      "motivo": "La Etapa 1 trae 3 reglas, una por gap estructural. Las demás son la misma máquina con otra condición — no cambian la arquitectura.",
+      "motivo": "La Etapa 1 trae 4 reglas, una por gap estructural. Las demas son la misma maquina con otra condicion — no cambian la arquitectura.",
       "incluye": [
         "Calidad de la métrica, tamaño, apalancamiento real en agentes, riesgo de dependencia del proveedor",
         "Permitir definir el framework en vez de tenerlo fijo"
@@ -210,7 +273,7 @@
     },
     {
       "titulo": "Un solo artefacto, sin backend",
-      "texto": "POC estático, igual que MyHermesTest"
+      "texto": "POC estático, igual que MyHermesTest. ⚠ SUPERSEDED en el Ciclo 2: ahora hay dos artefactos (el cliente y el Worker) y una base. ADR-001 sigue vigente en lo que importa: sin build y sin framework"
     },
     {
       "titulo": "Anti-alcance: no ejecuta, solo define",
@@ -230,20 +293,49 @@
     },
     {
       "titulo": "Cloudflare Workers con static assets, no Pages",
-      "texto": "Cloudflare recomienda 'start new projects with Workers'. Una app estatica sin backend no paga invocaciones: los requests de assets son gratis"
+      "texto": "Cloudflare recomienda 'start new projects with Workers'. La plataforma NO la toca el Ciclo 2: el criterio sigue siendo '¿que hace el artefacto en runtime?'"
     },
     {
       "titulo": "El arquitecto tiene skill de Cloudflare",
       "texto": "cloudflare-architecture, instalada desde el harness: limites reales del plan free, eleccion de bindings, paridad local/cloud y trampas verificadas"
+    },
+    {
+      "titulo": "Ciclo 2 · La base es D1, la mas pequeña que sigue siendo una base de datos",
+      "texto": "VERIFICADO contra developers.cloudflare.com: D1 plan Free = 5M filas leidas/dia, 100k escritas/dia, 5 GB por cuenta, 500 MB maximo por base, 10 bases por cuenta. KV no es una base de datos (y tiene 1.000 escrituras/dia); Durable Objects es por entidad y existe para coordinacion; R2 guarda objetos"
+    },
+    {
+      "titulo": "Ciclo 2 · Un requerimiento a mitad de la implementacion abre ciclo nuevo",
+      "texto": "Cambia la arquitectura (binding + main) y es exactamente lo que la iteracion anterior difirio a proposito. No se parchea el ciclo en curso"
+    },
+    {
+      "titulo": "Ciclo 2 · Murio la premisa 'cero limites de plan'",
+      "texto": "Con main el Worker ejecuta codigo: vuelven a aplicar 100.000 requests/dia, 10 ms de CPU y 50 consultas por invocacion. Se corrigio con ADR-007 (supersede parcial de ADR-002 y ADR-006), no parcheando la afirmacion en silencio (regla v0.29)"
+    },
+    {
+      "titulo": "Ciclo 2 · run_worker_first acotado a /api/*",
+      "texto": "Asi servir assets sigue siendo gratis e ilimitado y cargar la pagina no consume las 100.000 diarias. En Free, agotar la cuota con run_worker_first devuelve 429 sin caer de vuelta a los assets"
+    },
+    {
+      "titulo": "Ciclo 2 · La base queda ABIERTA (decision del usuario)",
+      "texto": "Es un POC y no hay datos sensibles. Declarado, no descubierto: mientras no haya identidad, quien tenga la URL ve todas las ideas guardadas"
+    },
+    {
+      "titulo": "Ciclo 2 · localStorage sobrevive como borrador, no como almacen",
+      "texto": "Un fallo de la base no puede manifestarse como perdida de lo que el usuario escribio: el cliente conserva el borrador y MUESTRA el error"
+    },
+    {
+      "titulo": "Ciclo 2 · La cuota de D1 tiene corte DURO desde 2026-09-01",
+      "texto": "Al agotar el limite diario las consultas fallan hasta las 00:00 UTC; los datos no se borran. Se declara en el diseno y se verifica el mensaje (C-93) en vez de descubrirlo en produccion"
     }
   ],
   "diferido": [
-    "Agente LLM real (necesita backend o key)",
+    "Agente LLM real — el Worker forma B ya existe desde el Ciclo 2, asi que entra por ahi",
     "Reglas de challenger 5..N",
     "Instrumentacion real de la metrica",
     "Framework configurable",
-    "Multiusuario / nube / compartir",
+    "Multiusuario / compartir · identidad y login (por eso la base queda abierta)",
     "Exportar la idea como artefacto",
-    "Búsqueda de referencias asistida"
+    "Búsqueda de referencias asistida",
+    "Migrar las ideas ya guardadas en localStorage (S-9: no hay datos que valga la pena rescatar)"
   ]
 }

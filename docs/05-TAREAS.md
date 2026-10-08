@@ -5,7 +5,7 @@
 
 - **Proyecto:** Crisol
 - **Fecha:** 2026-10-07
-- **Basado en:** `04-DISENO.md` (85 casos en la matriz)
+- **Basado en:** `04-DISENO.md` (**95 casos** declarados: los 85 del Ciclo 1 + `C-89`..`C-98` del Ciclo 2). ⚠ `C-50` quedó **superseded** por `C-89` (`ADR-007`): **94 vigentes**.
 
 ## Reglas
 
@@ -125,20 +125,102 @@
 - [ ] Refactor sin romper tests
 - [ ] Commit
 
-### T-8 — Publicación de la Etapa 1
+### T-8 — Empaquetado y despliegue
 
 - **Cubre:** HU-8 / #1..#8
 - **Casos que debe cubrir:** `C-50`..`C-56`
-- **Entrada:** `04-DISENO.md` § Despliegue · `ADR-005`
-- **Salida:** `README.md` con el destino y la **URL exacta** del ciclo, `.gitignore`,
-  el artefacto ubicado en `preview/1/index.html`, y `scripts/smoke.sh` ajustado
-- **Test primero:** la ruta declarada existe y el `README` nombra la URL textual
-- **Criterio de terminado:** los 7 casos pasan. **`C-53` (sin build)**: no hay
-  `npm install` en ningún paso
-- **Nota:** **no** hay `wrangler.jsonc`. La Etapa 1 se publica en **GitHub Pages**;
-  Cloudflare entra en la Etapa 2 (el agente LLM necesita runtime) — ver `ADR-005`
-- **Nota:** publicar es un `push` a `main`, y lo hace **Hermes**, no el Coder
+- **Entrada:** `04-DISENO.md` § Despliegue · `ADR-006`
+- **Salida:** `wrangler.jsonc` (Worker **solo-assets**, sin `main`), `.gitignore`,
+  README con el comando local y el de despliegue, `scripts/smoke.sh` ajustado
+- **Test primero:** `assets.directory === "./public"` y **sin `main`**
+- **Criterio de terminado:** los 7 casos pasan. `C-53` exige que el README documente
+  el comando local (`npx wrangler dev`); el Coder **no** ejecuta `wrangler deploy`
+- **Nota:** el despliegue y la Preview URL los hace **Hermes**, no el Coder (`ADR-004`)
 - **Nota:** `scripts/smoke.sh` es un **entregable del diseño** (ya existe, escrito por
-  el Arquitecto): compara el **hash** de lo publicado contra el repo. El Coder lo
-  verifica **estructuralmente**, no lo ejecuta contra la red
+  el Arquitecto): compara el hash de lo publicado contra el repo. El Coder lo verifica
+  **estructuralmente**, no lo ejecuta contra la red
+
+---
+
+# Ciclo 2 — persistencia en base de datos (`ADR-007`)
+
+### T-10 — La base y su migración
+
+- **Cubre:** HU-9 / #2, #4, #8, y el DoD (migración versionada)
+- **Casos que debe cubrir:** `C-89`, `C-90`, `C-96`, `C-98`, `C-55` *(sigue valiendo)*
+- **Entrada:** `ADR-007`, `04-DISENO.md` § *Esquema de persistencia*, § *Forma del Worker* y § *Contrato de la API*
+- **Salida:** `wrangler.jsonc` con `main` + binding `DB` + `run_worker_first`, la
+  migración `migrations/0001_ideas.sql`, **`src/worker.js` con la ruta de diagnóstico
+  `GET /api/salud`** (una consulta real: `SELECT count(*) FROM ideas`), y el README con
+  el comando local que **crea y migra la base emulada** (sin cuenta y sin token)
+- **Test primero:** la config tiene `main`, `d1_databases[0].binding === "DB"` y
+  `/api/*` en `run_worker_first`; la migración existe con su `CREATE TABLE` **y** el índice;
+  `/api/salud` devuelve el **conteo real** y, sin migración, **falla**
+- **Criterio de terminado:** `npx wrangler dev` levanta, la tabla está creada y
+  `/api/salud` responde contra ella
+- **Nota de secuencia (corregida antes de despachar):** `wrangler.jsonc` apunta a
+  `src/worker.js`, así que **ese archivo tiene que existir en esta tarea** — sin él,
+  `wrangler dev` no levanta y la tarea no se puede verificar. No es un stub: es la ruta
+  de diagnóstico, y existe porque **un binding sin ejercitar es un supuesto, no un hecho**.
+  Las dos operaciones reales llegan en T-11
+- **Nota:** el Coder **no** despliega a Cloudflare (`ADR-004`); el `database_id` real lo
+  completa Hermes al desplegar
+
+- [ ] Test escrito y fallando (RED) — evidencia:
+- [ ] Implementación mínima que lo pasa (GREEN)
+- [ ] Refactor sin romper tests
+- [ ] Commit
+
+### T-11 — El Worker: la API de dos operaciones
+
+- **Cubre:** HU-9 / #1, #2, #7
+- **Casos que debe cubrir:** `C-91`, `C-92`
+- **Entrada:** `04-DISENO.md` § *Contrato de la API*
+- **Salida:** `src/worker.js` con `POST /api/ideas` (**upsert** por `id`) y
+  `GET /api/ideas` (ordenadas por `actualizado_en DESC`)
+- **Test primero:** guardar una idea y leerla **desde la base**; dos `POST` con el mismo
+  `id` dejan **una** fila
+- **Criterio de terminado:** los dos casos pasan **contra la base emulada**, sin red
+- **Nota:** el script **solo** corre en `/api/*`. Un test que cargue `/` y espere que el
+  script haya corrido está mal escrito
+
+- [ ] Test escrito y fallando (RED) — evidencia:
+- [ ] Implementación mínima que lo pasa (GREEN)
+- [ ] Refactor sin romper tests
+- [ ] Commit
+
+### T-12 — La app lee y escribe en la base
+
+- **Cubre:** HU-9 / #1, #5, #6, #7
+- **Casos que debe cubrir:** `C-91`, `C-93`, `C-94`, `C-95`
+- **Entrada:** T-11, HU-6 (el borrador local)
+- **Salida:** el cliente guarda y lista **contra la API**; `localStorage` queda como
+  **borrador del paso en curso**; los errores `cuota_diaria` y `base_no_disponible` se
+  **muestran** nombrando el límite
+- **Test primero:** con la base forzada a fallar, lo escrito **sigue en pantalla** y se
+  ve el mensaje; editar una idea aprobada **invalida el veredicto en la base**
+- **Criterio de terminado:** los 4 casos pasan, incluidos los **dos negativos** (cuota y
+  base caída) — un guardado que falla en silencio es el fallo que esta tarea existe para evitar
+
+- [ ] Test escrito y fallando (RED) — evidencia:
+- [ ] Implementación mínima que lo pasa (GREEN)
+- [ ] Refactor sin romper tests
+- [ ] Commit
+
+### T-13 — Despliegue y smoke del Ciclo 2
+
+- **Cubre:** HU-9 / #3
+- **Casos que debe cubrir:** `C-97`
+- **Entrada:** T-10, T-11, `scripts/smoke.sh`
+- **Salida:** el `smoke.sh` extendido: guardar una idea con marca conocida contra la URL
+  real, **redeploy**, y verificar que **sigue** — además del hash de assets que ya verifica
+- **Test primero:** *no aplica test unitario*: el caso es un **umbral contra el edge**, y
+  el verificador es el smoke, que corre **Hermes** después de desplegar
+- **Criterio de terminado:** la idea sobrevive a un redeploy y el request de `/api/*`
+  queda **bajo 10 ms de CPU** (el emulador **no** aplica este límite: local no lo prueba)
+- **Nota:** el despliegue lo hace **Hermes**, no el Coder (`ADR-004`)
+
+- [ ] Desplegado por Hermes — evidencia:
+- [ ] Smoke contra la URL real — evidencia:
+- [ ] Idea con marca conocida **sobrevive al redeploy**
 

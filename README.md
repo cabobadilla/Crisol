@@ -29,6 +29,28 @@ El proceso no es solo documentación: estas guardias lo hacen cumplir.
 | `review.sh` | Revisión mecánica: tests, sello, frescura, commits |
 | `update-status.sh [--push]` | Regenera y publica el tablero (`progreso.html`) |
 
+## Desarrollo y despliegue
+
+### Local (Ciclo 2 — D1 emulada)
+
+En local **no hace falta cuenta de Cloudflare ni token**: `wrangler dev` emula D1
+offline. Antes de la primera consulta hay que crear y migrar la base emulada:
+
+```sh
+npx wrangler d1 migrations apply crisol-ideas --local
+```
+
+Después se levanta la app:
+
+```sh
+npx wrangler dev
+```
+
+- **local:** `npx wrangler dev` — levanta la app en `http://localhost:8787`
+- **despliegue:** `npx wrangler deploy` — lo corre **Hermes**, no el Coder (ADR-004)
+- **URL del ciclo 1:** `https://crisol-ciclo-1.mkvs.workers.dev`
+- El repo **no** lleva `npm install`: no hay dependencias
+
 ## Estado
 
 - [ ] G0 Idea registrada

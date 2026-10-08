@@ -54,6 +54,20 @@ const fecha = (iso) => {
 };
 
 const tareas = e.tareas || [];
+// Vocabulario CERRADO, y se verifica (v0.23).
+// Un estado fuera de la lista NO se ignora en silencio: mostrar "0%" es una métrica
+// falsa con apariencia de dato. Un `'hecho'` donde el render espera `'listo'` daba
+// 0/8 sin un solo mensaje — el fallo más caro es el que no se nota.
+// La lista válida es la MISMA que usa `est()` para pintar: una sola fuente.
+for (const t of tareas) {
+  if (!Object.hasOwn(ESTADOS, t.estado)) {
+    console.error(`✗ ${t.id}: estado «${t.estado}» no es válido.`);
+    console.error(`  Válidos: ${Object.keys(ESTADOS).join(' · ')}`);
+    console.error('  (Un estado desconocido se contaba como 0% y se pintaba');
+    console.error('   como «Pendiente», en silencio.)');
+    process.exit(1);
+  }
+}
 const hechas = tareas.filter((t) => t.estado === 'listo').length;
 const pct = tareas.length ? Math.round((hechas / tareas.length) * 100) : 0;
 

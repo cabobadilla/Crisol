@@ -1,6 +1,6 @@
 # ADR-005 — GitHub Pages para la Etapa 1, Cloudflare para la Etapa 2
 
-- **Estado:** aceptado (2026-10-07) — **reemplaza a ADR-002**
+- **Estado:** ⤳ SUPERADO por `ADR-006` (2026-10-07, mismo día) — se conserva por su razonamiento
 - **Decide:** el Arquitecto
 - **Reemplaza a:** `ADR-002-worker-solo-assets.md` (superado)
 

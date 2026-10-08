@@ -1,17 +1,47 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-mode="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Crisol</title>
 <style>
   * { box-sizing: border-box; }
+  :root[data-mode="light"] {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-2: #eef1f5;
+    --text: #16191f;
+    --muted: #565d6b;
+    --accent: #1f5fbf;
+    --on-accent: #ffffff;
+    --border: #d9dee5;
+    --shadow: 0 1px 2px rgba(22, 27, 45, 0.09);
+    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --radius: 10px;
+    --container: 1120px;
+  }
+  :root[data-mode="dark"] {
+    --bg: #0f1216;
+    --surface: #171b21;
+    --surface-2: #1f242b;
+    --text: #e8eaee;
+    --muted: #a3abb8;
+    --accent: #7aa8ff;
+    --on-accent: #0d1117;
+    --border: #2a313a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --radius: 10px;
+    --container: 1120px;
+  }
   body {
     margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-family: var(--font-body);
     line-height: 1.5;
-    color: #14161a;
-    background: #ffffff;
+    color: var(--text);
+    background: var(--bg);
   }
   .barra {
     display: flex;
@@ -20,88 +50,114 @@
     align-items: baseline;
     justify-content: space-between;
     padding: 0.9rem 1.25rem;
-    border-bottom: 1px solid #c9ced6;
-    background: #f5f6f8;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
   }
-  .barra h1 { margin: 0; font-size: 1.15rem; }
-  .contador { margin: 0; font-size: 0.95rem; color: #33383f; }
-  main { max-width: 46rem; margin: 0 auto; padding: 1.25rem; }
+  .barra h1 { margin: 0; font-size: 1.15rem; font-family: var(--font-heading); }
+  .contador { margin: 0; font-size: 0.95rem; color: var(--muted); }
+  main { max-width: var(--container); margin: 0 auto; padding: 1.25rem; }
   .panel { margin-bottom: 2rem; }
-  .panel > h2 { font-size: 1.05rem; margin: 0 0 0.75rem; }
+  .panel > h2 { font-size: 1.05rem; margin: 0 0 0.75rem; font-family: var(--font-heading); }
   .pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
   .paso {
-    border: 1px solid #b8bec7;
-    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     padding: 1rem;
-    background: #ffffff;
+    background: var(--surface);
   }
-  .paso[data-estado="activo"] { border-color: #1f5fbf; box-shadow: 0 0 0 1px #1f5fbf; }
-  .paso[data-estado="completo"] { background: #f2f6fc; }
-  .paso[data-estado="bloqueado"] { background: #f7f7f8; color: #4a4f57; }
-  .paso-titulo { margin: 0 0 0.15rem; font-size: 1.05rem; }
+  .paso[data-estado="activo"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .paso[data-estado="completo"] { background: var(--surface-2); }
+  .paso[data-estado="bloqueado"] { background: var(--surface-2); color: var(--muted); }
+
+  .barra-indicadores {
+    display: flex;
+    flex-direction: row;
+    gap: .35rem;
+    padding: 0 .5rem;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .indicador {
+    display: inline-flex;
+    align-items: center;
+    padding: .4rem .35rem;
+    border-radius: var(--radius);
+    font-size: .7rem;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+  .indicador[data-estado-indicador="activo"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .indicador[data-estado-indicador="completo"] { background: var(--surface-2); border-color: var(--border); }
+  .indicador[data-estado-indicador="bloqueado"] { background: var(--surface-2); color: var(--muted); border-color: var(--border); }
+  .indicador .paso-numero { margin-right: .35rem; }
+  .paso-titulo { margin: 0 0 0.15rem; font-size: 1.05rem; font-family: var(--font-heading); }
   .paso-estado {
     display: inline-block;
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #33383f;
-    border: 1px solid #b8bec7;
-    border-radius: 999px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     padding: 0.05rem 0.5rem;
-    background: #eceef1;
+    background: var(--surface-2);
   }
-  .paso[data-estado="activo"] .paso-estado { background: #dbe6fb; border-color: #1f5fbf; }
-  .paso[data-estado="completo"] .paso-estado { background: #e3efe3; border-color: #3f7d3f; }
-  .paso-exige { margin: 0.5rem 0 0.75rem; font-size: 0.88rem; color: #4a4f57; }
+  .paso[data-estado="activo"] .paso-estado { background: var(--surface-2); border-color: var(--accent); }
+  .paso[data-estado="completo"] .paso-estado { background: var(--surface-2); border-color: var(--border); }
+  .paso-exige { margin: 0.5rem 0 0.75rem; font-size: 0.88rem; color: var(--muted); }
   .campo { display: block; margin-bottom: 0.65rem; }
   .campo-etiqueta { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.2rem; }
   .campo input, .campo textarea {
     width: 100%;
     padding: 0.45rem 0.55rem;
     font: inherit;
-    border: 1px solid #9aa1ab;
+    border: 1px solid var(--border);
     border-radius: 6px;
-    background: #ffffff;
+    background: var(--surface);
     color: inherit;
   }
   .campo textarea { min-height: 4.5rem; resize: vertical; }
   .paso-mensaje {
     margin: 0.6rem 0;
     padding: 0.5rem 0.65rem;
-    border: 1px solid #d3a2a2;
+    border: 1px solid var(--border);
     border-radius: 6px;
-    background: #fdf1f1;
-    color: #7a1616;
+    background: var(--surface-2);
+    color: var(--text);
     font-size: 0.9rem;
   }
   .paso-confirmar {
     font: inherit;
     padding: 0.5rem 1rem;
-    border: 1px solid #1f5fbf;
+    border: 1px solid var(--accent);
     border-radius: 8px;
-    background: #1f5fbf;
-    color: #ffffff;
+    background: var(--accent);
+    color: var(--on-accent);
     cursor: pointer;
   }
   .paso-confirmar:disabled { cursor: not-allowed; opacity: 0.55; }
   input:disabled, textarea:disabled { opacity: 0.6; }
   button:focus-visible, input:focus-visible, textarea:focus-visible {
-    outline: 2px solid #1f5fbf;
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
-  .lista-vacia { color: #4a4f57; font-size: 0.92rem; }
+  .lista-vacia { color: var(--muted); font-size: 0.92rem; }
   .lista-ideas { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
   .idea {
-    border: 1px solid #b8bec7;
-    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     padding: 0.75rem 1rem;
-    background: #f2f6fc;
+    background: var(--surface-2);
     display: grid;
     gap: 0.15rem;
   }
-  .idea-titulo { font-size: 1rem; }
-  .idea-problema { font-size: 0.9rem; color: #33383f; }
-  .idea-fecha { font-size: 0.78rem; color: #5a6069; }
+  .idea-titulo { font-size: 1rem; font-family: var(--font-heading); }
+  .idea-problema { font-size: 0.9rem; color: var(--muted); }
+  .idea-fecha { font-size: 0.78rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -114,6 +170,7 @@
 <main>
   <section class="panel" aria-labelledby="titulo-wizard">
     <h2 id="titulo-wizard">Definir la idea</h2>
+    <ul class="barra-indicadores" id="barra-indicadores" aria-label="Pasos del asistente"></ul>
     <ol class="pasos" id="pasos"></ol>
   </section>
   <section class="panel" aria-labelledby="titulo-ideas">
@@ -165,6 +222,7 @@
   const REFERENCIAS_POR_DEFECTO = 2;
 
   const contenedorPasos = document.getElementById('pasos');
+  const barraIndicadores = document.getElementById('barra-indicadores');
   const contador = document.querySelector('[data-contador]');
   const listaIdeas = document.querySelector('[data-lista-ideas]');
   const avisoVacio = document.getElementById('lista-vacia');
@@ -222,10 +280,6 @@
     return valor === undefined || valor === null ? '' : valor;
   }
 
-  function nodoPaso(id) {
-    return contenedorPasos.querySelector('[data-paso="' + id + '"]');
-  }
-
   function construirCampo(def) {
     const etiqueta = document.createElement('label');
     etiqueta.className = 'campo';
@@ -241,56 +295,79 @@
   }
 
   function construir() {
+    const barra = barraIndicadores;
     PASOS.forEach((paso, indice) => {
       const li = document.createElement('li');
-      li.className = 'paso';
-      li.setAttribute('data-paso', paso.id);
+      li.setAttribute('data-paso-indicador', paso.id);
+      li.className = 'indicador';
+      li.innerHTML = '<span class="paso-numero">' + (indice + 1) + '</span><span class="paso-nombre">' + paso.titulo + '</span>';
+      barra.appendChild(li);
+    });
+    renderizarPasoActivo();
+  }
 
-      const titulo = document.createElement('h3');
-      titulo.className = 'paso-titulo';
-      titulo.textContent = paso.titulo;
+  function renderizarPasoActivo() {
+    contenedorPasos.textContent = '';
+    const paso = PASOS[pasoActual];
+    const liPaso = document.createElement('li');
+    liPaso.className = 'paso';
+    liPaso.setAttribute('data-paso', paso.id);
+    liPaso.setAttribute('data-estado', 'activo');
 
-      const etiquetaEstado = document.createElement('span');
-      etiquetaEstado.className = 'paso-estado';
+    const titulo = document.createElement('h3');
+    titulo.className = 'paso-titulo';
+    titulo.textContent = paso.titulo;
 
-      const exige = document.createElement('p');
-      exige.className = 'paso-exige';
-      exige.textContent = paso.exige.length
-        ? 'Exige: ' + paso.exige.join(' · ')
-        : 'Al confirmar se registra la idea con sus pasos.';
+    const etiquetaEstado = document.createElement('span');
+    etiquetaEstado.className = 'paso-estado';
+    etiquetaEstado.textContent = ESTADOS.activo;
 
-      const campos = document.createElement('div');
-      campos.className = 'paso-campos';
-      camposDe(paso.id).forEach(def => campos.appendChild(construirCampo(def)));
+    const exige = document.createElement('p');
+    exige.className = 'paso-exige';
+    exige.textContent = paso.exige.length
+      ? 'Exige: ' + paso.exige.join(' · ')
+      : 'Al confirmar se registra la idea con sus pasos.';
 
-      const mensaje = document.createElement('p');
-      mensaje.className = 'paso-mensaje';
-      mensaje.setAttribute('role', 'alert');
-      mensaje.hidden = true;
+    const campos = document.createElement('div');
+    campos.className = 'paso-campos';
+    camposDe(paso.id).forEach(def => campos.appendChild(construirCampo(def)));
 
-      const confirmar = document.createElement('button');
-      confirmar.type = 'button';
-      confirmar.className = 'paso-confirmar';
-      confirmar.setAttribute('data-accion', 'confirmar');
-      confirmar.textContent = indice === PASOS.length - 1 ? 'Registrar idea' : 'Confirmar paso';
-      confirmar.addEventListener('click', confirmarPaso);
+    const mensaje = document.createElement('p');
+    mensaje.className = 'paso-mensaje';
+    mensaje.setAttribute('role', 'alert');
+    mensaje.hidden = true;
 
-      li.append(titulo, etiquetaEstado, exige, campos, mensaje, confirmar);
-      contenedorPasos.appendChild(li);
+    const confirmar = document.createElement('button');
+    confirmar.type = 'button';
+    confirmar.className = 'paso-confirmar';
+    confirmar.setAttribute('data-accion', 'confirmar');
+    confirmar.textContent = pasoActual === PASOS.length - 1 ? 'Registrar idea' : 'Confirmar paso';
+    confirmar.addEventListener('click', confirmarPaso);
+
+    liPaso.append(titulo, etiquetaEstado, exige, campos, mensaje, confirmar);
+    contenedorPasos.appendChild(liPaso);
+
+    const estadoPaso = ideaActual.pasos[paso.id];
+    liPaso.querySelectorAll('[data-campo]').forEach(control => {
+      control.value = leer(estadoPaso, control.getAttribute('data-campo'));
     });
   }
 
-  function sincronizar(paso) {
+  function sincronizar() {
+    const paso = PASOS[pasoActual];
     const estadoPaso = ideaActual.pasos[paso.id];
     if (!estadoPaso) return;
-    const nodo = nodoPaso(paso.id);
+    const nodo = contenedorPasos.querySelector('[data-paso="' + paso.id + '"]');
+    if (!nodo) return;
     nodo.querySelectorAll('[data-campo]').forEach(control => {
       fijar(estadoPaso, control.getAttribute('data-campo'), control.value);
     });
   }
 
-  function faltantes(paso) {
-    const nodo = nodoPaso(paso.id);
+  function faltantes() {
+    const paso = PASOS[pasoActual];
+    const nodo = contenedorPasos.querySelector('[data-paso="' + paso.id + '"]');
+    if (!nodo) return [];
     const motivos = [];
     nodo.querySelectorAll('[data-campo]').forEach(control => {
       if (control.value.trim() === '') {
@@ -301,18 +378,20 @@
     return motivos;
   }
 
-  function mostrarMensaje(paso, texto) {
-    const mensaje = nodoPaso(paso.id).querySelector('.paso-mensaje');
-    mensaje.textContent = texto;
-    mensaje.hidden = false;
+  function mostrarMensaje(texto) {
+    const mensaje = contenedorPasos.querySelector('.paso-mensaje');
+    if (mensaje) {
+      mensaje.textContent = texto;
+      mensaje.hidden = false;
+    }
   }
 
   function confirmarPaso() {
     const paso = PASOS[pasoActual];
-    sincronizar(paso);
-    const faltantesDe = faltantes(paso);
+    sincronizar();
+    const faltantesDe = faltantes();
     if (faltantesDe.length > 0) {
-      mostrarMensaje(paso, 'El paso «' + paso.titulo + '» exige: ' + faltantesDe.join(' · '));
+      mostrarMensaje('El paso «' + paso.titulo + '» exige: ' + faltantesDe.join(' · '));
       return;
     }
     const estadoPaso = ideaActual.pasos[paso.id];
@@ -337,22 +416,21 @@
 
   function actualizar() {
     PASOS.forEach((paso, indice) => {
-      const nodo = nodoPaso(paso.id);
       const estado = indice < pasoActual ? 'completo' : indice === pasoActual ? 'activo' : 'bloqueado';
-      nodo.setAttribute('data-estado', estado);
-      nodo.querySelector('.paso-estado').textContent = ESTADOS[estado];
-      const habilitado = estado === 'activo';
-      nodo.querySelectorAll('button, input, textarea, select').forEach(control => {
-        control.disabled = !habilitado;
-      });
-      const estadoPaso = ideaActual.pasos[paso.id];
-      nodo.querySelectorAll('[data-campo]').forEach(control => {
-        control.value = leer(estadoPaso, control.getAttribute('data-campo'));
-      });
-      nodo.querySelector('.paso-mensaje').hidden = true;
+
+      const indicador = barraIndicadores.querySelector('[data-paso-indicador="' + paso.id + '"]');
+      if (indicador) {
+        indicador.setAttribute('data-estado-indicador', estado);
+        if (estado === 'activo') {
+          indicador.setAttribute('aria-current', 'step');
+        } else {
+          indicador.removeAttribute('aria-current');
+        }
+      }
     });
     contador.querySelector('[data-paso-actual]').textContent = String(pasoActual + 1);
     contador.querySelector('[data-total]').textContent = String(PASOS.length);
+    renderizarPasoActivo();
   }
 
   function renderizarIdeas() {

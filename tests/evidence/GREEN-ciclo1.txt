@@ -1,0 +1,14 @@
+✔ C-01 · los 7 pasos se muestran en orden (437.658583ms)
+✔ C-02 · al cargar sin datos, solo el paso 1 es accesible (86.930625ms)
+✔ C-03 · los pasos futuros son visibles, no ocultos (87.89975ms)
+✔ C-04 · se indica el total de pasos (87.797916ms)
+✔ C-05 · completar un paso avanza al siguiente (88.248792ms)
+✔ C-06 · completar los 7 pasos registra la idea (87.71325ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2469.513167
