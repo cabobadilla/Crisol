@@ -221,9 +221,12 @@
   real, **redeploy**, y verificar que **sigue** — además del hash de assets que ya verifica
 - **Test primero:** *no aplica test unitario*: el caso es un **umbral contra el edge**, y
   el verificador es el smoke, que corre **Hermes** después de desplegar
-- **Criterio de terminado:** la idea sobrevive a un redeploy y el request de `/api/*`
-  queda **bajo 10 ms de CPU** (el emulador **no** aplica este límite: local no lo prueba)
-- **Nota:** el despliegue lo hace **Hermes**, no el Coder (`ADR-004`)
+- **Criterio de terminado:** `smoke.sh <url> --c97 guardar` → **redeploy** → `smoke.sh <url>
+  --c97 verificar` pasa: **la idea sigue**, la latencia de pared está bajo 1 s y **no hay
+  error `1102`**; y la **CPU de `/api/*` medida a mano** en el dashboard queda **registrada**
+  en el historial del ciclo
+- **Nota:** el despliegue lo hace **Hermes**, no el Coder (`ADR-004`). La CPU **no se ve por
+  HTTP**: el smoke no puede medirla y no se le pide que finja que lo hace
 
 - [ ] Desplegado por Hermes — evidencia:
 - [ ] Smoke contra la URL real — evidencia:

@@ -373,8 +373,17 @@ silencio (`C-93`).
 **Ciclo 2: real y acotado.** El script corre **solo en `/api/*`** y hace una cosa:
 validar el cuerpo, y una consulta a D1 (I/O, que **no** consume CPU de la invocación).
 Lo que sí consume: parsear el JSON del cuerpo y serializar la respuesta. Para una idea
-de pocos KB, está muy por debajo de 10 ms — pero eso **no se supone: se mide** contra
-el edge (`C-97`).
+de pocos KB, está muy por debajo de 10 ms — pero eso **no se supone: se mide**.
+
+> **Cómo se mide, y por qué así** (v0.36 del harness): la CPU **no se ve por HTTP**. El
+> smoke habla HTTP, así que **no puede** verificar los 10 ms de CPU, y un caso cuyo
+> verificador declarado no puede observarlo es un caso que nadie verifica. Se parte en
+> dos: el **smoke** verifica lo observable — que la idea **sobreviva al redeploy**, que
+> la latencia de **pared** esté bajo 1 s (proxy declarado, **no** la CPU) y que **no
+> aparezca el error `1102`**, que es como el límite se manifiesta; y la **CPU se mide a
+> mano** en el dashboard (`cpuTimeP50` del Worker), **una vez por ciclo**, y se registra
+> en el historial. Medir una vez a mano es honesto; dejar un caso que dice «se mide» sin
+> decir **con qué** es lo que no lo era.
 
 > El trabajo pesado del wizard (render, validación de los 7 pasos, challenger) sigue
 > corriendo **en el navegador del usuario**, no en el edge. El script es una **API de
@@ -540,7 +549,7 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 | `C-94` | Base no disponible: el borrador sobrevive | HU-9 / #6 | **comportamiento** | Con la API **interceptada** al error `base_no_disponible`, tras recargar **lo escrito sigue** (borrador local) y se ve el error |
 | `C-95` | Editar invalida el veredicto **en la base** | HU-9 / #7 | **comportamiento** | Editar una idea aprobada → su `veredicto` queda nulo en la base y en la lista |
 | `C-96` | La migración existe y es versionada | HU-9 (DoD) | estructura | Existe `migrations/0001_ideas.sql` con `CREATE TABLE ideas` **y** el índice |
-| `C-97` | El smoke verifica persistencia contra la URL real | HU-9 / #3 | **umbral** | Contra la URL real: guardar una idea con marca conocida, **redeploy**, y la idea **sigue**; el request de `/api/*` queda **bajo 10 ms** de CPU |
+| `C-97` | La idea sobrevive al redeploy, y el borde responde | HU-9 / #3 | **umbral** | Contra la URL real (`smoke.sh <url> --c97 guardar` y luego `--c97 verificar`): guardada una idea con marca conocida, **tras el redeploy la idea SIGUE**; la latencia de **pared** queda bajo 1 s (proxy declarado) y **no aparece el error `1102`**. La **CPU de `/api/*` no se ve por HTTP**: se mide **a mano** en el dashboard (`cpuTimeP50`) y se registra — ver «Despliegue» |
 | `C-98` | El binding responde **en local**, contra la tabla | HU-9 / #2 | **comportamiento** | `GET /api/salud` responde `200` y devuelve el conteo real de `ideas`; con la migración sin aplicar, **falla** (no devuelve un conteo inventado) |
 | `C-99` | El Worker **clasifica** el error de límite | HU-9 / #5 | estructura | `src/worker.js` **exporta una función pura** (`clasificarError`) y devuelve `"cuota_diaria"` ante un error que nombra el límite del plan, y `"base_no_disponible"` ante cualquier otro. Se prueba **inyectando los errores**, sin red. *(Sin esto, `cuota_diaria` está declarado en el contrato y **nada lo produce**: `C-93` no podría pasar nunca.)* |
 

@@ -47,6 +47,17 @@
 - **Comportamiento observado:**
 - **Comportamiento esperado:**
 
+## Casos cuyo verificador NO es un test (declarados)
+
+> El invariante del harness es «todo caso termina en un test **o** en un hueco declarado,
+> nunca en nada». Un caso puede tener un verificador **legítimo que no sea un archivo de
+> `tests/`** — pero entonces se declara acá, con el comando que lo verifica. Lo que no vale
+> es que el caso exista y no lo verifique nadie.
+
+| Caso | Verificador | Comando | Por qué no es un test |
+|---|---|---|---|
+| `C-97` | `scripts/smoke.sh` (lo corre **Hermes** tras desplegar) | `bash scripts/smoke.sh <url> --c97 verificar` | Es un **umbral contra el edge**: no se puede ejercitar en local — el emulador **no aplica** los límites del plan. La mitad de CPU se mide **a mano** en el dashboard (`cpuTimeP50`) y se registra |
+
 ## Lo que NO se probó
 
 > Honestidad explícita sobre los huecos de cobertura.
