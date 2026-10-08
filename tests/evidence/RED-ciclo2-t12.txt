@@ -1,59 +1,45 @@
-✔ C-01 · los 7 pasos están en UNA fila horizontal (993.056834ms)
-✔ C-02 · al cargar sin datos, solo el paso 1 tiene formulario en pantalla (213.481834ms)
-✔ C-03 · los 7 pasos se ven aunque estén bloqueados (geometría) (212.522375ms)
-✔ C-04 · se indica el paso actual y el total, y el activo está en la fila (212.39ms)
-✔ C-05 · confirmar paso 1 muestra formulario del paso 2 y oculta el del paso 1 (214.198875ms)
-✔ C-06 · completar los 7 pasos registra la idea (225.243583ms)
-✔ C-86 · a 390 px la fila no desborda el viewport (333.013292ms)
-✔ C-87 · a 390 px el contenido respeta el margen de 16 px (337.119625ms)
-✔ C-88 · a 1200 px los 7 pasos caben sin recortar en su contenedor (340.903917ms)
-✔ C-89 · la config declara la forma B: main, binding DB y run_worker_first con /api/* (0.785958ms)
-✔ C-90 · el diseño declara el límite que ahora aplica y no afirma "cero límites de plan" (0.125042ms)
-✔ C-96 · la migración existe y es versionada: CREATE TABLE ideas + el índice (0.080958ms)
-✔ C-98 · GET /api/salud responde contra la tabla: con migración 200 y conteo real; sin migración falla (14553.796666ms)
-✔ C-91 · Guardar escribe en la base, no en el navegador (7871.171417ms)
-✔ C-92 · Guardar dos veces no duplica (7011.202333ms)
-✔ C-99 · clasificarError: cuota_diaria vs base_no_disponible (0.564916ms)
-✖ C-91 · la app guarda contra la API y no en el navegador (2964.259625ms)
-✖ C-93 · cuota agotada: fallo declarado, sin pérdida (1080.374417ms)
-✖ C-94 · base no disponible: el borrador sobrevive (1047.173042ms)
-✖ C-95 · editar invalida el veredicto en la base (3156.113917ms)
-✔ C-51 · assets.directory === "./public" (0.462666ms)
-✔ C-52 · public/ contiene index.html y nada de docs/, tests/, scripts/ (0.553417ms)
-✔ C-53 · el README menciona npx wrangler dev (0.092084ms)
-✔ C-54 · el README menciona npx wrangler deploy y que lo corre Hermes (0.067375ms)
-✔ C-55 · ningún archivo versionado contiene un token; .env y .dev.vars están ignorados (19.255375ms)
-✔ C-40 · modo claro expone los 13 tokens exactos en :root[data-mode="light"] (971.065917ms)
-✔ C-41 · modo oscuro expone los 13 tokens exactos en :root[data-mode="dark"] (601.238667ms)
-✔ C-42 · todo el CSS usa var(--…) en lugar de hex sueltos (576.106167ms)
-✔ C-48 · el contenedor usa max-width: var(--container) (561.17ms)
+✔ C-01 · los 7 pasos están en UNA fila horizontal (994.114208ms)
+✔ C-02 · al cargar sin datos, solo el paso 1 tiene formulario en pantalla (216.72175ms)
+✔ C-03 · los 7 pasos se ven aunque estén bloqueados (geometría) (216.0955ms)
+✔ C-04 · se indica el paso actual y el total, y el activo está en la fila (215.6015ms)
+✔ C-05 · confirmar paso 1 muestra formulario del paso 2 y oculta el del paso 1 (216.564208ms)
+✔ C-06 · completar los 7 pasos registra la idea (222.17025ms)
+✔ C-86 · a 390 px la fila no desborda el viewport (335.563083ms)
+✔ C-87 · a 390 px el contenido respeta el margen de 16 px (348.762041ms)
+✔ C-88 · a 1200 px los 7 pasos caben sin recortar en su contenedor (335.5505ms)
+✔ C-89 · la config declara la forma B: main, binding DB y run_worker_first con /api/* (0.901792ms)
+✔ C-90 · el diseño declara el límite que ahora aplica y no afirma "cero límites de plan" (0.221042ms)
+✔ C-96 · la migración existe y es versionada: CREATE TABLE ideas + el índice (0.101833ms)
+✔ C-98 · GET /api/salud responde contra la tabla: con migración 200 y conteo real; sin migración falla (14931.7405ms)
+✔ C-91 · Guardar escribe en la base, no en el navegador (7920.343208ms)
+✔ C-92 · Guardar dos veces no duplica (7022.957792ms)
+✔ C-99 · clasificarError: cuota_diaria vs base_no_disponible (0.587292ms)
+✔ C-91 · la app guarda contra la API y no en el navegador (3002.058416ms)
+✖ C-93 · cuota agotada: fallo declarado, sin pérdida (1078.686333ms)
+✖ C-94 · base no disponible: el borrador sobrevive (1054.979959ms)
+✖ C-95 · editar invalida el veredicto en la base (3175.780792ms)
+✔ C-51 · assets.directory === "./public" (0.442042ms)
+✔ C-52 · public/ contiene index.html y nada de docs/, tests/, scripts/ (0.513ms)
+✔ C-53 · el README menciona npx wrangler dev (0.123792ms)
+✔ C-54 · el README menciona npx wrangler deploy y que lo corre Hermes (0.079084ms)
+✔ C-55 · ningún archivo versionado contiene un token; .env y .dev.vars están ignorados (15.037083ms)
+✔ C-40 · modo claro expone los 13 tokens exactos en :root[data-mode="light"] (982.042333ms)
+✔ C-41 · modo oscuro expone los 13 tokens exactos en :root[data-mode="dark"] (605.081917ms)
+✔ C-42 · todo el CSS usa var(--…) en lugar de hex sueltos (573.574459ms)
+✔ C-48 · el contenedor usa max-width: var(--container) (583.5065ms)
 ℹ tests 29
 ℹ suites 0
-ℹ pass 25
-ℹ fail 4
+ℹ pass 26
+ℹ fail 3
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 14988.523166
+ℹ duration_ms 15052.090334
 
 ✖ failing tests:
 
-test at tests/ciclo2-t12.test.mjs:28:1
-✖ C-91 · la app guarda contra la API y no en el navegador (2964.259625ms)
-  AssertionError [ERR_ASSERTION]: tras borrar localStorage la idea debe seguir en la lista
-      at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t12.test.mjs:100:10)
-      at async Test.run (node:internal/test_runner/test:1409:7)
-      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
-    generatedMessage: false,
-    code: 'ERR_ASSERTION',
-    actual: false,
-    expected: true,
-    operator: '==',
-    diff: 'simple'
-  }
-
 test at tests/ciclo2-t12.test.mjs:107:1
-✖ C-93 · cuota agotada: fallo declarado, sin pérdida (1080.374417ms)
+✖ C-93 · cuota agotada: fallo declarado, sin pérdida (1078.686333ms)
   AssertionError [ERR_ASSERTION]: debe mostrarse un mensaje que nombre el límite de cuota; mensaje: ""
       at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t12.test.mjs:141:10)
       at async Test.run (node:internal/test_runner/test:1409:7)
@@ -67,7 +53,7 @@ test at tests/ciclo2-t12.test.mjs:107:1
   }
 
 test at tests/ciclo2-t12.test.mjs:165:1
-✖ C-94 · base no disponible: el borrador sobrevive (1047.173042ms)
+✖ C-94 · base no disponible: el borrador sobrevive (1054.979959ms)
   AssertionError [ERR_ASSERTION]: debe mostrarse un mensaje de error de base; mensaje: ""
       at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t12.test.mjs:199:10)
       at async Test.run (node:internal/test_runner/test:1409:7)
@@ -81,7 +67,7 @@ test at tests/ciclo2-t12.test.mjs:165:1
   }
 
 test at tests/ciclo2-t12.test.mjs:240:1
-✖ C-95 · editar invalida el veredicto en la base (3156.113917ms)
+✖ C-95 · editar invalida el veredicto en la base (3175.780792ms)
   AssertionError [ERR_ASSERTION]: RED: la app debe enviar veredicto=null al editar una idea aprobada (implementación pendiente)
       at TestContext.<anonymous> (file:///Users/christianbobadilla/.hermes/cache/scratch/Crisol/tests/ciclo2-t12.test.mjs:350:10)
       at async Test.run (node:internal/test_runner/test:1409:7)
