@@ -5,7 +5,7 @@
 
 - **Proyecto:** Crisol
 - **Fecha:** 2026-10-07
-- **Basado en:** `04-DISENO.md` (**95 casos** declarados: los 85 del Ciclo 1 + `C-89`..`C-98` del Ciclo 2). ⚠ `C-50` quedó **superseded** por `C-89` (`ADR-007`): **94 vigentes**.
+- **Basado en:** `04-DISENO.md` (**96 casos** declarados: los 85 del Ciclo 1 + `C-89`..`C-99` del Ciclo 2). ⚠ `C-50` quedó **superseded** por `C-89` (`ADR-007`): **95 vigentes**.
 
 ## Reglas
 
@@ -174,13 +174,15 @@
 ### T-11 — El Worker: la API de dos operaciones
 
 - **Cubre:** HU-9 / #1, #2, #7
-- **Casos que debe cubrir:** `C-91`, `C-92`
+- **Casos que debe cubrir:** `C-91`, `C-92`, `C-99`
 - **Entrada:** `04-DISENO.md` § *Contrato de la API*
 - **Salida:** `src/worker.js` con `POST /api/ideas` (**upsert** por `id`) y
-  `GET /api/ideas` (ordenadas por `actualizado_en DESC`)
+  `GET /api/ideas` (ordenadas por `actualizado_en DESC`), más la **clasificación de
+  errores** exportada como función pura (`clasificarError`: `cuota_diaria` vs
+  `base_no_disponible`)
 - **Test primero:** guardar una idea y leerla **desde la base**; dos `POST` con el mismo
-  `id` dejan **una** fila
-- **Criterio de terminado:** los dos casos pasan **contra la base emulada**, sin red
+  `id` dejan **una** fila; y los dos errores se clasifican **inyectándolos** (sin red)
+- **Criterio de terminado:** los **tres** casos pasan **contra la base emulada**, sin red
 - **Nota:** el script **solo** corre en `/api/*`. Un test que cargue `/` y espere que el
   script haya corrido está mal escrito
 

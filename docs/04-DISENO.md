@@ -190,8 +190,13 @@ obliga a escanear la tabla entera.
 |---|---|---|---|
 | `POST /api/ideas` | la Idea completa | `201` + `{ id, actualizado_en }` | **Upsert** por `id`: guardar dos veces **no duplica** |
 | `GET /api/ideas` | — | `200` + `{ ideas: [ … ] }` | Ordenadas por `actualizado_en DESC` |
-| `GET /api/ideas/:id` | — | `200` + la Idea, o `404` | Para reabrir |
 | `GET /api/salud` | — | `200` + `{ ok: true, ideas: <n> }` | **Diagnóstico:** prueba el binding y la migración juntos con una consulta real (`SELECT count(*) FROM ideas`). Existe porque un binding sin ejercitar es un supuesto, no un hecho |
+
+> **Retirada declarada — `GET /api/ideas/:id`.** Estuvo en esta tabla **sin caso ni tarea
+> que lo cubriera**: superficie sin contrato. Se retira: la app reabre una idea **desde la
+> lista**, que ya trae las ideas completas, así que la ruta no la necesita nadie. Vuelve
+> el día que exista un caso que la exija. *(No se deja como ruta sin test: una ruta que
+> nadie ejercita es un supuesto, y ya sabemos cómo terminan.)*
 
 **Formato de error — declarado, no adivinado:**
 
@@ -528,6 +533,7 @@ que describen el producto), `tests/` (que revelan la matriz), `wrangler.jsonc`, 
 | `C-96` | La migración existe y es versionada | HU-9 (DoD) | estructura | Existe `migrations/0001_ideas.sql` con `CREATE TABLE ideas` **y** el índice |
 | `C-97` | El smoke verifica persistencia contra la URL real | HU-9 / #3 | **umbral** | Contra la URL real: guardar una idea con marca conocida, **redeploy**, y la idea **sigue**; el request de `/api/*` queda **bajo 10 ms** de CPU |
 | `C-98` | El binding responde **en local**, contra la tabla | HU-9 / #2 | **comportamiento** | `GET /api/salud` responde `200` y devuelve el conteo real de `ideas`; con la migración sin aplicar, **falla** (no devuelve un conteo inventado) |
+| `C-99` | El Worker **clasifica** el error de límite | HU-9 / #5 | estructura | `src/worker.js` **exporta una función pura** (`clasificarError`) y devuelve `"cuota_diaria"` ante un error que nombra el límite del plan, y `"base_no_disponible"` ante cualquier otro. Se prueba **inyectando los errores**, sin red. *(Sin esto, `cuota_diaria` está declarado en el contrato y **nada lo produce**: `C-93` no podría pasar nunca.)* |
 
 ### Cobertura combinada
 
@@ -563,7 +569,7 @@ debe ser **uniforme**. Un paso que no valide es un hueco silencioso.
 | **HU-9** / #1, #3 | `C-91`, `C-97` | T-11, T-12 | `C-91 · …` |
 | **HU-9** / #2 | `C-91`, `C-98` | T-10, T-11 | `C-91 · …` |
 | **HU-9** / #4 | `C-89`, `C-90` | T-10 | `C-89 · …` |
-| **HU-9** / #5 | `C-93` | T-12 | `C-93 · …` |
+| **HU-9** / #5 | `C-93`, `C-99` | T-11, T-12 | `C-93 · …` |
 | **HU-9** / #6 | `C-94` | T-12 | `C-94 · …` |
 | **HU-9** / #7 | `C-92`, `C-95` | T-11, T-12 | `C-92 · …` |
 | **HU-9** / #8 | `C-55` *(existente, sigue valiendo)* | T-10 | `C-55 · …` |
