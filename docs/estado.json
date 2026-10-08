@@ -1,11 +1,11 @@
 {
   "proyecto": "Crisol",
   "resumen": "Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.",
-  "actualizado": "2026-10-07T23:42:52Z",
+  "actualizado": "2026-10-08T00:49:06Z",
   "ciclo": "Ciclo 1 (implementación en curso) + Ciclo 2 (persistencia en D1)",
   "etapa": "Etapa 1 — el wizard con el mecanismo completo · con el Ciclo 2 arranca la Etapa 2",
-  "fase_actual": "Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · G2 cerrado (ADR-007 + 9 casos + 4 tareas)",
-  "siguiente": "Ciclo 2: despachar T-10 (config forma B + migración). Antes: preflight del modelo y sello de tests. El diseño ya declara el límite que ahora manda —la cuota diaria de D1— y que el emulador local NO lo aplica.",
+  "fase_actual": "Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10 aprobado (la base D1 y su migración, en pie y ejercitada)",
+  "siguiente": "Ciclo 2: despachar T-11 (la API de dos operaciones: POST/GET /api/ideas con upsert). Antes: preflight del modelo. La suite del Ciclo 2 ya se verificó por mutación: C-89, C-96 y C-98 muerden. Recordá que el emulador local NO aplica la cuota diaria de D1 — eso lo prueba el smoke contra la URL real, en T-13.",
   "nota_de_proceso": "estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.",
   "fases": [
     {
@@ -138,9 +138,9 @@
     {
       "id": "T-10",
       "titulo": "Ciclo 2 · La base y su migracion",
-      "estado": "pendiente",
-      "casos": "C-89, C-90, C-96, C-55",
-      "nota": "config forma B (main + binding DB + run_worker_first), migracion versionada, README con el comando local que crea y migra la base emulada"
+      "estado": "listo",
+      "casos": "C-89, C-90, C-96, C-98, C-55",
+      "nota": "Aprobado en el 2º intento. El 1º se RECHAZO con evidencia medida: (a) C-50 quedaba insatisfacible —la matriz lo marca superseded por C-89 pero su test seguia en la suite: un error de DISENO mio, que G2 debia haber atrapado—; (b) C-98 no mordia en su mitad 'conteo real': hardcodear ideas:0 con tabla vacia daba verde. El Coder reporto ambos honestamente y no toco nada. Correccion: retirado el test de C-50 y C-98 endurecido insertando 3 filas conocidas. Verificado por Hermes: verify-red real por asercion, sello INTACTOS, C-89/C-96/C-98 muerden por mutacion, suite 22/22, y el propio Coder reporto como BLOQUEO que mutar con el MISMO valor esperado no puede dar rojo (la instruccion era mia y estaba mal)"
     },
     {
       "id": "T-11",

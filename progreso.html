@@ -23,7 +23,7 @@
   .kpi b{font-size:21px; font-weight:600}
   .kpi span{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em}
   .barra{height:6px; background:var(--surface2); border-radius:99px; overflow:hidden; margin-top:18px}
-  .barra i{display:block; height:100%; background:var(--accent); width:23%}
+  .barra i{display:block; height:100%; background:var(--accent); width:31%}
   h2{font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
      margin:44px 0 6px; font-weight:600}
   .h2sub{color:var(--muted); font-size:13px; margin:0 0 16px; max-width:70ch}
@@ -105,11 +105,11 @@
     <h1>Crisol</h1>
     <p class="sub">Un wizard que obliga a especificar una idea antes de construirla: el proceso no deja avanzar con huecos, y un challenger determinístico la ataca antes de darla por definida.</p>
     <div class="meta">
-      <div class="kpi"><b>23%</b><span>Tareas del ciclo</span></div>
-      <div class="kpi"><b>3/13</b><span>Completadas</span></div>
+      <div class="kpi"><b>31%</b><span>Tareas del ciclo</span></div>
+      <div class="kpi"><b>4/13</b><span>Completadas</span></div>
       <div class="kpi"><b>Ciclo 1 (implementación en curso) + Ciclo 2 (persistencia en D1)</b><span>Ciclo activo</span></div>
       <div class="kpi"><b>Etapa 1 — el wizard con el mecanismo completo · con el Ciclo 2 arranca la Etapa 2</b><span>Alcance</span></div>
-      <div class="kpi"><b>Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · G2 cerrado (ADR-007 + 9 casos + 4 tareas)</b><span>Fase actual</span></div>
+      <div class="kpi"><b>Ciclo 1 · Implementación (G3) — T-1, T-8 y T-9 aprobados | Ciclo 2 · T-10 aprobado (la base D1 y su migración, en pie y ejercitada)</b><span>Fase actual</span></div>
     </div>
     <div class="barra"><i></i></div>
   </header>
@@ -193,11 +193,11 @@
       <span class="tk-id">T-8</span>
       <span class="tk-titulo">Empaquetado y despliegue</span>
       <span class="tk-nota">verificado: 15/15 local, sello intacto, smoke con hash coincidente y nada privado publicado. C-50 (config sin main) queda superseded por el Ciclo 2</span>
-    </li><li class="wait">
-      <span class="tk-estado">○</span>
+    </li><li class="ok">
+      <span class="tk-estado">✓</span>
       <span class="tk-id">T-10</span>
       <span class="tk-titulo">Ciclo 2 · La base y su migracion</span>
-      <span class="tk-nota">config forma B (main + binding DB + run_worker_first), migracion versionada, README con el comando local que crea y migra la base emulada</span>
+      <span class="tk-nota">Aprobado en el 2º intento. El 1º se RECHAZO con evidencia medida: (a) C-50 quedaba insatisfacible —la matriz lo marca superseded por C-89 pero su test seguia en la suite: un error de DISENO mio, que G2 debia haber atrapado—; (b) C-98 no mordia en su mitad 'conteo real': hardcodear ideas:0 con tabla vacia daba verde. El Coder reporto ambos honestamente y no toco nada. Correccion: retirado el test de C-50 y C-98 endurecido insertando 3 filas conocidas. Verificado por Hermes: verify-red real por asercion, sello INTACTOS, C-89/C-96/C-98 muerden por mutacion, suite 22/22, y el propio Coder reporto como BLOQUEO que mutar con el MISMO valor esperado no puede dar rojo (la instruccion era mia y estaba mal)</span>
     </li><li class="wait">
       <span class="tk-estado">○</span>
       <span class="tk-id">T-11</span>
@@ -363,12 +363,20 @@
       <td class="num">—</td>
       <td><span class="chip ok">OK</span></td>
       <td class="nota">ADR-007 supersede PARCIALMENTE a ADR-002 y ADR-006: mueren «sin main» y «cero límites»; NO muere la plataforma (sigue Workers) ni la elección por runtime. El Worker pasa a forma B con binding DB, y run_worker_first acota el script a /api/* para que servir assets siga siendo gratis e ilimitado. Contrato de dos operaciones (POST y GET sobre /api/ideas) con upsert por id, y un formato de error declarado (cuota_diaria, base_no_disponible) para que un fallo de la base NO se manifieste como pérdida silenciosa. Matriz: 9 casos nuevos (C-89..C-97) y C-50 marcado superseded (decía «no tiene main»). 4 tareas nuevas (T-10..T-13). El diseño declara el límite que ahora manda —la cuota diaria de D1, con corte DURO desde 2026-09-01— y que el emulador local NO lo aplica: por eso el smoke verifica la persistencia contra la URL real.</td>
+    </tr>
+    <tr>
+      <td class="num">8</td>
+      <td>Ciclo 2 · T-10 (la base D1, su migración y el Worker que la ejercita)</td>
+      <td><code>opencode/big-pickle (N3, preflight vivo)</code></td>
+      <td class="num">—</td>
+      <td><span class="chip wait">rechazado y luego aprobado</span></td>
+      <td class="nota">PRIMERA corrida del harness RECHAZADA en G3 por evidencia medida, no por el reporte. El Coder hizo las cosas bien: 2 commits (tests primero, implementación después), no tocó main, no tocó docs/, no usó /tmp, y NO mintió — reportó honestamente que su GREEN quedaba en 22/23. El rechazo fue por tres hallazgos, dos de ellos del Arquitecto: (1) C-50 quedaba INSATISFACIBLE: la matriz lo marca superseded por C-89 desde ADR-007 pero su TEST seguía en la suite, así que exigía lo contrario de C-89. Es un error de DISEÑO mío y es la regla de satisfacibilidad (v0.10) al pie de la letra: al ampliar el alcance hay que revisar todo literal del alcance anterior. Lo debía atrapar G2 y lo atrapó G3. (2) C-98 NO MORDÍA en su mitad 'conteo real': hardcodeando ideas:0 en el Worker la suite seguía verde, porque el test afirmaba ideas===0 contra una tabla VACÍA — un conteo inventado es indistinguible del real. Lo cazó la PRUEBA DE MUTACIÓN (v0.22), que es para lo que existe. Corrección: retirado el test de C-50 (autorizado, matriz cambiada) y C-98 endurecido insertando 3 filas conocidas. (3) DESCUBRIMIENTO DEL CICLO, el más grave: las GUARDIAS de Crisol estaban CONGELADAS en la versión del día de creación del proyecto — freeze-tests.sh de 3 KB contra 7 KB del harness, sin seal-from-commit ni verify-red, que son las verificaciones OBLIGATORIAS de G3 desde v0.20/v0.21; y faltaba deploy.sh. Ya sabíamos que las plantillas copiadas quedan congeladas (#61); los scripts también, y es peor porque los scripts SON las guardias: un proyecto con los artefactos y sin las guardias queda documentado pero indefenso. Refrescadas desde el harness v0.31. HALLAZGO de método: la instrucción del Arquitecto al Coder puede ser ella misma insatisfacible — le pedí mutar con ideas:3 cuando el valor esperado era 3, y el Coder lo reportó como BLOQUEO en vez de fingir un rojo. La asimetría funciona: el Coder honesto es más útil que el Coder obediente. Verificado por Hermes: verify-red real POR ASERCIÓN, sello INTACTOS, C-89 y C-96 muerden (quitar run_worker_first / quitar el índice), C-98 muerde con la mutación que sí difiere del esperado, suite 22/22, review.sh consistente.</td>
     </tr></tbody>
   </table>
 
   <footer>
-    <p><strong>Siguiente:</strong> Ciclo 2: despachar T-10 (config forma B + migración). Antes: preflight del modelo y sello de tests. El diseño ya declara el límite que ahora manda —la cuota diaria de D1— y que el emulador local NO lo aplica.</p>
-    <p>Actualizado 07-10-2026, 8:42 p. m. · estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.</p>
+    <p><strong>Siguiente:</strong> Ciclo 2: despachar T-11 (la API de dos operaciones: POST/GET /api/ideas con upsert). Antes: preflight del modelo. La suite del Ciclo 2 ya se verificó por mutación: C-89, C-96 y C-98 muerden. Recordá que el emulador local NO aplica la cuota diaria de D1 — eso lo prueba el smoke contra la URL real, en T-13.</p>
+    <p>Actualizado 07-10-2026, 9:49 p. m. · estado.json es la capa VIVA: se reinicia en cada ciclo. Lo escribe Hermes desde evidencia verificada, nunca desde el reporte del Coder.</p>
   </footer>
 
 </div>
