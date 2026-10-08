@@ -231,9 +231,14 @@
   let ideaActual = ideaNueva();
   let pasoActual = 0;
 
+  function nuevoId() {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+    return 'i-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  }
+
   function ideaNueva() {
     return {
-      id: 'i-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
+      id: nuevoId(),
       creada: new Date().toISOString(),
       pasos: {
         idea:        { valor: '', completo: false },
@@ -405,10 +410,83 @@
     actualizar();
   }
 
+  function vistaDeIdea(idea, fila) {
+    const pasos = idea && idea.pasos ? idea.pasos : {};
+    const pasoIdea = pasos.idea || {};
+    const pasoProblema = pasos.problema || {};
+    return {
+      id: (fila && fila.id) || idea.id,
+      titulo: pasoIdea.valor || (fila && fila.titulo) || '',
+      problema: pasoProblema.quien || '',
+      creada: (idea && idea.creada) || (fila && fila.creado_en) || '',
+    };
+  }
+
+  function deserializarIdea(texto) {
+    let datos = texto;
+    for (let i = 0; i < 3; i++) {
+      if (typeof datos !== 'string') break;
+      try {
+        datos = JSON.parse(datos);
+      } catch {
+        return null;
+      }
+      if (datos && typeof datos.idea_json === 'string') {
+        datos = datos.idea_json;
+        continue;
+      }
+      break;
+    }
+    return datos && datos.pasos ? datos : null;
+  }
+
+  function vistaDeFila(fila) {
+    const idea = deserializarIdea(fila.idea_json);
+    if (idea) return vistaDeIdea(idea, fila);
+    return {
+      id: fila.id,
+      titulo: fila.titulo || '',
+      problema: '',
+      creada: fila.creado_en || '',
+    };
+  }
+
+  function enviarIdea(idea) {
+    const fila = {
+      id: idea.id,
+      titulo: (idea.pasos.idea && idea.pasos.idea.valor) || 'Sin título',
+      estado: 'definida',
+      paso_alcanzado: PASOS.length,
+      idea_json: JSON.stringify(idea),
+      veredicto: null,
+      veredicto_json: null,
+      creado_en: idea.creada,
+      actualizado_en: new Date().toISOString(),
+    };
+    return fetch('/api/ideas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fila),
+    }).catch(() => {});
+  }
+
+  function cargarIdeas() {
+    return fetch('/api/ideas', { headers: { Accept: 'application/json' } })
+      .then(respuesta => (respuesta.ok ? respuesta.json() : null))
+      .then(datos => {
+        if (!datos || !Array.isArray(datos.ideas)) return;
+        ideas = datos.ideas.map(vistaDeFila);
+        renderizarIdeas();
+      })
+      .catch(() => {});
+  }
+
   function registrar() {
     ideaActual.pasoActual = PASOS.length - 1;
-    ideas.push(ideaActual);
+    const guardada = ideaActual;
+    ideas.unshift(vistaDeIdea(guardada));
     renderizarIdeas();
+    enviarIdea(guardada);
     ideaActual = ideaNueva();
     pasoActual = 0;
     actualizar();
@@ -435,18 +513,18 @@
 
   function renderizarIdeas() {
     listaIdeas.textContent = '';
-    ideas.forEach(idea => {
+    ideas.forEach(vista => {
       const li = document.createElement('li');
       li.className = 'idea';
       const titulo = document.createElement('strong');
       titulo.className = 'idea-titulo';
-      titulo.textContent = idea.pasos.idea.valor;
+      titulo.textContent = vista.titulo;
       const problema = document.createElement('span');
       problema.className = 'idea-problema';
-      problema.textContent = 'Problema: ' + idea.pasos.problema.quien;
+      problema.textContent = 'Problema: ' + vista.problema;
       const fecha = document.createElement('span');
       fecha.className = 'idea-fecha';
-      fecha.textContent = idea.creada;
+      fecha.textContent = vista.creada;
       li.append(titulo, problema, fecha);
       listaIdeas.appendChild(li);
     });
@@ -465,6 +543,7 @@
   construir();
   renderizarIdeas();
   actualizar();
+  cargarIdeas();
 })();
 </script>
 </body>
