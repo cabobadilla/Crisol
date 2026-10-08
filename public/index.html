@@ -569,6 +569,9 @@
     const idea = deserializarIdea(vista._fila.idea_json);
     if (!idea) return;
 
+    idea.id = vista._fila.id;
+    idea.creada = vista._fila.creado_en;
+
     ideaActual = idea;
     pasoActual = 0;
     ideaActual.pasoActual = 0;
